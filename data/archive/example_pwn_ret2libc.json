@@ -1,0 +1,20 @@
+{
+  "challenge_name": "PwnCTF2024 - ClassicStack",
+  "category": "pwn",
+  "techniques": ["stack-buffer-overflow", "ret2libc", "aslr-bypass"],
+  "difficulty": "medium",
+  "source": "ExampleCTF 2024",
+  "description": "A statically-linked-looking x86_64 binary reads a name into a fixed-size stack buffer with gets(), no canary, NX enabled, no PIE. libc version is provided alongside the binary.",
+  "explanation": "gets() performs no bounds checking, so input longer than the buffer overwrites adjacent stack memory including the saved return address. NX prevents jumping to injected shellcode on the stack, but with no canary and no PIE the return address can be reliably overwritten with the address of a libc function (system()) plus a ROP gadget to set up the '/bin/sh' argument, effectively calling system(\"/bin/sh\") from a return address we control -- no code injection needed.",
+  "solve_steps": [
+    "Find the offset from the buffer start to the saved return address with a cyclic pattern",
+    "Leak a libc address (e.g. via a puts@plt call on a GOT entry) to defeat ASLR and compute the libc base",
+    "Locate system() and a '/bin/sh' string offset within that libc version",
+    "Find a 'pop rdi; ret' gadget to set up the first argument register per the x86_64 calling convention",
+    "Build the payload: padding to the saved return address, then pop-rdi gadget, '/bin/sh' address, system() address",
+    "Send the payload and catch the shell"
+  ],
+  "tools_used": ["pwntools", "gdb", "ropper"],
+  "references": ["https://ctf-wiki.org/pwn/linux/stackoverflow/x64/ret2libc/"],
+  "notes": "Double check the libc version matches exactly -- offsets for system()/\"/bin/sh\" differ between libc builds and a mismatch just crashes the target."
+}

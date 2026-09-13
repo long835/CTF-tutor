@@ -1,0 +1,15 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+
+# Local vector store (regenerate via `python ingest.py`)
+data/chroma/
+
+# Env / secrets
+.env
+*.local
+
+# OS cruft
+.DS_Store
