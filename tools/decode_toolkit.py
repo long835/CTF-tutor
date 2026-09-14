@@ -19,6 +19,10 @@ a first-class one to depend on (CyberChef is normally a static web app).
 If you specifically want the real CyberChef UI/recipes, run it locally
 (https://github.com/gchq/CyberChef) or via cyberchef-server and treat this
 module as the fast, scriptable subset for automated/LLM-driven use.
+
+SECURITY: Decompression operations are protected against decompression bombs
+by a configurable size cap (default 50MB). Attempting to decompress data that
+would exceed this cap raises ValueError.
 """
 
 import base64
@@ -30,6 +34,11 @@ from typing import List, Union
 from urllib.parse import quote, unquote
 
 Bytes = Union[str, bytes]
+
+# Maximum decompressed size to prevent decompression bomb DoS.
+# 50MB is large enough for legitimate CTF challenges, small enough to prevent
+# accidental/malicious memory exhaustion.
+MAX_DECOMPRESSED_SIZE = 50 * 1024 * 1024
 
 
 def _as_bytes(data: Bytes) -> bytes:
@@ -124,18 +133,48 @@ def xor_bruteforce_single_byte(data: Bytes, min_printable_ratio: float = 0.85) -
     return candidates
 
 
-# --- gzip / zlib --------------------------------------------------------
+# --- gzip / zlib (with decompression bomb protection) -----------------------
 
-def gunzip_bytes(data: Bytes) -> bytes:
-    return gzip.decompress(_as_bytes(data))
+def gunzip_bytes(data: Bytes, max_size: int = MAX_DECOMPRESSED_SIZE) -> bytes:
+    """
+    Decompress gzip data with size cap protection against decompression bombs.
+    Raises ValueError if decompressed output would exceed max_size.
+    """
+    data_b = _as_bytes(data)
+    decompressor = zlib.decompressobj(16 + zlib.MAX_WBITS)
+    try:
+        output = decompressor.decompress(data_b, max_size)
+        if decompressor.unconsumed_tail:
+            raise ValueError(
+                f"decompressed output exceeds size cap ({max_size} bytes) — "
+                "possible decompression bomb"
+            )
+        return output
+    except zlib.error as e:
+        raise ValueError(f"gzip decompression failed: {e}") from e
 
 
 def gzip_bytes(data: Bytes) -> bytes:
     return gzip.compress(_as_bytes(data))
 
 
-def zlib_inflate(data: Bytes) -> bytes:
-    return zlib.decompress(_as_bytes(data))
+def zlib_inflate(data: Bytes, max_size: int = MAX_DECOMPRESSED_SIZE) -> bytes:
+    """
+    Decompress zlib data with size cap protection against decompression bombs.
+    Raises ValueError if decompressed output would exceed max_size.
+    """
+    data_b = _as_bytes(data)
+    decompressor = zlib.decompressobj()
+    try:
+        output = decompressor.decompress(data_b, max_size)
+        if decompressor.unconsumed_tail:
+            raise ValueError(
+                f"decompressed output exceeds size cap ({max_size} bytes) — "
+                "possible decompression bomb"
+            )
+        return output
+    except zlib.error as e:
+        raise ValueError(f"zlib decompression failed: {e}") from e
 
 
 def zlib_deflate(data: Bytes) -> bytes:
