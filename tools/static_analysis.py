@@ -3,7 +3,7 @@ import shutil
 from typing import Optional
 
 from tools.ghidra_headless import decompile_with_ghidra
-from tools import web_recon, crypto_toolkit
+from tools import web_recon, crypto_toolkit, forensics_toolkit
 
 
 def _run(cmd: list, timeout: int = 15) -> str:
@@ -107,7 +107,8 @@ def full_recon(
     - pwn/rev: binary analysis (checksec, nm, readelf, objdump, optional Ghidra)
     - web: source code analysis (framework detection, JWT scanning, auth patterns)
     - crypto: hash identification, RSA key analysis, cipher pattern detection
-    - forensics/misc: binwalk, exiftool (file carving, steganography, metadata)
+    - forensics: PCAP analysis, memory dumps, disk images, steganography detection
+    - misc: binwalk, exiftool (file carving, steganography, metadata)
     
     Ghidra decompilation is opt-in via include_decompile=True since it's much
     slower (a real headless analysis pass, not a one-shot CLI call) and
@@ -145,8 +146,20 @@ def full_recon(
         except Exception as e:
             evidence["crypto_analysis_error"] = str(e)
     
-    elif category_hint in (None, "forensics", "misc"):
-        # Forensics / misc: file carving, steganography, metadata
+    elif category_hint == "forensics":
+        # Forensics challenges: PCAP, memory dumps, disk images, steganography
+        try:
+            forensics_analysis = forensics_toolkit.analyze_forensics_file(path)
+            evidence["forensics_pcap"] = forensics_analysis.get("pcap_metadata", {})
+            evidence["forensics_memory"] = forensics_analysis.get("memory_dump_metadata", {})
+            evidence["forensics_disk"] = forensics_analysis.get("disk_image_metadata", {})
+            evidence["forensics_steg"] = forensics_analysis.get("steganography_indicators", {})
+            evidence["forensics_archive"] = forensics_analysis.get("archive_metadata", {})
+        except Exception as e:
+            evidence["forensics_analysis_error"] = str(e)
+    
+    elif category_hint in (None, "misc"):
+        # Misc/generic: file carving, steganography, metadata
         evidence["binwalk"] = run_binwalk(path)
         evidence["metadata"] = extract_metadata(path)
     
