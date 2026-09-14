@@ -1,4 +1,3 @@
-```python
 """
 llm_client.py
 
@@ -289,4 +288,4 @@ def extract_json_object_lenient(
     return {
         fallback_key: cleaned
     }
-```
+
