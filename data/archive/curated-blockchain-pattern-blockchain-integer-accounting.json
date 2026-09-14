@@ -1,0 +1,25 @@
+{
+  "challenge_name": "Pattern BLOCKCHAIN: Integer Accounting",
+  "category": "blockchain",
+  "techniques": [
+    "smart-contract",
+    "integer-arithmetic"
+  ],
+  "difficulty": "medium",
+  "source": "CTF-Tutor curated pattern library",
+  "description": "Contract balances are updated through multiple arithmetic operations.",
+  "explanation": "Incorrect assumptions about arithmetic invariants can create inconsistent accounting.",
+  "solve_steps": [
+    "Map state variables",
+    "Write expected invariants",
+    "Trace each update path"
+  ],
+  "tools_used": [
+    "slither",
+    "remix"
+  ],
+  "references": [
+    "local:ctf-tutor-curated-patterns"
+  ],
+  "notes": "Original educational pattern summary; no flag or challenge-specific payload stored."
+}

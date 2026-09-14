@@ -13,9 +13,12 @@ solution or exact exploit steps. Both system prompts below enforce that.
 
 from dataclasses import dataclass, field
 from typing import Dict, List
+import logging
 
 from concurrency import map_concurrent
 from llm_client import call_ollama, extract_json_object, DEFAULT_MODEL
+
+logger = logging.getLogger(__name__)
 
 
 EXPLAIN_SYSTEM_PROMPT_GROUNDED = """You are a CTF tutor explaining ONE piece \
@@ -86,6 +89,7 @@ def explain(sub_problem, matches: list, model: str = DEFAULT_MODEL) -> Explanati
         text = parsed.get("explanation") or raw.strip()
         cited_entries = parsed.get("cited_entries", [])
     except ValueError:
+        logger.warning("explainer model returned invalid JSON for sub-problem %s", sub_problem.id)
         text = raw.strip()
         cited_entries = []
 

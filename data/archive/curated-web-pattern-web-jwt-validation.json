@@ -1,0 +1,24 @@
+{
+  "challenge_name": "Pattern WEB: JWT Validation",
+  "category": "web",
+  "techniques": [
+    "jwt"
+  ],
+  "difficulty": "medium",
+  "source": "CTF-Tutor curated pattern library",
+  "description": "A service authorizes requests using JSON Web Tokens.",
+  "explanation": "Security depends on strict signature and algorithm validation rather than trusting token fields by themselves.",
+  "solve_steps": [
+    "Decode header and payload without modifying them",
+    "Identify validation expectations",
+    "Check claims and expiry handling"
+  ],
+  "tools_used": [
+    "jwt_tool",
+    "burpsuite"
+  ],
+  "references": [
+    "local:ctf-tutor-curated-patterns"
+  ],
+  "notes": "Original educational pattern summary; no flag or challenge-specific payload stored."
+}

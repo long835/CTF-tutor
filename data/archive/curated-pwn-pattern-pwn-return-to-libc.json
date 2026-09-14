@@ -1,0 +1,26 @@
+{
+  "challenge_name": "Pattern PWN: Return-to-libc",
+  "category": "pwn",
+  "techniques": [
+    "ret2libc",
+    "buffer-overflow"
+  ],
+  "difficulty": "hard",
+  "source": "CTF-Tutor curated pattern library",
+  "description": "A memory-corruption bug exists but injected code execution is restricted.",
+  "explanation": "Existing executable code can sometimes be reused instead of placing new executable bytes in memory.",
+  "solve_steps": [
+    "Inspect mitigations",
+    "Establish controlled control flow",
+    "Identify required runtime addresses"
+  ],
+  "tools_used": [
+    "checksec",
+    "gdb",
+    "pwntools"
+  ],
+  "references": [
+    "local:ctf-tutor-curated-patterns"
+  ],
+  "notes": "Original educational pattern summary; no flag or challenge-specific payload stored."
+}

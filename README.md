@@ -525,3 +525,13 @@ Only use exploitation techniques against systems you own or have explicit permis
 This project is currently under active development.
 
 Expect things to change.
+
+## Safety when analyzing untrusted challenge files
+
+CTF challenge files should be treated as untrusted input. `CTF-Tutor` invokes
+third-party parsers such as `binwalk`, `exiftool`, `objdump`, Ghidra, `tshark`,
+and Volatility when those tools are available. Keep challenge analysis inside
+a disposable VM or otherwise isolated container/sandbox, preferably from a
+revertible snapshot and without unnecessary network access. Keep the host and
+analysis tools patched. The tutor's subprocess timeouts and size limits are
+defense-in-depth, not a replacement for isolation.

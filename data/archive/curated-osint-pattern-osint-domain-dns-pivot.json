@@ -1,0 +1,25 @@
+{
+  "challenge_name": "Pattern OSINT: Domain DNS Pivot",
+  "category": "osint",
+  "techniques": [
+    "log-analysis",
+    "domain-osint"
+  ],
+  "difficulty": "medium",
+  "source": "CTF-Tutor curated pattern library",
+  "description": "A challenge provides a domain and expects public infrastructure clues.",
+  "explanation": "DNS records and registration information expose different layers of domain metadata.",
+  "solve_steps": [
+    "Query record types",
+    "Compare historical/current clues where allowed",
+    "Corroborate before drawing conclusions"
+  ],
+  "tools_used": [
+    "dig",
+    "whois"
+  ],
+  "references": [
+    "local:ctf-tutor-curated-patterns"
+  ],
+  "notes": "Original educational pattern summary; no flag or challenge-specific payload stored."
+}

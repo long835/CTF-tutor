@@ -1,0 +1,24 @@
+{
+  "challenge_name": "Pattern OSINT: EXIF Geolocation",
+  "category": "osint",
+  "techniques": [
+    "metadata",
+    "geolocation"
+  ],
+  "difficulty": "easy",
+  "source": "CTF-Tutor curated pattern library",
+  "description": "A public image may retain location metadata.",
+  "explanation": "GPS fields, when genuinely present, can provide coordinates that should be verified against the image context.",
+  "solve_steps": [
+    "Extract metadata",
+    "Check coordinate validity",
+    "Corroborate with independent visible clues"
+  ],
+  "tools_used": [
+    "exiftool"
+  ],
+  "references": [
+    "local:ctf-tutor-curated-patterns"
+  ],
+  "notes": "Original educational pattern summary; no flag or challenge-specific payload stored."
+}

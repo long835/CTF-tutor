@@ -19,26 +19,21 @@ a first-class one to depend on (CyberChef is normally a static web app).
 If you specifically want the real CyberChef UI/recipes, run it locally
 (https://github.com/gchq/CyberChef) or via cyberchef-server and treat this
 module as the fast, scriptable subset for automated/LLM-driven use.
-
-SECURITY: Decompression operations are protected against decompression bombs
-by a configurable size cap (default 50MB). Attempting to decompress data that
-would exceed this cap raises ValueError.
 """
 
 import base64
 import binascii
+import collections
 import gzip
+import math
 import re
 import zlib
-from typing import List, Union
+from typing import List, Optional, Tuple, Union
 from urllib.parse import quote, unquote
 
-Bytes = Union[str, bytes]
+from config import MAX_DECOMPRESSED_SIZE
 
-# Maximum decompressed size to prevent decompression bomb DoS.
-# 50MB is large enough for legitimate CTF challenges, small enough to prevent
-# accidental/malicious memory exhaustion.
-MAX_DECOMPRESSED_SIZE = 50 * 1024 * 1024
+Bytes = Union[str, bytes]
 
 
 def _as_bytes(data: Bytes) -> bytes:
@@ -133,52 +128,140 @@ def xor_bruteforce_single_byte(data: Bytes, min_printable_ratio: float = 0.85) -
     return candidates
 
 
-# --- gzip / zlib (with decompression bomb protection) -----------------------
+def shannon_entropy(data: Bytes) -> float:
+    """Bits of Shannon entropy per byte, in [0, 8]. Used to pick decode
+    candidates: high entropy tends toward compression/encryption; low,
+    uniform-looking text tends toward Caesar/substitution."""
+    blob = _as_bytes(data)
+    if not blob:
+        return 0.0
+    counts = collections.Counter(blob)
+    length = len(blob)
+    return -sum((c / length) * math.log2(c / length) for c in counts.values())
 
-def gunzip_bytes(data: Bytes, max_size: int = MAX_DECOMPRESSED_SIZE) -> bytes:
-    """
-    Decompress gzip data with size cap protection against decompression bombs.
-    Raises ValueError if decompressed output would exceed max_size.
-    """
-    data_b = _as_bytes(data)
-    decompressor = zlib.decompressobj(16 + zlib.MAX_WBITS)
-    try:
-        output = decompressor.decompress(data_b, max_size)
-        if decompressor.unconsumed_tail:
+
+def _safe_inflate(data: bytes, wbits: int, max_size: int = MAX_DECOMPRESSED_SIZE) -> bytes:
+    decoder = zlib.decompressobj(wbits)
+    out = decoder.decompress(data, max_size)
+    if decoder.unconsumed_tail:
+        raise ValueError(
+            "decompressed output exceeds size cap — possible decompression bomb"
+        )
+    leftover = decoder.flush()
+    if leftover:
+        if len(out) + len(leftover) > max_size:
             raise ValueError(
-                f"decompressed output exceeds size cap ({max_size} bytes) — "
-                "possible decompression bomb"
+                "decompressed output exceeds size cap — possible decompression bomb"
             )
-        return output
-    except zlib.error as e:
-        raise ValueError(f"gzip decompression failed: {e}") from e
+        out += leftover
+    return out
+
+
+def gunzip_bytes(data: Bytes) -> bytes:
+    return _safe_inflate(_as_bytes(data), 16 + zlib.MAX_WBITS)
 
 
 def gzip_bytes(data: Bytes) -> bytes:
     return gzip.compress(_as_bytes(data))
 
 
-def zlib_inflate(data: Bytes, max_size: int = MAX_DECOMPRESSED_SIZE) -> bytes:
-    """
-    Decompress zlib data with size cap protection against decompression bombs.
-    Raises ValueError if decompressed output would exceed max_size.
-    """
-    data_b = _as_bytes(data)
-    decompressor = zlib.decompressobj()
-    try:
-        output = decompressor.decompress(data_b, max_size)
-        if decompressor.unconsumed_tail:
-            raise ValueError(
-                f"decompressed output exceeds size cap ({max_size} bytes) — "
-                "possible decompression bomb"
-            )
-        return output
-    except zlib.error as e:
-        raise ValueError(f"zlib decompression failed: {e}") from e
+def zlib_inflate(data: Bytes) -> bytes:
+    return _safe_inflate(_as_bytes(data), zlib.MAX_WBITS)
 
 
 def zlib_deflate(data: Bytes) -> bytes:
     return zlib.compress(_as_bytes(data))
+
+
+# --- repeating-key XOR (CryptoPals-style identification helper) ------------
+
+ENGLISH_FREQ = {
+    "a": 0.082, "b": 0.015, "c": 0.028, "d": 0.043, "e": 0.13,
+    "f": 0.022, "g": 0.02, "h": 0.061, "i": 0.07, "j": 0.0015,
+    "k": 0.0077, "l": 0.04, "m": 0.024, "n": 0.067, "o": 0.075,
+    "p": 0.019, "q": 0.00095, "r": 0.06, "s": 0.063, "t": 0.091,
+    "u": 0.028, "v": 0.0098, "w": 0.024, "x": 0.0015, "y": 0.02,
+    "z": 0.00074, " ": 0.13,
+}
+
+
+def hamming_distance(a: bytes, b: bytes) -> int:
+    if len(a) != len(b):
+        raise ValueError("hamming_distance requires equal-length buffers")
+    return sum(bin(x ^ y).count("1") for x, y in zip(a, b))
+
+
+def _english_score(text: bytes) -> float:
+    if not text:
+        return 0.0
+    lowered = text.lower()
+    score = 0.0
+    for b in lowered:
+        ch = chr(b)
+        if ch in ENGLISH_FREQ:
+            score += ENGLISH_FREQ[ch]
+        elif b < 32 and b not in (9, 10, 13):
+            score -= 0.5
+    return score / len(text)
+
+
+def _best_single_byte_xor_key(column: bytes) -> Tuple[int, bytes, float]:
+    best_key, best_out, best_score = 0, b"", float("-inf")
+    for key in range(256):
+        out = bytes(b ^ key for b in column)
+        score = _english_score(out)
+        if score > best_score:
+            best_key, best_out, best_score = key, out, score
+    return best_key, best_out, best_score
+
+
+def guess_xor_key_lengths(data: Bytes, min_key: int = 2, max_key: int = 40, top_n: int = 3) -> List[Tuple[int, float]]:
+    """Normalized Hamming-distance ranking of candidate repeating-key lengths."""
+    blob = _as_bytes(data)
+    ranked = []
+    for keysize in range(min_key, min(max_key, len(blob) // 2) + 1):
+        blocks = [blob[i:i + keysize] for i in range(0, keysize * 4, keysize)]
+        blocks = [b for b in blocks if len(b) == keysize]
+        if len(blocks) < 2:
+            continue
+        distances = [
+            hamming_distance(blocks[i], blocks[i + 1]) / keysize
+            for i in range(len(blocks) - 1)
+        ]
+        ranked.append((keysize, sum(distances) / len(distances)))
+    ranked.sort(key=lambda row: row[1])
+    return ranked[:top_n]
+
+
+def break_repeating_key_xor(
+    data: Bytes,
+    key_length: Optional[int] = None,
+) -> dict:
+    """Recover a plausible repeating XOR key via per-column frequency
+    analysis. This is identification / teaching assistance for a blob the
+    learner already has, not a live-system attack."""
+    blob = _as_bytes(data)
+    if key_length is None:
+        guesses = guess_xor_key_lengths(blob)
+        if not guesses:
+            raise ValueError("not enough data to guess a repeating XOR key length")
+        key_length = guesses[0][0]
+    key_bytes = []
+    for offset in range(key_length):
+        column = blob[offset::key_length]
+        key, _out, _score = _best_single_byte_xor_key(column)
+        key_bytes.append(key)
+    key = bytes(key_bytes)
+    plaintext = xor_bytes(blob, key)
+    return {
+        "key": key,
+        "key_hex": key.hex(),
+        "plaintext": plaintext,
+        "key_length": key_length,
+        "printable_ratio": (
+            sum(1 for b in plaintext if 32 <= b < 127) / len(plaintext) if plaintext else 0
+        ),
+    }
 
 
 # --- recipes: chain named operations like a CyberChef recipe ---------------
@@ -254,6 +337,27 @@ def _magic_search(data: bytes, recipe_so_far: List[str], results: List[dict], de
 
     text = data.decode("latin-1")
     candidates = []
+    entropy = shannon_entropy(data)
+
+    # High entropy: prefer compression/encryption-shaped candidates first.
+    # Low entropy: prefer substitution (ROT13) before treating the blob as
+    # encoded binary.
+    if entropy >= 6.5 or data[:2] == b"\x1f\x8b" or data[:2] in (b"\x78\x01", b"\x78\x9c", b"\x78\xda"):
+        if data[:2] == b"\x1f\x8b":
+            try:
+                candidates.append(("gunzip", gunzip_bytes(data)))
+            except Exception:
+                pass
+        if data[:2] in (b"\x78\x01", b"\x78\x9c", b"\x78\xda"):
+            try:
+                candidates.append(("zlib_inflate", zlib_inflate(data)))
+            except Exception:
+                pass
+
+    if entropy < 5.0 and text.isalpha() and len(text) >= 8:
+        rotated = rot13(data)
+        if rotated != text:
+            candidates.append(("rot13", rotated.encode("latin-1")))
 
     if re.fullmatch(r"[A-Za-z0-9+/=\s]+", text) and len(text.strip()) >= 4:
         try:
@@ -270,16 +374,17 @@ def _magic_search(data: bytes, recipe_so_far: List[str], results: List[dict], de
             candidates.append(("from_url", from_url(data).encode()))
         except Exception:
             pass
-    if data[:2] == b"\x1f\x8b":
-        try:
-            candidates.append(("gunzip", gunzip_bytes(data)))
-        except Exception:
-            pass
-    if data[:2] in (b"\x78\x01", b"\x78\x9c", b"\x78\xda"):
-        try:
-            candidates.append(("zlib_inflate", zlib_inflate(data)))
-        except Exception:
-            pass
+    if entropy < 6.5:
+        if data[:2] == b"\x1f\x8b":
+            try:
+                candidates.append(("gunzip", gunzip_bytes(data)))
+            except Exception:
+                pass
+        if data[:2] in (b"\x78\x01", b"\x78\x9c", b"\x78\xda"):
+            try:
+                candidates.append(("zlib_inflate", zlib_inflate(data)))
+            except Exception:
+                pass
 
     for name, decoded in candidates:
         if decoded == data:

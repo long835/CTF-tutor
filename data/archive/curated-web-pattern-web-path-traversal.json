@@ -1,0 +1,24 @@
+{
+  "challenge_name": "Pattern WEB: Path Traversal",
+  "category": "web",
+  "techniques": [
+    "path-traversal"
+  ],
+  "difficulty": "medium",
+  "source": "CTF-Tutor curated pattern library",
+  "description": "A file-serving feature derives a filesystem path from user input.",
+  "explanation": "Canonicalization and access boundaries matter because path components can escape an intended directory if validation is weak.",
+  "solve_steps": [
+    "Identify the path-building input",
+    "Compare requested and canonical paths conceptually",
+    "Determine the intended file boundary"
+  ],
+  "tools_used": [
+    "curl",
+    "burpsuite"
+  ],
+  "references": [
+    "local:ctf-tutor-curated-patterns"
+  ],
+  "notes": "Original educational pattern summary; no flag or challenge-specific payload stored."
+}

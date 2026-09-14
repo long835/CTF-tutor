@@ -1,0 +1,24 @@
+{
+  "challenge_name": "Pattern WEB: SQL Injection",
+  "category": "web",
+  "techniques": [
+    "sql-injection"
+  ],
+  "difficulty": "medium",
+  "source": "CTF-Tutor curated pattern library",
+  "description": "An application appears to construct database queries from request-controlled values.",
+  "explanation": "Separating query structure from data is essential; unsafe concatenation can let input alter query semantics.",
+  "solve_steps": [
+    "Map inputs and server responses",
+    "Look for query-dependent behavior",
+    "Explain parameterization as the underlying defense"
+  ],
+  "tools_used": [
+    "curl",
+    "burpsuite"
+  ],
+  "references": [
+    "local:ctf-tutor-curated-patterns"
+  ],
+  "notes": "Original educational pattern summary; no flag or challenge-specific payload stored."
+}

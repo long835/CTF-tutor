@@ -19,7 +19,7 @@ Each user can set these values to their own Ollama server.
 import json
 import os
 import re
-from typing import List, Union
+from typing import Callable, List, Optional, Union
 
 import requests
 from dotenv import load_dotenv
@@ -56,35 +56,7 @@ OLLAMA_EMBED_URL = f"{OLLAMA_BASE_URL}/api/embed"
 # Chat
 # ---------------------------------------------------------------------------
 
-def call_ollama(
-    system_prompt: str,
-    user_prompt: str,
-    model: str = DEFAULT_MODEL,
-    stream: bool = False,
-    on_token=None,
-) -> str:
-    """
-    Send a chat request to an Ollama server and return the text response.
-
-    stream=False (default): one blocking request, one blocking response --
-    what every existing caller in this codebase uses, since they all parse
-    the reply as JSON and a partial JSON fragment isn't useful mid-flight.
-
-    stream=True: reads Ollama's newline-delimited streaming response and
-    calls on_token(piece) as each piece arrives (if given), still returning
-    the fully-assembled text at the end either way. Useful for a caller
-    that wants to show live progress on a genuinely prose (non-JSON) reply.
-    """
-
-    payload = {
-        "model": model,
-        "messages": [
-            {"role": "system", "content": system_prompt},
-            {"role": "user", "content": user_prompt},
-        ],
-        "stream": stream,
-    }
-
+def _post_chat(payload: dict, stream: bool, model: str):
     try:
         resp = requests.post(
             OLLAMA_URL,
@@ -93,14 +65,13 @@ def call_ollama(
             stream=stream,
         )
         resp.raise_for_status()
-
+        return resp
     except requests.exceptions.ConnectionError:
         raise RuntimeError(
             f"Could not reach Ollama at {OLLAMA_BASE_URL} -- "
             "is the Ollama server running and is the URL configured correctly? "
             f"Is the model pulled (`ollama pull {model}`)?"
         )
-
     except requests.exceptions.ReadTimeout:
         raise RuntimeError(
             f"Ollama took longer than 180s to respond for model '{model}'. "
@@ -110,23 +81,94 @@ def call_ollama(
             "or increase the timeout if your hardware is slower."
         )
 
+
+def call_ollama(
+    system_prompt: str,
+    user_prompt: str,
+    model: str = DEFAULT_MODEL,
+    stream: bool = False,
+    on_token=None,
+) -> str:
+    """
+    Send a chat request to an Ollama server and return the text response.
+    """
+    message = _chat(
+        [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": user_prompt},
+        ],
+        model=model,
+        stream=stream,
+        on_token=on_token,
+    )
+    return message.get("content", "") or ""
+
+
+def _chat(messages, model: str = DEFAULT_MODEL, stream: bool = False, on_token=None, tools=None) -> dict:
+    payload = {
+        "model": model,
+        "messages": messages,
+        "stream": stream,
+    }
+    if tools:
+        payload["tools"] = tools
+
+    resp = _post_chat(payload, stream=stream, model=model)
+
     if not stream:
         data = resp.json()
-        return data.get("message", {}).get("content", "")
+        return data.get("message", {}) or {}
 
     pieces = []
+    last_message: dict = {}
     for line in resp.iter_lines():
         if not line:
             continue
         chunk = json.loads(line)
-        piece = chunk.get("message", {}).get("content", "")
+        last_message = chunk.get("message", {}) or last_message
+        piece = (chunk.get("message") or {}).get("content", "")
         if piece:
             pieces.append(piece)
             if on_token:
                 on_token(piece)
         if chunk.get("done"):
             break
-    return "".join(pieces)
+    return {"role": "assistant", "content": "".join(pieces)}
+
+
+def call_ollama_with_tools(
+    system_prompt: str,
+    user_prompt: str,
+    tools: list,
+    tool_impl: Callable[[str, dict], str],
+    model: str = DEFAULT_MODEL,
+    max_rounds: int = 4,
+) -> str:
+    """Ollama function-calling loop. Stops when the model replies without tool_calls."""
+    messages = [
+        {"role": "system", "content": system_prompt},
+        {"role": "user", "content": user_prompt},
+    ]
+    last_text = ""
+    for _ in range(max_rounds):
+        message = _chat(messages, model=model, tools=tools)
+        last_text = message.get("content") or last_text
+        tool_calls = message.get("tool_calls") or []
+        if not tool_calls:
+            return last_text or ""
+        messages.append(message)
+        for call in tool_calls:
+            function = call.get("function") or {}
+            name = function.get("name", "")
+            raw_args = function.get("arguments") or {}
+            if isinstance(raw_args, str):
+                try:
+                    raw_args = json.loads(raw_args) if raw_args else {}
+                except json.JSONDecodeError:
+                    raw_args = {}
+            result = tool_impl(name, raw_args if isinstance(raw_args, dict) else {})
+            messages.append({"role": "tool", "content": str(result), "name": name})
+    return last_text or ""
 
 
 def warm_up(model: str = DEFAULT_MODEL, timeout: int = 300) -> None:

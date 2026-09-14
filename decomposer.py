@@ -2,22 +2,12 @@
 decomposer.py
 
 Takes a raw challenge (description text + optional file) and breaks it into
-a list of SubProblem objects -- the way an experienced player would mentally
-split up a challenge before diving in.
-
-Runs entirely against a LOCAL model via Ollama (free, no API key, no cost).
-Install Ollama from https://ollama.com, then:
-
-    ollama pull qwen3:8b          # or devstral:24b / qwen3:14b if your
-                                   # hardware can handle a bigger model
-
-Ollama exposes an OpenAI-compatible-ish chat API at
-http://localhost:11434/api/chat -- we hit it directly with `requests`
-so there's no extra SDK dependency.
+a list of SubProblem objects.
 """
 
 from typing import List, Optional
 
+from config import EVIDENCE_CHAR_LIMIT
 from schema import SubProblem, normalize_tag
 from tools import static_analysis
 from llm_client import call_ollama, extract_json_array, DEFAULT_MODEL
@@ -43,6 +33,24 @@ Do not include a flag, a full solution, or step-by-step exploit instructions.
 Sub-problem identification only.
 """
 
+JSON_RETRY_REMINDER = (
+    "Your previous reply was not a JSON array. Respond ONLY with a JSON array "
+    "of objects with keys: id, description, likely_techniques, evidence. "
+    "No markdown, no prose outside the array."
+)
+
+
+def truncate_evidence_blob(value: str, limit: int = EVIDENCE_CHAR_LIMIT) -> str:
+    """Keep the head and tail of long recon output so a large binary/pcap
+    does not lose the interesting ending just because the middle is huge."""
+    if len(value) <= limit:
+        return value
+    marker = "\n... [middle truncated] ...\n"
+    budget = limit - len(marker)
+    head = budget // 2
+    tail = budget - head
+    return value[:head] + marker + value[-tail:]
+
 
 def build_user_prompt(
     challenge_description: str,
@@ -55,40 +63,30 @@ def build_user_prompt(
     if evidence:
         parts.append("\nStatic analysis / recon evidence:")
         for key, value in evidence.items():
-            # keep prompt size sane -- truncate long tool output
-            snippet = value if len(value) < 1500 else value[:1500] + "... [truncated]"
+            snippet = truncate_evidence_blob(str(value))
             parts.append(f"--- {key} ---\n{snippet}")
     return "\n".join(parts)
 
 
-def decompose(
-    challenge_description: str,
-    category: Optional[str] = None,
-    file_path: Optional[str] = None,
-    model: str = DEFAULT_MODEL,
-    include_decompile: bool = False,
-) -> List[SubProblem]:
-    """
-    Main entry point. Optionally pass file_path to a challenge binary/pcap/etc.
-    so real static-analysis evidence grounds the decomposition instead of the
-    model guessing purely from the text prompt. include_decompile=True adds
-    a Ghidra headless decompilation pass for pwn/rev files (slow, requires a
-    local Ghidra install -- see tools/ghidra_headless.py) on top of the
-    always-on fast checks (file/strings/checksec/binwalk/exiftool).
-    """
-    evidence = None
-    if file_path:
-        evidence = static_analysis.full_recon(
-            file_path, category_hint=category, include_decompile=include_decompile
-        )
+def _items_from_model_output(raw: str) -> list:
+    try:
+        items = extract_json_array(raw)
+    except (ValueError, TypeError):
+        return []
+    return items if isinstance(items, list) else []
 
-    user_prompt = build_user_prompt(challenge_description, category, evidence)
-    raw = call_ollama(DECOMPOSE_SYSTEM_PROMPT, user_prompt, model=model)
-    items = extract_json_array(raw)
 
+def _subproblems_from_items(items: list) -> List[SubProblem]:
     sub_problems = []
     for item in items:
-        techniques = [normalize_tag(t) for t in item.get("likely_techniques", [])]
+        if not isinstance(item, dict):
+            continue
+        techniques = []
+        for t in item.get("likely_techniques", []) or []:
+            try:
+                techniques.append(normalize_tag(str(t)))
+            except ValueError:
+                continue
         sub_problems.append(
             SubProblem(
                 id=item.get("id", "unnamed"),
@@ -98,6 +96,45 @@ def decompose(
             )
         )
     return sub_problems
+
+
+def decompose(
+    challenge_description: str,
+    category: Optional[str] = None,
+    file_path: Optional[str] = None,
+    model: str = DEFAULT_MODEL,
+    include_decompile: bool = False,
+    target_url: Optional[str] = None,
+    guided_recon: bool = False,
+) -> List[SubProblem]:
+    evidence = None
+    if file_path or target_url:
+        if guided_recon:
+            evidence = static_analysis.guided_recon(
+                file_path,
+                category_hint=category,
+                include_decompile=include_decompile,
+                target_url=target_url,
+                model=model,
+                challenge_description=challenge_description,
+            )
+        else:
+            evidence = static_analysis.full_recon(
+                file_path,
+                category_hint=category,
+                include_decompile=include_decompile,
+                target_url=target_url,
+            )
+
+    user_prompt = build_user_prompt(challenge_description, category, evidence)
+    raw = call_ollama(DECOMPOSE_SYSTEM_PROMPT, user_prompt, model=model)
+    items = _items_from_model_output(raw)
+    if not items:
+        retry_prompt = user_prompt + "\n\n" + JSON_RETRY_REMINDER
+        raw = call_ollama(DECOMPOSE_SYSTEM_PROMPT, retry_prompt, model=model)
+        items = _items_from_model_output(raw)
+
+    return _subproblems_from_items(items)
 
 
 if __name__ == "__main__":

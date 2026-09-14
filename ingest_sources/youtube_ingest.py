@@ -18,7 +18,7 @@ Usage:
 
 import re
 import os
-from typing import Optional
+from typing import List, Optional
 
 from schema import ArchiveEntry
 from llm_client import call_ollama, extract_json_object, DEFAULT_MODEL
@@ -122,11 +122,57 @@ def ingest_video(
     return entry
 
 
+def list_playlist_video_urls(playlist_url: str) -> List[str]:
+    """Return video URLs from a playlist using optional yt-dlp metadata only."""
+    try:
+        from yt_dlp import YoutubeDL
+    except ImportError as e:
+        raise RuntimeError("playlist mode requires yt-dlp: pip install yt-dlp") from e
+    opts = {"quiet": True, "skip_download": True, "extract_flat": True}
+    with YoutubeDL(opts) as ydl:
+        info = ydl.extract_info(playlist_url, download=False)
+    entries = info.get("entries") or []
+    return [
+        f"https://www.youtube.com/watch?v={item['id']}"
+        for item in entries
+        if item and item.get("id")
+    ]
+
+
+def ingest_playlist(playlist_url: str, output_dir: str = "data/archive",
+                    model: str = DEFAULT_MODEL, dry_run: bool = False) -> List[ArchiveEntry]:
+    import json
+    urls = list_playlist_video_urls(playlist_url)
+    print(f"Found {len(urls)} videos in playlist")
+    entries = []
+    os.makedirs(output_dir, exist_ok=True)
+    for url in urls:
+        try:
+            entry = summarize_video(url, model=model)
+            entries.append(entry)
+            video_id = _extract_video_id(url)
+            out_path = os.path.join(output_dir, f"youtube-{video_id}.json")
+            if dry_run:
+                print(f"  DRY-RUN {out_path}:\n{json.dumps(entry.to_dict(), indent=2, ensure_ascii=False)}")
+            else:
+                entry.save(out_path)
+                print(f"  saved: {out_path}  ({entry.challenge_name})")
+        except Exception as e:
+            print(f"  skipped {url}: {e}")
+    return entries
+
+
 if __name__ == "__main__":
     import sys
 
     if len(sys.argv) < 2:
-        print("Usage: python -m ingest_sources.youtube_ingest <youtube-video-url>")
+        print("Usage: python -m ingest_sources.youtube_ingest <youtube-video-url> | --playlist <playlist-url> [--dry-run]")
         sys.exit(1)
 
-    ingest_video(sys.argv[1])
+    if sys.argv[1] == "--playlist":
+        if len(sys.argv) < 3:
+            print("error: --playlist requires a playlist URL", file=sys.stderr)
+            sys.exit(1)
+        ingest_playlist(sys.argv[2], dry_run="--dry-run" in sys.argv[3:])
+    else:
+        ingest_video(sys.argv[1])

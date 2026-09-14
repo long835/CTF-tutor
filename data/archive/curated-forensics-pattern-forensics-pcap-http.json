@@ -1,0 +1,25 @@
+{
+  "challenge_name": "Pattern FORENSICS: PCAP HTTP",
+  "category": "forensics",
+  "techniques": [
+    "pcap-analysis",
+    "http-analysis"
+  ],
+  "difficulty": "medium",
+  "source": "CTF-Tutor curated pattern library",
+  "description": "A packet capture contains application traffic that may reconstruct a sequence of requests.",
+  "explanation": "Network captures preserve protocol metadata and payload ordering that can reveal behavior.",
+  "solve_steps": [
+    "Get protocol statistics",
+    "Filter relevant conversations",
+    "Reconstruct the sequence at the application layer"
+  ],
+  "tools_used": [
+    "tshark",
+    "scapy"
+  ],
+  "references": [
+    "local:ctf-tutor-curated-patterns"
+  ],
+  "notes": "Original educational pattern summary; no flag or challenge-specific payload stored."
+}

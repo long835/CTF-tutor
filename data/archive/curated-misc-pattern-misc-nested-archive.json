@@ -1,0 +1,25 @@
+{
+  "challenge_name": "Pattern MISC: Nested Archive",
+  "category": "misc",
+  "techniques": [
+    "archive-analysis",
+    "file-signature"
+  ],
+  "difficulty": "medium",
+  "source": "CTF-Tutor curated pattern library",
+  "description": "A challenge file contains one or more nested containers.",
+  "explanation": "Each layer should be identified and handled according to its own format rather than blindly extracting everything.",
+  "solve_steps": [
+    "List archive members safely",
+    "Track depth and total extracted size",
+    "Inspect each recovered type before continuing"
+  ],
+  "tools_used": [
+    "file",
+    "binwalk"
+  ],
+  "references": [
+    "local:ctf-tutor-curated-patterns"
+  ],
+  "notes": "Original educational pattern summary; no flag or challenge-specific payload stored."
+}

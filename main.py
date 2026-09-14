@@ -25,6 +25,9 @@ Subcommands:
     search    query your archive directly
     list      list archive entries on disk, grouped by category
     history   show past sessions / a technique-frequency progress summary
+    chat      chat with the local CTF tutor
+    generate  generate a safe local CTF challenge specification
+    session   manage multi-language challenge sessions
 
 Usage:
     python main.py "A login portal issues JWTs signed with RS256. \\
@@ -37,6 +40,7 @@ The admin panel trusts the role claim in the token." \\
 """
 
 import argparse
+import json
 import os
 import sys
 from typing import Dict, Optional
@@ -48,6 +52,8 @@ import llm_client
 import synthesizer
 import explainer
 import depth_guide
+import chat_generate
+import multilang
 from concurrency import map_concurrent
 from depth_guide import HintLevel, level_from_str
 from progress import Spinner
@@ -306,6 +312,7 @@ def _build_search_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="main.py search", description="Search your archive directly.")
     parser.add_argument("query", help="free-text search query")
     parser.add_argument("--category", default=None, help="filter to one category")
+    parser.add_argument("--difficulty", default=None, help="filter to one difficulty (easy/medium/hard/insane)")
     parser.add_argument("-n", "--n-results", type=int, default=5, help="max results (default: 5)")
     return parser
 
@@ -318,7 +325,7 @@ def cmd_search(argv) -> int:
         print(f"error: {e}", file=sys.stderr)
         return 1
 
-    matches = retriever.query(args.query, n_results=args.n_results, category=args.category)
+    matches = retriever.query(args.query, n_results=args.n_results, category=args.category, difficulty=args.difficulty)
     if not matches:
         print("no matches found")
         return 0
@@ -397,6 +404,11 @@ def cmd_history(argv) -> int:
         print(f"technique frequency across {len(entries)} session(s):")
         for technique, count in counts.items():
             print(f"  {count:>3}  {technique}")
+        avg = history.avg_hint_depth_by_technique(entries)
+        if avg:
+            print("average recorded hint depth by technique (lower can indicate less assistance needed):")
+            for technique, value in avg.items():
+                print(f"  {value:>6.2f}  {technique}")
         return 0
 
     for e in entries:
@@ -407,14 +419,79 @@ def cmd_history(argv) -> int:
     return 0
 
 
-SUBCOMMAND_NAMES = ["run", "search", "list", "history"]
+
+def _build_chat_parser():
+    parser = argparse.ArgumentParser(prog="main.py chat", description="Chat with the local CTF tutor.")
+    parser.add_argument("prompt")
+    parser.add_argument("--model", default=DEFAULT_MODEL)
+    return parser
+
+def cmd_chat(argv) -> int:
+    args = _build_chat_parser().parse_args(argv)
+    try:
+        print(chat_generate.chat(args.prompt, model=args.model))
+    except (RuntimeError, ValueError) as exc:
+        print(f"error: {exc}", file=sys.stderr)
+        return 1
+    return 0
+
+def _build_generate_parser():
+    parser = argparse.ArgumentParser(prog="main.py generate", description="Generate a safe local CTF challenge specification.")
+    parser.add_argument("prompt")
+    parser.add_argument("--model", default=DEFAULT_MODEL)
+    parser.add_argument("--output", default=None, help="write JSON to this file")
+    return parser
+
+def cmd_generate(argv) -> int:
+    args = _build_generate_parser().parse_args(argv)
+    try:
+        obj = chat_generate.generate(args.prompt, model=args.model)
+    except (RuntimeError, ValueError) as exc:
+        print(f"error: {exc}", file=sys.stderr)
+        return 1
+    text = json.dumps(obj, indent=2, ensure_ascii=False)
+    if args.output:
+        with open(args.output, "w", encoding="utf-8") as f:
+            f.write(text + "\n")
+    else:
+        print(text)
+    return 0
+
+def _build_session_parser():
+    parser = argparse.ArgumentParser(prog="main.py session", description="Manage a shared multi-language CTF session.")
+    sub = parser.add_subparsers(dest="action", required=True)
+    p = sub.add_parser("create"); p.add_argument("challenge_name"); p.add_argument("--language", default="python", choices=multilang.SUPPORTED_LANGUAGES); p.add_argument("--root", default="data/sessions")
+    p = sub.add_parser("switch"); p.add_argument("workspace"); p.add_argument("language", choices=multilang.SUPPORTED_LANGUAGES)
+    p = sub.add_parser("run"); p.add_argument("workspace"); p.add_argument("source"); p.add_argument("--language", choices=multilang.SUPPORTED_LANGUAGES); p.add_argument("--timeout", type=int, default=10)
+    p = sub.add_parser("note"); p.add_argument("workspace"); p.add_argument("text")
+    sub.add_parser("list")
+    return parser
+
+def cmd_session(argv) -> int:
+    args = _build_session_parser().parse_args(argv)
+    try:
+        if args.action == "create":
+            s = multilang.MultiLanguageSession.create(args.challenge_name, root=args.root, language=args.language); print(s.workspace); return 0
+        if args.action == "list":
+            print(json.dumps(multilang.list_sessions(), indent=2)); return 0
+        s = multilang.MultiLanguageSession.load(args.workspace)
+        if args.action == "switch": s.switch(args.language); print(s.current_language); return 0
+        if args.action == "note": s.add_note(args.text); return 0
+        if args.action == "run":
+            with open(args.source, "r", encoding="utf-8") as f: source = f.read()
+            r = s.run_source(source, language=args.language, timeout=args.timeout); print(json.dumps(r.to_dict(), indent=2)); return 0 if r.returncode == 0 else 1
+    except (OSError, ValueError, RuntimeError, json.JSONDecodeError) as exc:
+        print(f"error: {exc}", file=sys.stderr); return 1
+
+
+SUBCOMMAND_NAMES = ["run", "search", "list", "history", "chat", "generate", "session"]
 
 
 def main(argv=None) -> int:
     argv = list(sys.argv[1:]) if argv is None else list(argv)
 
     if not argv or argv[0] in ("-h", "--help"):
-        print("usage: main.py {run,search,list,history} ...")
+        print("usage: main.py {run,search,list,history,chat,generate,session} ...")
         print()
         print("A free, local, learning-focused CTF assistant. Does NOT auto-solve or submit flags.")
         print()
@@ -423,6 +500,9 @@ def main(argv=None) -> int:
         print("  search    query your archive directly")
         print("  list      list archive entries on disk, grouped by category")
         print("  history   show past sessions / a technique-frequency progress summary")
+        print("  chat      chat with the local CTF tutor")
+        print("  generate  generate a safe local CTF challenge specification")
+        print("  session   manage multi-language challenge sessions")
         print()
         print("run `python main.py <subcommand> --help` for that subcommand's options.")
         if not argv:

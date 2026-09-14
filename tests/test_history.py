@@ -15,6 +15,8 @@ from history import (
     log_entry,
     read_history,
     summarize,
+    avg_hint_depth_by_technique,
+    _rotate,
 )
 
 
@@ -142,6 +144,24 @@ class TestSummarize(unittest.TestCase):
 
     def test_empty_history_returns_empty_summary(self):
         self.assertEqual(summarize([]), {})
+
+    def test_average_hint_depth_by_technique(self):
+        entries = [
+            HistoryEntry(timestamp="t1", challenge_description="d", category="pwn", depth="approach",
+                         sub_problem_count=1, techniques=["ret2libc"], hint_depth=1),
+            HistoryEntry(timestamp="t2", challenge_description="d", category="pwn", depth="commands",
+                         sub_problem_count=1, techniques=["ret2libc", "rop"], hint_depth=3),
+        ]
+        self.assertEqual(avg_hint_depth_by_technique(entries), {"ret2libc": 2.0, "rop": 3.0})
+
+    def test_rotate_keeps_only_recent_entries(self):
+        with tempfile.TemporaryDirectory() as td:
+            path = os.path.join(td, "history.jsonl")
+            for i in range(4):
+                log_entry(HistoryEntry(timestamp=f"t{i}", challenge_description=f"d{i}", category=None,
+                                       depth=None, sub_problem_count=0, techniques=[]), path=path)
+            _rotate(path, 2)
+            self.assertEqual([e.timestamp for e in read_history(path)], ["t2", "t3"])
 
 
 if __name__ == "__main__":

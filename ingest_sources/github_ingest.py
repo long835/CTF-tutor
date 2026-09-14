@@ -19,6 +19,7 @@ import os
 import re
 import base64
 import requests
+import time
 from typing import List, Optional
 
 from schema import ArchiveEntry
@@ -59,6 +60,22 @@ def _parse_repo_url(url: str) -> tuple:
     return match.group(1), match.group(2)
 
 
+def _github_get(url: str, max_retries: int = 3):
+    """GET a GitHub API URL with rate-limit-aware bounded backoff."""
+    for attempt in range(max_retries + 1):
+        resp = requests.get(url, headers=_headers(), timeout=20)
+        remaining = resp.headers.get("X-RateLimit-Remaining")
+        if resp.status_code != 403 or remaining not in {"0", "0.0"}:
+            resp.raise_for_status()
+            return resp
+        if attempt >= max_retries:
+            resp.raise_for_status()
+        retry_after = resp.headers.get("Retry-After")
+        delay = float(retry_after) if retry_after else min(2 ** attempt, 8)
+        time.sleep(delay)
+    raise RuntimeError("unreachable")
+
+
 def list_markdown_files(
     owner: str, repo: str, path: str = "", max_depth: int = 4, _depth: int = 0
 ) -> List[str]:
@@ -70,8 +87,7 @@ def list_markdown_files(
     stops descending past max_depth rather than recursing without limit.
     """
     url = f"{GITHUB_API}/repos/{owner}/{repo}/contents/{path}"
-    resp = requests.get(url, headers=_headers(), timeout=20)
-    resp.raise_for_status()
+    resp = _github_get(url)
     items = resp.json()
 
     md_files = []
@@ -89,8 +105,7 @@ def list_markdown_files(
 
 def fetch_file_text(owner: str, repo: str, path: str) -> str:
     url = f"{GITHUB_API}/repos/{owner}/{repo}/contents/{path}"
-    resp = requests.get(url, headers=_headers(), timeout=20)
-    resp.raise_for_status()
+    resp = _github_get(url)
     data = resp.json()
     content = base64.b64decode(data["content"]).decode("utf-8", errors="ignore")
     return content
@@ -120,7 +135,8 @@ def summarize_writeup(
 
 
 def ingest_repo(
-    repo_url: str, output_dir: str = "data/archive", model: str = DEFAULT_MODEL
+    repo_url: str, output_dir: str = "data/archive", model: str = DEFAULT_MODEL,
+    dry_run: bool = False,
 ) -> List[ArchiveEntry]:
     owner, repo = _parse_repo_url(repo_url)
     md_paths = list_markdown_files(owner, repo)
@@ -138,8 +154,12 @@ def ingest_repo(
 
             safe_name = re.sub(r"[^a-z0-9]+", "-", path.lower()).strip("-")
             out_path = os.path.join(output_dir, f"github-{safe_name}.json")
-            entry.save(out_path)
-            print(f"  saved: {out_path}  ({entry.challenge_name})")
+            if dry_run:
+                import json
+                print(f"  DRY-RUN {out_path}:\n{json.dumps(entry.to_dict(), indent=2, ensure_ascii=False)}")
+            else:
+                entry.save(out_path)
+                print(f"  saved: {out_path}  ({entry.challenge_name})")
         except Exception as e:
             print(f"  skipped {path}: {e}")
 
@@ -150,7 +170,7 @@ if __name__ == "__main__":
     import sys
 
     if len(sys.argv) < 2:
-        print("Usage: python -m ingest_sources.github_ingest <github-repo-url>")
+        print("Usage: python -m ingest_sources.github_ingest <github-repo-url> [--dry-run]")
         sys.exit(1)
 
-    ingest_repo(sys.argv[1])
+    ingest_repo(sys.argv[1], dry_run="--dry-run" in sys.argv[2:])

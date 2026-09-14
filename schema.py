@@ -4,54 +4,66 @@ schema.py
 Defines the data structure for archive entries (past solved challenges)
 and sub-problems (pieces a challenge gets decomposed into).
 
-Every past challenge you've solved gets stored as one ArchiveEntry, tagged
-with the *techniques* it used (not just its category). This is what lets
-the retriever match challenges by underlying technique rather than surface
-similarity -- e.g. a "crypto" challenge and a "web" challenge can both
-surface as relevant if they both hinge on, say, a padding oracle.
-
-Design note: keep `techniques` as a controlled-ish vocabulary over time.
-Reusing the same tag string ("jwt-alg-confusion" not "jwt alg confusion"
-one time and "JWT Algorithm Confusion" the next) is what makes retrieval
-actually work well. See TECHNIQUE_TAG_GUIDE below for conventions.
+Technique tags are normalized against data/technique_vocab.json so two
+people ingesting the same idea don't invent two spellings of one tag.
 """
 
 from dataclasses import dataclass, field, asdict
-from typing import List, Optional
+from typing import List, Optional, Set
 import json
+import os
 import re
 
 
-# ---------------------------------------------------------------------------
-# Controlled vocabulary guidance (not enforced, just documented convention)
-# ---------------------------------------------------------------------------
-# Use lowercase, hyphen-separated tags. Examples by category:
-#
-# web:      jwt-alg-confusion, jwt-none-bypass, ssrf, idor, sqli-union,
-#           sqli-blind-boolean, xxe, deserialization-rce, ssti, path-traversal,
-#           auth-bypass, race-condition, cors-misconfig
-#
-# pwn:      stack-buffer-overflow, format-string, rop-chain, ret2libc,
-#           heap-overflow, use-after-free, integer-overflow, fsop,
-#           got-overwrite, canary-bypass, aslr-bypass
-#
-# crypto:   padding-oracle, xor-repeating-key, rsa-small-e, rsa-common-modulus,
-#           ecb-byte-at-a-time, hash-length-extension, weak-rng, ecdsa-nonce-reuse
-#
-# rev:      anti-debug-bypass, vm-obfuscation, string-decryption,
-#           control-flow-flattening, packed-binary
-#
-# forensics: pcap-carving, memory-forensics, steganography, file-carving,
-#            metadata-analysis, log-analysis
-#
-# misc:     osint, esoteric-encoding, jail-escape, side-channel
-# ---------------------------------------------------------------------------
-
 TAG_PATTERN = re.compile(r"^[a-z0-9]+(-[a-z0-9]+)*$")
 
+_VOCAB_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data", "technique_vocab.json")
+_VOCAB_FLAT: Optional[Set[str]] = None
+_VOCAB_MTIME: Optional[float] = None
 
-def normalize_tag(tag: str) -> str:
-    """Force a technique tag into the lowercase-hyphenated convention."""
+
+def _levenshtein(a: str, b: str) -> int:
+    if a == b:
+        return 0
+    if not a:
+        return len(b)
+    if not b:
+        return len(a)
+    prev = list(range(len(b) + 1))
+    for i, ca in enumerate(a, 1):
+        curr = [i]
+        for j, cb in enumerate(b, 1):
+            ins = curr[j - 1] + 1
+            delete = prev[j] + 1
+            sub = prev[j - 1] + (ca != cb)
+            curr.append(min(ins, delete, sub))
+        prev = curr
+    return prev[-1]
+
+
+def load_technique_vocab(path: str = _VOCAB_PATH) -> Set[str]:
+    """Flatten the per-category vocab file into a set of canonical tags."""
+    global _VOCAB_FLAT, _VOCAB_MTIME
+    try:
+        mtime = os.path.getmtime(path)
+    except OSError:
+        return _VOCAB_FLAT or set()
+    if _VOCAB_FLAT is not None and _VOCAB_MTIME == mtime:
+        return _VOCAB_FLAT
+    with open(path, "r", encoding="utf-8") as f:
+        data = json.load(f)
+    tags: Set[str] = set()
+    if isinstance(data, dict):
+        for group in data.values():
+            tags.update(str(t) for t in group)
+    elif isinstance(data, list):
+        tags.update(str(t) for t in data)
+    _VOCAB_FLAT = tags
+    _VOCAB_MTIME = mtime
+    return tags
+
+
+def _shape_tag(tag: str) -> str:
     tag = tag.strip().lower()
     tag = re.sub(r"[\s_]+", "-", tag)
     tag = re.sub(r"[^a-z0-9\-]", "", tag)
@@ -59,14 +71,44 @@ def normalize_tag(tag: str) -> str:
     return tag
 
 
+def normalize_tag(tag: str, vocab: Optional[Set[str]] = None) -> str:
+    """Force a technique tag into the lowercase-hyphenated convention, then
+    fuzzy-match it against the controlled vocabulary when a close canonical
+    spelling already exists (Levenshtein distance <= 2, or 25% of length)."""
+    shaped = _shape_tag(tag)
+    if not shaped:
+        return ""
+    if not TAG_PATTERN.match(shaped):
+        raise ValueError(f"technique tag {tag!r} normalized to {shaped!r}, which is not a valid tag")
+    known = vocab if vocab is not None else load_technique_vocab()
+    if not known or shaped in known:
+        return shaped
+    best = min(known, key=lambda v: _levenshtein(shaped, v))
+    dist = _levenshtein(shaped, best)
+    threshold = 2 if len(shaped) <= 8 else max(2, len(shaped) // 4)
+    if dist <= threshold:
+        return best
+    return shaped
+
+
 @dataclass
 class SubProblem:
     """One piece of a decomposed challenge."""
-    id: str                        # short slug, e.g. "auth-bypass-part"
-    description: str               # plain-language description of this piece
-    likely_techniques: List[str] = field(default_factory=list)  # guessed tags
-    evidence: str = ""              # what in the challenge suggests this
-                                     # (e.g. "JWT header has alg:none accepted")
+    id: str
+    description: str
+    likely_techniques: List[str] = field(default_factory=list)
+    evidence: str = ""
+
+    def __post_init__(self):
+        cleaned = []
+        for t in self.likely_techniques:
+            if not str(t).strip():
+                continue
+            try:
+                cleaned.append(normalize_tag(t))
+            except ValueError:
+                continue
+        self.likely_techniques = cleaned
 
     def to_dict(self) -> dict:
         return asdict(self)
@@ -76,31 +118,32 @@ class SubProblem:
 class ArchiveEntry:
     """One past solved challenge, stored for future retrieval."""
     challenge_name: str
-    category: str                   # web | pwn | crypto | rev | forensics | misc
-    techniques: List[str]           # normalized tags, see guide above
-    difficulty: Optional[str] = None       # easy | medium | hard | insane
-    source: Optional[str] = None           # e.g. "PicoCTF 2025", "HTB", own-made
-    description: str = ""                  # the original challenge prompt/summary
-    explanation: str = ""                  # WHY the vuln/technique exists here
-    solve_steps: List[str] = field(default_factory=list)   # high-level steps,
-                                                              # not just a flag dump
-    tools_used: List[str] = field(default_factory=list)     # e.g. ["ghidra", "pwntools"]
-    references: List[str] = field(default_factory=list)     # wiki links, writeups
-    notes: Optional[str] = None            # personal notes, gotchas, what you
-                                            # personally struggled with
+    category: str
+    techniques: List[str]
+    difficulty: Optional[str] = None
+    source: Optional[str] = None
+    description: str = ""
+    explanation: str = ""
+    solve_steps: List[str] = field(default_factory=list)
+    tools_used: List[str] = field(default_factory=list)
+    references: List[str] = field(default_factory=list)
+    notes: Optional[str] = None
 
     def __post_init__(self):
-        self.techniques = [normalize_tag(t) for t in self.techniques if t.strip()]
+        cleaned = []
+        for t in self.techniques:
+            if not str(t).strip():
+                continue
+            try:
+                cleaned.append(normalize_tag(t))
+            except ValueError:
+                continue
+        self.techniques = cleaned
 
     def to_dict(self) -> dict:
         return asdict(self)
 
     def to_embedding_text(self) -> str:
-        """
-        Flatten this entry into a single text blob for embedding.
-        This is what actually gets vectorized -- keep it information-dense
-        but not just a raw dump, so semantic search has clean signal.
-        """
         parts = [
             f"Challenge: {self.challenge_name} ({self.category})",
             f"Techniques: {', '.join(self.techniques)}",
@@ -109,6 +152,8 @@ class ArchiveEntry:
         ]
         if self.solve_steps:
             parts.append("Solve approach: " + " -> ".join(self.solve_steps))
+        if self.tools_used:
+            parts.append("Tools used: " + ", ".join(self.tools_used))
         if self.notes:
             parts.append(f"Notes: {self.notes}")
         return "\n".join(parts)
@@ -125,7 +170,6 @@ class ArchiveEntry:
 
 
 if __name__ == "__main__":
-    # quick self-test
     entry = ArchiveEntry(
         challenge_name="WebCTF2024 - AuthBreaker",
         category="web",

@@ -41,22 +41,24 @@ class TestDecompileWithGhidra(unittest.TestCase):
     def setUp(self):
         self.binary_fd, self.binary_path = tempfile.mkstemp()
         os.close(self.binary_fd)
+        self.cache_dir = tempfile.mkdtemp()
 
     def tearDown(self):
         try:
             os.remove(self.binary_path)
         except OSError:
             pass
+        shutil.rmtree(self.cache_dir, ignore_errors=True)
 
     def test_returns_helpful_message_when_ghidra_not_found(self):
         with patch.object(gh, "find_analyze_headless", return_value=None):
-            result = gh.decompile_with_ghidra(self.binary_path)
+            result = gh.decompile_with_ghidra(self.binary_path, cache_dir=self.cache_dir)
         self.assertIn("Ghidra not found", result)
         self.assertIn("GHIDRA_INSTALL_DIR", result)
 
     def test_returns_message_when_binary_does_not_exist(self):
         with patch.object(gh, "find_analyze_headless", return_value="/fake/analyzeHeadless"):
-            result = gh.decompile_with_ghidra("/no/such/binary")
+            result = gh.decompile_with_ghidra("/no/such/binary", cache_dir=self.cache_dir)
         self.assertIn("binary not found", result)
 
     def test_reads_back_decompiled_output_on_success(self):
@@ -71,7 +73,7 @@ class TestDecompileWithGhidra(unittest.TestCase):
 
         with patch.object(gh, "find_analyze_headless", return_value="/fake/analyzeHeadless"), \
              patch("subprocess.run", side_effect=fake_run):
-            result = gh.decompile_with_ghidra(self.binary_path)
+            result = gh.decompile_with_ghidra(self.binary_path, cache_dir=self.cache_dir)
 
         self.assertEqual(result, decompiled_text)
 
@@ -81,7 +83,7 @@ class TestDecompileWithGhidra(unittest.TestCase):
 
         with patch.object(gh, "find_analyze_headless", return_value="/fake/analyzeHeadless"), \
              patch("subprocess.run", side_effect=fake_run):
-            result = gh.decompile_with_ghidra(self.binary_path)
+            result = gh.decompile_with_ghidra(self.binary_path, cache_dir=self.cache_dir)
 
         self.assertIn("exit 1", result)
         self.assertIn("bad ELF header", result)
@@ -94,7 +96,7 @@ class TestDecompileWithGhidra(unittest.TestCase):
 
         with patch.object(gh, "find_analyze_headless", return_value="/fake/analyzeHeadless"), \
              patch("subprocess.run", side_effect=fake_run):
-            result = gh.decompile_with_ghidra(self.binary_path, timeout=42)
+            result = gh.decompile_with_ghidra(self.binary_path, timeout=42, cache_dir=self.cache_dir)
 
         self.assertIn("timed out after 42s", result)
 
@@ -111,7 +113,7 @@ class TestDecompileWithGhidra(unittest.TestCase):
 
         with patch.object(gh, "find_analyze_headless", return_value="/fake/analyzeHeadless"), \
              patch("subprocess.run", side_effect=fake_run):
-            gh.decompile_with_ghidra(self.binary_path)
+            gh.decompile_with_ghidra(self.binary_path, cache_dir=self.cache_dir)
 
         self.assertFalse(os.path.exists(captured_path["path"]))
 
@@ -127,7 +129,7 @@ class TestDecompileWithGhidra(unittest.TestCase):
 
         with patch.object(gh, "find_analyze_headless", return_value="/fake/analyzeHeadless"), \
              patch("subprocess.run", side_effect=fake_run):
-            gh.decompile_with_ghidra(self.binary_path)
+            gh.decompile_with_ghidra(self.binary_path, cache_dir=self.cache_dir)
 
         self.assertFalse(os.path.isdir(captured_project_dir["path"]))
 

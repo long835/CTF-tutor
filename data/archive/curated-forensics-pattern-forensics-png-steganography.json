@@ -1,0 +1,25 @@
+{
+  "challenge_name": "Pattern FORENSICS: PNG Steganography",
+  "category": "forensics",
+  "techniques": [
+    "steganography",
+    "lsb"
+  ],
+  "difficulty": "hard",
+  "source": "CTF-Tutor curated pattern library",
+  "description": "A PNG may encode information in pixel channels rather than visible image content.",
+  "explanation": "Small bit-level changes can preserve appearance while carrying structured data.",
+  "solve_steps": [
+    "Inspect metadata and chunk structure first",
+    "Test channel/bit-plane hypotheses",
+    "Validate extracted data by file signatures"
+  ],
+  "tools_used": [
+    "zsteg",
+    "exiftool"
+  ],
+  "references": [
+    "local:ctf-tutor-curated-patterns"
+  ],
+  "notes": "Original educational pattern summary; no flag or challenge-specific payload stored."
+}

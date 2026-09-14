@@ -1,0 +1,25 @@
+{
+  "challenge_name": "Pattern BLOCKCHAIN: Solidity Access Control",
+  "category": "blockchain",
+  "techniques": [
+    "solidity",
+    "access-control"
+  ],
+  "difficulty": "medium",
+  "source": "CTF-Tutor curated pattern library",
+  "description": "A smart contract exposes privileged functions whose authorization logic may be flawed.",
+  "explanation": "On-chain state changes depend on contract code, so caller checks and state transitions must match the intended privilege model.",
+  "solve_steps": [
+    "Read privileged function guards",
+    "Trace state changes",
+    "Compare intended and actual authorization"
+  ],
+  "tools_used": [
+    "slither",
+    "remix"
+  ],
+  "references": [
+    "local:ctf-tutor-curated-patterns"
+  ],
+  "notes": "Original educational pattern summary; no flag or challenge-specific payload stored."
+}

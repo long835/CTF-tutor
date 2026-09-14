@@ -1,0 +1,24 @@
+{
+  "challenge_name": "Pattern FORENSICS: File Carving",
+  "category": "forensics",
+  "techniques": [
+    "file-carving"
+  ],
+  "difficulty": "medium",
+  "source": "CTF-Tutor curated pattern library",
+  "description": "A disk image may contain deleted or embedded files.",
+  "explanation": "Recognizable file signatures and internal structure can allow recovery independent of the directory tree.",
+  "solve_steps": [
+    "Identify image format",
+    "Search for candidate signatures",
+    "Validate carved output before trusting it"
+  ],
+  "tools_used": [
+    "foremost",
+    "binwalk"
+  ],
+  "references": [
+    "local:ctf-tutor-curated-patterns"
+  ],
+  "notes": "Original educational pattern summary; no flag or challenge-specific payload stored."
+}

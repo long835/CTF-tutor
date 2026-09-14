@@ -21,17 +21,17 @@ from retriever import (
 from tests.fakes import FakeCollection, FakeOllamaHTTP
 
 
-def make_entry(name="AuthBreaker", category="web", techniques=None, source="ExampleCTF"):
+def make_entry(name="AuthBreaker", category="web", techniques=None, source="ExampleCTF", difficulty="medium", tools_used=None):
     return ArchiveEntry(
         challenge_name=name,
         category=category,
         techniques=techniques or ["jwt-alg-confusion"],
-        difficulty="medium",
+        difficulty=difficulty,
         source=source,
         description="A login portal issues JWTs signed with RS256.",
         explanation="The server accepts alg=none tokens, so an attacker can forge one.",
         solve_steps=["Capture a token", "Set alg to none", "Replay it"],
-        tools_used=["jwt_tool"],
+        tools_used=tools_used if tools_used is not None else ["jwt_tool"],
         references=["https://example.com/writeup"],
     )
 
@@ -111,6 +111,20 @@ class TestRetrieverIndexingAndQuery(unittest.TestCase):
         self.assertEqual(self.retriever.count(), 1)
         self.retriever.reset()
         self.assertEqual(self.retriever.count(), 0)
+
+    def test_query_difficulty_filter(self):
+        self.retriever.index_entry(make_entry(name="Easy", difficulty="easy"))
+        self.retriever.index_entry(make_entry(name="Hard", difficulty="hard"))
+        matches = self.retriever.query("jwt auth", n_results=5, difficulty="hard")
+        self.assertEqual([m.entry.challenge_name for m in matches], ["Hard"])
+
+    def test_suggest_tools_returns_unique_tools_with_reason(self):
+        self.retriever.index_entry(make_entry(name="One", tools_used=["gdb", "pwntools"]))
+        self.retriever.index_entry(make_entry(name="Two", tools_used=["gdb", "checksec"]))
+        sp = FakeSubProblem(id="sp1", description="jwt auth", likely_techniques=["jwt-alg-confusion"])
+        suggestions = self.retriever.suggest_tools(sp, n_results=3)
+        self.assertEqual([s["tool"] for s in suggestions], ["gdb", "pwntools", "checksec"])
+        self.assertIn("resembles", suggestions[0]["reason"])
 
     def test_query_sub_problem_builds_query_from_description_and_techniques(self):
         self.retriever.index_entry(

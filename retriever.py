@@ -167,9 +167,16 @@ class Retriever:
         self.collection.delete_all()
 
     def query(
-        self, query_text: str, n_results: int = 5, category: Optional[str] = None
+        self, query_text: str, n_results: int = 5, category: Optional[str] = None,
+        difficulty: Optional[str] = None,
     ) -> List[RetrievedMatch]:
-        where = {"category": json.dumps(category)} if category else None
+        where = {}
+        if category:
+            where["category"] = json.dumps(category)
+        if difficulty:
+            where["difficulty"] = json.dumps(difficulty)
+        if not where:
+            where = None
         raw = self.collection.query(
             query_texts=[query_text], n_results=n_results, where=where
         )
@@ -189,10 +196,43 @@ class Retriever:
         return matches
 
     def query_sub_problem(
-        self, sub_problem, n_results: int = 3, category: Optional[str] = None
+        self, sub_problem, n_results: int = 3, category: Optional[str] = None,
+        difficulty: Optional[str] = None,
     ) -> List[RetrievedMatch]:
         query_text = _sub_problem_query_text(sub_problem)
-        return self.query(query_text, n_results=n_results, category=category)
+        return self.query(
+            query_text, n_results=n_results, category=category, difficulty=difficulty
+        )
+
+    def suggest_tools(self, sub_problem, n_results: int = 3, category: Optional[str] = None,
+                      difficulty: Optional[str] = None) -> List[dict]:
+        """Recommend tools from the closest archived examples without executing them.
+
+        Returns compact dictionaries with a tool name, source challenge, and a
+        human-readable reason so callers can present suggestions without turning
+        retrieval into automatic tool execution.
+        """
+        matches = self.query_sub_problem(
+            sub_problem, n_results=n_results, category=category, difficulty=difficulty
+        )
+        suggestions = []
+        seen = set()
+        for match in matches:
+            for tool in match.entry.tools_used:
+                tool = str(tool).strip()
+                key = tool.lower()
+                if not tool or key in seen:
+                    continue
+                seen.add(key)
+                suggestions.append({
+                    "tool": tool,
+                    "source_challenge": match.entry.challenge_name,
+                    "score": match.score,
+                    "reason": f"resembles {match.entry.challenge_name}, where {tool} was used",
+                })
+                if len(suggestions) >= n_results:
+                    return suggestions
+        return suggestions
 
 
 if __name__ == "__main__":

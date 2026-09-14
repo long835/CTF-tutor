@@ -22,6 +22,7 @@ different services (e.g. embeddings hitting chromadb while a chat call is
 in flight to Ollama).
 """
 
+from config import MAX_WORKERS
 from concurrent.futures import ThreadPoolExecutor
 from typing import Callable, List, TypeVar
 
@@ -29,16 +30,14 @@ T = TypeVar("T")
 R = TypeVar("R")
 
 
-def map_concurrent(func: Callable[[T], R], items: List[T], max_workers: int = 4) -> List[R]:
+def map_concurrent(func: Callable[[T], R], items: List[T], max_workers: int = None) -> List[R]:
     """
     Apply func to every item concurrently, returning results in the same
-    order as `items` (not completion order). Falls back to a plain
-    sequential loop for 0 or 1 items -- no point spinning up a thread pool
-    for a single call, and it keeps behavior trivially predictable for the
-    common single-sub-problem case.
+    order as `items`. Default worker count is CTF_TUTOR_MAX_WORKERS (env).
     """
+    workers = MAX_WORKERS if max_workers is None else max_workers
     if len(items) <= 1:
         return [func(item) for item in items]
 
-    with ThreadPoolExecutor(max_workers=min(max_workers, len(items))) as executor:
+    with ThreadPoolExecutor(max_workers=min(workers, len(items))) as executor:
         return list(executor.map(func, items))

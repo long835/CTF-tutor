@@ -1,0 +1,26 @@
+{
+  "challenge_name": "Pattern REV: Simple Crackme",
+  "category": "rev",
+  "techniques": [
+    "string-analysis",
+    "control-flow"
+  ],
+  "difficulty": "easy",
+  "source": "CTF-Tutor curated pattern library",
+  "description": "A local binary compares user input against hidden conditions.",
+  "explanation": "Static strings and branches often reveal how success and failure are decided.",
+  "solve_steps": [
+    "Run with harmless test input",
+    "Inspect strings and cross-references",
+    "Trace the comparison logic"
+  ],
+  "tools_used": [
+    "strings",
+    "ghidra",
+    "objdump"
+  ],
+  "references": [
+    "local:ctf-tutor-curated-patterns"
+  ],
+  "notes": "Original educational pattern summary; no flag or challenge-specific payload stored."
+}

@@ -1,0 +1,23 @@
+{
+  "challenge_name": "Pattern OSINT: Username Correlation",
+  "category": "osint",
+  "techniques": [
+    "username-osint"
+  ],
+  "difficulty": "medium",
+  "source": "CTF-Tutor curated pattern library",
+  "description": "A handle appears across publicly accessible challenge clues.",
+  "explanation": "Repeated identifiers can be correlated cautiously, but matching a name alone is weak evidence.",
+  "solve_steps": [
+    "Collect exact identifiers from supplied clues",
+    "Compare public context and timestamps",
+    "Require multiple corroborating signals"
+  ],
+  "tools_used": [
+    "manual-search"
+  ],
+  "references": [
+    "local:ctf-tutor-curated-patterns"
+  ],
+  "notes": "Original educational pattern summary; no flag or challenge-specific payload stored."
+}

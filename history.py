@@ -25,6 +25,8 @@ from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from typing import Dict, List, Optional
 
+from config import HISTORY_MAX_ENTRIES
+
 DEFAULT_HISTORY_PATH = "data/history.jsonl"
 
 
@@ -36,6 +38,7 @@ class HistoryEntry:
     depth: Optional[str]
     sub_problem_count: int
     techniques: List[str] = field(default_factory=list)
+    hint_depth: Optional[float] = None
 
     def to_dict(self) -> dict:
         return {
@@ -45,6 +48,7 @@ class HistoryEntry:
             "depth": self.depth,
             "sub_problem_count": self.sub_problem_count,
             "techniques": self.techniques,
+            "hint_depth": self.hint_depth,
         }
 
     @classmethod
@@ -56,6 +60,7 @@ class HistoryEntry:
             depth=data.get("depth"),
             sub_problem_count=data.get("sub_problem_count", 0),
             techniques=data.get("techniques", []),
+            hint_depth=data.get("hint_depth"),
         )
 
 
@@ -76,6 +81,13 @@ def entry_from_run_result(
                 seen.add(t)
                 techniques.append(t)
 
+    hint_levels = []
+    for ladder in (result.get("hints_by_id") or {}).values():
+        for hint in ladder or []:
+            level = getattr(hint, "level", None)
+            value = getattr(level, "value", level)
+            if isinstance(value, int):
+                hint_levels.append(value)
     return HistoryEntry(
         timestamp=datetime.now(timezone.utc).isoformat(),
         challenge_description=challenge_description,
@@ -83,16 +95,34 @@ def entry_from_run_result(
         depth=depth,
         sub_problem_count=len(result.get("sub_problems", [])),
         techniques=techniques,
+        hint_depth=(sum(hint_levels) / len(hint_levels)) if hint_levels else None,
     )
 
 
 def log_entry(entry: HistoryEntry, path: str = DEFAULT_HISTORY_PATH) -> None:
-    """Append one entry to the history log, creating the file/directory if needed."""
+    """Append one entry and rotate older entries beyond the configured cap."""
     directory = os.path.dirname(path)
     if directory:
         os.makedirs(directory, exist_ok=True)
-    with open(path, "a") as f:
-        f.write(json.dumps(entry.to_dict()) + "\n")
+    with open(path, "a", encoding="utf-8") as f:
+        f.write(json.dumps(entry.to_dict(), ensure_ascii=False) + "\n")
+    _rotate(path, HISTORY_MAX_ENTRIES)
+
+
+def _rotate(path: str, max_entries: int) -> None:
+    if max_entries < 1 or not os.path.exists(path):
+        return
+    # Keep recent entries verbatim; corrupted lines are discarded during the
+    # rewrite so rotation also prevents a damaged tail from accumulating.
+    entries = read_history(path)
+    if len(entries) <= max_entries:
+        return
+    kept = entries[-max_entries:]
+    tmp = path + ".tmp"
+    with open(tmp, "w", encoding="utf-8") as f:
+        for item in kept:
+            f.write(json.dumps(item.to_dict(), ensure_ascii=False) + "\n")
+    os.replace(tmp, path)
 
 
 def read_history(path: str = DEFAULT_HISTORY_PATH, limit: Optional[int] = None) -> List[HistoryEntry]:
@@ -125,3 +155,19 @@ def summarize(entries: List[HistoryEntry]) -> Dict[str, int]:
     for entry in entries:
         counts.update(entry.techniques)
     return dict(sorted(counts.items(), key=lambda kv: kv[1], reverse=True))
+
+
+def avg_hint_depth_by_technique(entries: List[HistoryEntry]) -> Dict[str, float]:
+    """Average recorded hint depth attributed to each tagged technique."""
+    totals = {}
+    counts = Counter()
+    for entry in entries:
+        if entry.hint_depth is None:
+            continue
+        for technique in entry.techniques:
+            totals[technique] = totals.get(technique, 0.0) + float(entry.hint_depth)
+            counts[technique] += 1
+    return dict(sorted(
+        ((technique, totals[technique] / counts[technique]) for technique in totals),
+        key=lambda kv: kv[1],
+    ))

@@ -15,6 +15,7 @@ post-script, which decompiles every function Ghidra's analysis found and
 writes it to a temp file this wrapper then reads back in.
 """
 
+import hashlib
 import os
 import shutil
 import subprocess
@@ -23,6 +24,26 @@ from typing import Optional
 
 SCRIPT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "ghidra_scripts")
 SCRIPT_NAME = "DumpDecompiled.py"
+DEFAULT_CACHE_DIR = os.path.join("data", "ghidra_cache")
+
+
+def _sha256_file(path: str) -> str:
+    digest = hashlib.sha256()
+    with open(path, "rb") as f:
+        for chunk in iter(lambda: f.read(65536), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def _cache_path(binary_path: str, cache_dir: str) -> str:
+    os.makedirs(cache_dir, exist_ok=True)
+    # Cache identity includes the binary and the bundled post-script, so
+    # changing the analysis logic cannot silently reuse stale decompilation.
+    script_path = os.path.join(SCRIPT_DIR, SCRIPT_NAME)
+    digest = hashlib.sha256()
+    for path in (binary_path, script_path):
+        digest.update(_sha256_file(path).encode())
+    return os.path.join(cache_dir, digest.hexdigest() + ".c")
 
 
 def find_analyze_headless() -> Optional[str]:
@@ -43,13 +64,17 @@ def _remove_quiet(path: str) -> None:
         pass
 
 
-def decompile_with_ghidra(binary_path: str, timeout: int = 300, project_dir: Optional[str] = None) -> str:
+def decompile_with_ghidra(
+    binary_path: str,
+    timeout: int = 300,
+    project_dir: Optional[str] = None,
+    cache_dir: Optional[str] = None,
+) -> str:
     """
     Run Ghidra headless analysis + decompilation on a binary and return the
-    decompiled output as text. Never raises -- returns a bracketed "[...]"
-    message instead when Ghidra isn't available or analysis fails, matching
-    tools/static_analysis.py's graceful-degradation style, so a missing
-    Ghidra install degrades a run instead of crashing it.
+    decompiled output as text. Successful results are cached under
+    data/ghidra_cache/<binary+script-sha256>.c so a second --decompile on the same file
+    skips the full headless pass.
     """
     analyze_headless = find_analyze_headless()
     if analyze_headless is None:
@@ -59,6 +84,14 @@ def decompile_with_ghidra(binary_path: str, timeout: int = 300, project_dir: Opt
         )
     if not os.path.isfile(binary_path):
         return f"[binary not found: {binary_path}]"
+
+    resolved_cache = cache_dir if cache_dir is not None else os.environ.get(
+        "GHIDRA_CACHE_DIR", DEFAULT_CACHE_DIR
+    )
+    cached = _cache_path(binary_path, resolved_cache)
+    if os.path.isfile(cached) and os.path.getsize(cached) > 0:
+        with open(cached, "r", errors="replace") as f:
+            return f.read()
 
     owns_project_dir = project_dir is None
     if owns_project_dir:
@@ -89,7 +122,13 @@ def decompile_with_ghidra(binary_path: str, timeout: int = 300, project_dir: Opt
             return f"[Ghidra headless analysis produced no output (exit {result.returncode})\n{stderr_tail}]"
 
         with open(output_path, "r", errors="replace") as f:
-            return f.read()
+            text = f.read()
+        try:
+            with open(cached, "w", encoding="utf-8", errors="replace") as f:
+                f.write(text)
+        except OSError:
+            pass
+        return text
     finally:
         _remove_quiet(output_path)
         if owns_project_dir:

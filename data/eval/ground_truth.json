@@ -1,0 +1,50 @@
+[
+  {
+    "id": "web-jwt",
+    "description": "A login portal issues JWTs signed with RS256. The admin panel trusts the role claim in the token and also accepts alg=none.",
+    "expected_category": "web",
+    "expected_techniques": ["jwt-alg-confusion", "jwt-none-bypass", "auth-bypass"]
+  },
+  {
+    "id": "pwn-bof",
+    "description": "A binary reads a name into a fixed stack buffer with gets(), no canary, NX enabled. Get a shell with ret2libc.",
+    "expected_category": "pwn",
+    "expected_techniques": ["stack-buffer-overflow", "ret2libc"]
+  },
+  {
+    "id": "crypto-rsa",
+    "description": "Messages are encrypted with RSA using a small public exponent and a shared modulus across users.",
+    "expected_category": "crypto",
+    "expected_techniques": ["rsa-small-e", "rsa-common-modulus"]
+  },
+  {
+    "id": "rev-crackme",
+    "description": "Reverse engineer this crackme -- disassemble it in Ghidra and find the keygen algorithm.",
+    "expected_category": "rev",
+    "expected_techniques": ["string-decryption"]
+  },
+  {
+    "id": "forensics-pcap",
+    "description": "Analyze this pcap in Wireshark to find hidden files in the network capture using file carving.",
+    "expected_category": "forensics",
+    "expected_techniques": ["pcap-carving", "file-carving"]
+  },
+  {
+    "id": "osint-geo",
+    "description": "Use the photo metadata to geolocate the photographer and correlate the username on social media.",
+    "expected_category": "osint",
+    "expected_techniques": ["geolocation", "image-metadata", "username-osint"]
+  },
+  {
+    "id": "chain-sol",
+    "description": "Audit this Solidity smart contract on Ethereum. A withdraw function looks like a reentrancy bug and gas is relevant.",
+    "expected_category": "blockchain",
+    "expected_techniques": ["reentrancy"]
+  },
+  {
+    "id": "mobile-apk",
+    "description": "Decompile this Android APK. An exported activity stores the session token in shared preferences.",
+    "expected_category": "mobile",
+    "expected_techniques": ["android-exported-component", "insecure-storage"]
+  }
+]

@@ -1,0 +1,23 @@
+{
+  "challenge_name": "Pattern FORENSICS: Image Metadata",
+  "category": "forensics",
+  "techniques": [
+    "metadata"
+  ],
+  "difficulty": "easy",
+  "source": "CTF-Tutor curated pattern library",
+  "description": "An image may contain capture or editing metadata not visible in pixels.",
+  "explanation": "Container metadata can preserve descriptive fields separately from image content.",
+  "solve_steps": [
+    "Identify the file type",
+    "Extract metadata",
+    "Separate reliable fields from missing or rewritten fields"
+  ],
+  "tools_used": [
+    "exiftool"
+  ],
+  "references": [
+    "local:ctf-tutor-curated-patterns"
+  ],
+  "notes": "Original educational pattern summary; no flag or challenge-specific payload stored."
+}

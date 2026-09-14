@@ -1,0 +1,24 @@
+{
+  "challenge_name": "Pattern PWN: Format String",
+  "category": "pwn",
+  "techniques": [
+    "format-string"
+  ],
+  "difficulty": "medium",
+  "source": "CTF-Tutor curated pattern library",
+  "description": "User input is used as a printf-style format string.",
+  "explanation": "Format directives can cause unintended reads or writes when the format string itself is attacker-controlled.",
+  "solve_steps": [
+    "Find the unsafe formatting call",
+    "Map controlled arguments and output",
+    "Assess whether the bug is read-only or write-capable"
+  ],
+  "tools_used": [
+    "gdb",
+    "pwndbg"
+  ],
+  "references": [
+    "local:ctf-tutor-curated-patterns"
+  ],
+  "notes": "Original educational pattern summary; no flag or challenge-specific payload stored."
+}
