@@ -1,0 +1,18 @@
+{
+  "challenge_name": "WebCTF2024 - LoginBypass",
+  "category": "web",
+  "techniques": ["sql-injection", "auth-bypass", "boolean-blind-sqli"],
+  "difficulty": "easy",
+  "source": "ExampleCTF 2024",
+  "description": "A login form builds a SQL query by directly concatenating the username and password fields into a WHERE clause, with no parameterization.",
+  "explanation": "Because the query is built with raw string concatenation, input isn't treated as data -- it's treated as part of the SQL syntax itself. A username of something like `' OR '1'='1' --` closes the intended string literal early, injects an always-true condition, and comments out the rest of the query (including the password check), so the query matches the first row in the table regardless of what password was supplied.",
+  "solve_steps": [
+    "Try a single quote in the username field and watch for a SQL error -- confirms the field is unescaped",
+    "Try `' OR '1'='1' --` (or `' OR 1=1 -- -` depending on the DB's comment syntax) as the username with any password",
+    "If that doesn't return an admin session specifically, add an ORDER BY / row-targeting condition, e.g. `' OR username='admin' --`",
+    "Confirm the resulting session belongs to the intended account"
+  ],
+  "tools_used": ["burpsuite", "sqlmap"],
+  "references": ["https://portswigger.net/web-security/sql-injection"],
+  "notes": "If quotes are filtered, check whether the query uses numeric context (no quotes needed) or try encoding tricks before assuming the field is actually safe."
+}

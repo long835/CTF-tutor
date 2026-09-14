@@ -60,8 +60,21 @@ def call_ollama(
     system_prompt: str,
     user_prompt: str,
     model: str = DEFAULT_MODEL,
+    stream: bool = False,
+    on_token=None,
 ) -> str:
-    """Send a chat request to an Ollama server and return the text response."""
+    """
+    Send a chat request to an Ollama server and return the text response.
+
+    stream=False (default): one blocking request, one blocking response --
+    what every existing caller in this codebase uses, since they all parse
+    the reply as JSON and a partial JSON fragment isn't useful mid-flight.
+
+    stream=True: reads Ollama's newline-delimited streaming response and
+    calls on_token(piece) as each piece arrives (if given), still returning
+    the fully-assembled text at the end either way. Useful for a caller
+    that wants to show live progress on a genuinely prose (non-JSON) reply.
+    """
 
     payload = {
         "model": model,
@@ -69,7 +82,7 @@ def call_ollama(
             {"role": "system", "content": system_prompt},
             {"role": "user", "content": user_prompt},
         ],
-        "stream": False,
+        "stream": stream,
     }
 
     try:
@@ -77,6 +90,7 @@ def call_ollama(
             OLLAMA_URL,
             json=payload,
             timeout=180,
+            stream=stream,
         )
         resp.raise_for_status()
 
@@ -96,9 +110,44 @@ def call_ollama(
             "or increase the timeout if your hardware is slower."
         )
 
-    data = resp.json()
+    if not stream:
+        data = resp.json()
+        return data.get("message", {}).get("content", "")
 
-    return data.get("message", {}).get("content", "")
+    pieces = []
+    for line in resp.iter_lines():
+        if not line:
+            continue
+        chunk = json.loads(line)
+        piece = chunk.get("message", {}).get("content", "")
+        if piece:
+            pieces.append(piece)
+            if on_token:
+                on_token(piece)
+        if chunk.get("done"):
+            break
+    return "".join(pieces)
+
+
+def warm_up(model: str = DEFAULT_MODEL, timeout: int = 300) -> None:
+    """
+    Force Ollama to load `model` into memory with a trivial request, so the
+    cold-load delay (can be tens of seconds, sometimes longer on CPU-only
+    setups) happens once, predictably, up front -- instead of silently
+    landing on whichever pipeline stage happens to run first, which is what
+    makes a cold Ollama server feel like it's randomly stuttering. Call this
+    once at the start of a session; every call after the first on an
+    already-loaded model is fast.
+
+    Raises RuntimeError (same as call_ollama) if Ollama can't be reached at
+    all -- that's a real failure, not just a slow load, and callers should
+    treat it as fatal to the run rather than swallow it.
+    """
+    call_ollama(
+        "Respond with exactly one word: ready",
+        "ready?",
+        model=model,
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -288,4 +337,3 @@ def extract_json_object_lenient(
     return {
         fallback_key: cleaned
     }
-

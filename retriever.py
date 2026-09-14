@@ -1,187 +1,204 @@
-import sys
-import os
-import json
-import tempfile
-import shutil
-import unittest
-from unittest.mock import patch
+"""
+retriever.py
 
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+ChromaDB-backed semantic search over your archive of past solved challenges
+(data/archive/*.json). Embeds each entry's `to_embedding_text()` output with
+a local Ollama embedding model (default: nomic-embed-text -- run
+`ollama pull nomic-embed-text` once) so lookups happen entirely offline,
+same as decomposer.py.
+
+Design notes:
+- The chromadb dependency is imported lazily, only when actually building
+  the default collection. This keeps the module importable (and testable
+  via `Retriever(collection=some_fake)`) even in an environment where
+  chromadb isn't installed -- e.g. this sandbox.
+- chromadb metadata values must be flat str/int/float/bool. Rather than
+  hand-picking a per-field encoding (which gets fiddly for Optional[str]
+  fields where None and "" need to stay distinguishable), every
+  ArchiveEntry field is JSON-encoded into its own metadata string. That
+  guarantees a lossless round trip through `_entry_to_metadata` /
+  `_entry_from_metadata` for any value the schema can hold, at the cost of
+  the raw metadata blob not being human-readable if you ever inspect the
+  chroma store directly.
+"""
+
+import json
+import os
+import re
+from dataclasses import dataclass
+from typing import Dict, List, Optional
 
 from schema import ArchiveEntry
-import retriever
-from retriever import (
-    Retriever,
-    OllamaEmbeddingFunction,
-    _entry_to_metadata,
-    _entry_from_metadata,
-    _default_id,
-    _sub_problem_query_text,
-)
-from tests.fakes import FakeCollection, FakeOllamaHTTP
+from llm_client import call_ollama_embed, DEFAULT_EMBED_MODEL
 
 
-def make_entry(name="AuthBreaker", category="web", techniques=None, source="ExampleCTF"):
-    return ArchiveEntry(
-        challenge_name=name,
-        category=category,
-        techniques=techniques or ["jwt-alg-confusion"],
-        difficulty="medium",
-        source=source,
-        description="A login portal issues JWTs signed with RS256.",
-        explanation="The server accepts alg=none tokens, so an attacker can forge one.",
-        solve_steps=["Capture a token", "Set alg to none", "Replay it"],
-        tools_used=["jwt_tool"],
-        references=["https://example.com/writeup"],
-    )
+COLLECTION_NAME = "ctf_archive"
+DEFAULT_PERSIST_DIR = "data/chroma"
 
 
-class FakeSubProblem:
-    def __init__(self, id, description, likely_techniques=None, evidence=""):
-        self.id = id
-        self.description = description
-        self.likely_techniques = likely_techniques or []
-        self.evidence = evidence
+@dataclass
+class RetrievedMatch:
+    """One archive entry retrieved for a query, with its similarity score."""
+    entry: ArchiveEntry
+    score: float       # higher = more similar, always > 0
+    distance: float     # raw distance from the vector store (lower = closer)
+    matched_on: str      # the query text that produced this match
 
 
-class TestOllamaEmbeddingFunction(unittest.TestCase):
-    def test_call_batches_documents_through_call_ollama_embed(self):
-        fake = FakeOllamaHTTP(embed_dim=5)
-        embed_fn = OllamaEmbeddingFunction(model="nomic-embed-text")
-        with patch("requests.post", side_effect=fake):
-            vectors = embed_fn(["doc a", "doc b"])
-        self.assertEqual(len(vectors), 2)
-        self.assertEqual(len(fake.calls), 1)
-        self.assertEqual(fake.calls[0]["json"]["model"], "nomic-embed-text")
-        self.assertEqual(fake.calls[0]["json"]["input"], ["doc a", "doc b"])
+class OllamaEmbeddingFunction:
+    """
+    Minimal chromadb-compatible embedding function backed by a local Ollama
+    embedding model. Batches every document in a single call through
+    call_ollama_embed rather than one HTTP round-trip per document.
+    """
 
-    def test_name_reflects_model(self):
-        embed_fn = OllamaEmbeddingFunction(model="my-model")
-        self.assertEqual(embed_fn.name(), "ollama-my-model")
+    def __init__(self, model: str = DEFAULT_EMBED_MODEL):
+        self.model = model
 
+    def __call__(self, input: List[str]) -> List[List[float]]:
+        return call_ollama_embed(list(input), model=self.model)
 
-class TestMetadataRoundTrip(unittest.TestCase):
-    def test_entry_round_trips_through_metadata(self):
-        entry = make_entry()
-        metadata = _entry_to_metadata(entry)
-        # chromadb metadata values must be flat str/int/float/bool
-        for value in metadata.values():
-            self.assertIsInstance(value, str)
-        restored = _entry_from_metadata(metadata)
-        self.assertEqual(restored.to_dict(), entry.to_dict())
-
-    def test_default_id_is_slugified(self):
-        entry = make_entry(name="Web CTF 2024 - AuthBreaker!!", category="web")
-        doc_id = _default_id(entry)
-        self.assertEqual(doc_id, "web-web-ctf-2024-authbreaker")
+    def name(self) -> str:
+        return f"ollama-{self.model}"
 
 
-class TestRetrieverIndexingAndQuery(unittest.TestCase):
-    def setUp(self):
-        self.collection = FakeCollection()
-        self.retriever = Retriever(collection=self.collection)
+def _entry_to_metadata(entry: ArchiveEntry) -> dict:
+    """Flatten an ArchiveEntry into an all-string metadata dict (see module docstring)."""
+    return {field: json.dumps(value) for field, value in entry.to_dict().items()}
 
-    def test_index_entry_then_query_returns_match(self):
-        entry = make_entry(name="AuthBreaker", techniques=["jwt-alg-confusion"])
-        self.retriever.index_entry(entry)
-        self.assertEqual(self.retriever.count(), 1)
 
-        matches = self.retriever.query("jwt alg confusion login portal", n_results=5)
-        self.assertEqual(len(matches), 1)
-        self.assertEqual(matches[0].entry.challenge_name, "AuthBreaker")
-        self.assertGreater(matches[0].score, 0)
+def _entry_from_metadata(metadata: dict) -> ArchiveEntry:
+    """Inverse of _entry_to_metadata."""
+    data = {field: json.loads(value) for field, value in metadata.items()}
+    return ArchiveEntry(**data)
 
-    def test_reindexing_same_id_upserts_not_duplicates(self):
-        entry = make_entry(name="AuthBreaker")
-        doc_id = self.retriever.index_entry(entry, doc_id="fixed-id")
-        self.retriever.index_entry(entry, doc_id="fixed-id")
-        self.assertEqual(doc_id, "fixed-id")
-        self.assertEqual(self.retriever.count(), 1)
 
-    def test_query_category_filter(self):
-        self.retriever.index_entry(make_entry(name="WebOne", category="web"))
-        self.retriever.index_entry(make_entry(name="PwnOne", category="pwn", techniques=["ret2libc"]))
+def _default_id(entry: ArchiveEntry) -> str:
+    """Deterministic doc id from an entry's category + slugified name, so
+    re-indexing the same entry (e.g. re-running ingest.py) upserts in place
+    instead of creating a duplicate."""
+    slug = re.sub(r"[^a-z0-9]+", "-", entry.challenge_name.lower()).strip("-")
+    return f"{entry.category}-{slug}"
 
-        web_matches = self.retriever.query("some query text", n_results=5, category="web")
-        self.assertEqual(len(web_matches), 1)
-        self.assertEqual(web_matches[0].entry.category, "web")
 
-    def test_reset_clears_the_collection(self):
-        self.retriever.index_entry(make_entry())
-        self.assertEqual(self.retriever.count(), 1)
-        self.retriever.reset()
-        self.assertEqual(self.retriever.count(), 0)
+def _sub_problem_query_text(sub_problem) -> str:
+    """Build the text used to query the archive for a given SubProblem --
+    its description plus any guessed techniques and evidence, so retrieval
+    isn't relying on the description alone."""
+    parts = [sub_problem.description]
+    techniques = getattr(sub_problem, "likely_techniques", None)
+    if techniques:
+        parts.append("Likely techniques: " + ", ".join(techniques))
+    evidence = getattr(sub_problem, "evidence", "")
+    if evidence:
+        parts.append(f"Evidence: {evidence}")
+    return "\n".join(parts)
 
-    def test_query_sub_problem_builds_query_from_description_and_techniques(self):
-        self.retriever.index_entry(
-            make_entry(name="PaddingOracleChal", techniques=["padding-oracle"])
+
+class Retriever:
+    """
+    Wraps a chromadb Collection (or any object satisfying the same tiny
+    upsert/query/count/delete_all interface -- see tests/fakes.py) with
+    ArchiveEntry-aware indexing and querying.
+    """
+
+    def __init__(
+        self,
+        collection=None,
+        persist_dir: Optional[str] = None,
+        embedding_model: str = DEFAULT_EMBED_MODEL,
+    ):
+        self.collection = collection or self._build_default_collection(
+            persist_dir, embedding_model
         )
-        sp = FakeSubProblem(
-            id="sp1",
-            description="cookie decryption looks vulnerable",
-            likely_techniques=["padding-oracle"],
+
+    @staticmethod
+    def _build_default_collection(persist_dir: Optional[str], embedding_model: str):
+        try:
+            import chromadb
+        except ImportError:
+            raise RuntimeError(
+                "chromadb isn't installed. Run:\n    pip install chromadb\n"
+                "or construct Retriever(collection=...) with your own "
+                "chromadb (or chromadb-compatible) collection directly."
+            )
+        client = chromadb.PersistentClient(path=persist_dir or DEFAULT_PERSIST_DIR)
+        return client.get_or_create_collection(
+            name=COLLECTION_NAME,
+            embedding_function=OllamaEmbeddingFunction(model=embedding_model),
         )
-        matches = self.retriever.query_sub_problem(sp, n_results=3)
-        self.assertTrue(any(m.entry.challenge_name == "PaddingOracleChal" for m in matches))
 
-
-class TestIndexDirectory(unittest.TestCase):
-    def setUp(self):
-        self.tmpdir = tempfile.mkdtemp()
-        self.collection = FakeCollection()
-        self.retriever = Retriever(collection=self.collection)
-
-    def tearDown(self):
-        shutil.rmtree(self.tmpdir, ignore_errors=True)
-
-    def test_indexes_all_valid_entries_and_skips_bad_json(self):
-        make_entry(name="One").save(os.path.join(self.tmpdir, "one.json"))
-        make_entry(name="Two", category="pwn").save(os.path.join(self.tmpdir, "two.json"))
-        with open(os.path.join(self.tmpdir, "broken.json"), "w") as f:
-            f.write("{not valid json")
-
-        count = self.retriever.index_directory(self.tmpdir)
-        self.assertEqual(count, 2)
-        self.assertEqual(self.retriever.count(), 2)
-
-    def test_empty_directory_returns_zero(self):
-        count = self.retriever.index_directory(self.tmpdir)
-        self.assertEqual(count, 0)
-
-    def test_reindexing_same_directory_does_not_duplicate(self):
-        make_entry(name="One").save(os.path.join(self.tmpdir, "one.json"))
-        self.retriever.index_directory(self.tmpdir)
-        self.retriever.index_directory(self.tmpdir)
-        self.assertEqual(self.retriever.count(), 1)
-
-
-class TestSubProblemQueryText(unittest.TestCase):
-    def test_includes_description_techniques_and_evidence(self):
-        sp = FakeSubProblem(
-            id="sp1",
-            description="the token accepts alg none",
-            likely_techniques=["jwt-alg-confusion", "jwt-none-bypass"],
-            evidence="header shows alg: none",
+    def index_entry(self, entry: ArchiveEntry, doc_id: Optional[str] = None) -> str:
+        """Embed and (up)store one archive entry. Returns the doc id used,
+        so callers can pin/reuse it if they want (e.g. to force an update)."""
+        doc_id = doc_id or _default_id(entry)
+        self.collection.upsert(
+            ids=[doc_id],
+            documents=[entry.to_embedding_text()],
+            metadatas=[_entry_to_metadata(entry)],
         )
-        text = _sub_problem_query_text(sp)
-        self.assertIn("the token accepts alg none", text)
-        self.assertIn("jwt-alg-confusion", text)
-        self.assertIn("header shows alg: none", text)
+        return doc_id
 
+    def index_directory(self, dir_path: str) -> int:
+        """Index every *.json ArchiveEntry file in a directory (non-recursive).
+        Files that fail to parse are skipped with a printed warning rather
+        than aborting the whole batch. Returns the count successfully
+        indexed."""
+        if not os.path.isdir(dir_path):
+            return 0
+        indexed = 0
+        for filename in sorted(os.listdir(dir_path)):
+            if not filename.lower().endswith(".json"):
+                continue
+            path = os.path.join(dir_path, filename)
+            try:
+                entry = ArchiveEntry.load(path)
+            except Exception as e:
+                print(f"  skipped {filename}: {e}")
+                continue
+            self.index_entry(entry)
+            indexed += 1
+        return indexed
 
-class TestDefaultBackendRequiresChromadb(unittest.TestCase):
-    def test_missing_chromadb_raises_helpful_error(self):
-        # Force `import chromadb` to fail regardless of whether it's
-        # actually installed in whatever environment runs this test suite
-        # (it isn't, in this sandbox -- but shouldn't need to be, since
-        # everything else in this file injects a collection). Setting the
-        # module to None in sys.modules is the standard way to simulate
-        # "not installed" for an import statement.
-        with patch.dict(sys.modules, {"chromadb": None}):
-            with self.assertRaises(RuntimeError) as ctx:
-                Retriever(persist_dir=tempfile.mkdtemp())
-        self.assertIn("pip install chromadb", str(ctx.exception))
+    def count(self) -> int:
+        return self.collection.count()
+
+    def reset(self) -> None:
+        self.collection.delete_all()
+
+    def query(
+        self, query_text: str, n_results: int = 5, category: Optional[str] = None
+    ) -> List[RetrievedMatch]:
+        where = {"category": json.dumps(category)} if category else None
+        raw = self.collection.query(
+            query_texts=[query_text], n_results=n_results, where=where
+        )
+        ids = raw.get("ids", [[]])[0]
+        distances = raw.get("distances", [[]])[0]
+        metadatas = raw.get("metadatas", [[]])[0]
+
+        matches = []
+        for _doc_id, distance, metadata in zip(ids, distances, metadatas):
+            entry = _entry_from_metadata(metadata)
+            score = 1.0 / (1.0 + max(distance, 0.0))  # always > 0, decreasing in distance
+            matches.append(
+                RetrievedMatch(
+                    entry=entry, score=score, distance=distance, matched_on=query_text
+                )
+            )
+        return matches
+
+    def query_sub_problem(
+        self, sub_problem, n_results: int = 3, category: Optional[str] = None
+    ) -> List[RetrievedMatch]:
+        query_text = _sub_problem_query_text(sub_problem)
+        return self.query(query_text, n_results=n_results, category=category)
 
 
 if __name__ == "__main__":
-    unittest.main()
+    import sys
+
+    archive_dir = sys.argv[1] if len(sys.argv) > 1 else "data/archive"
+    retriever = Retriever()
+    count = retriever.index_directory(archive_dir)
+    print(f"indexed {count} entries from {archive_dir} ({retriever.count()} total in store)")

@@ -80,9 +80,10 @@ def fake_embed_response(vectors: List[List[float]]) -> dict:
 
 
 class _FakeHTTPResponse:
-    def __init__(self, payload: dict, status_code: int = 200):
+    def __init__(self, payload: dict, status_code: int = 200, stream_lines=None):
         self._payload = payload
         self.status_code = status_code
+        self._stream_lines = stream_lines or []
 
     def raise_for_status(self):
         if self.status_code >= 400:
@@ -90,6 +91,20 @@ class _FakeHTTPResponse:
 
     def json(self):
         return self._payload
+
+    def iter_lines(self):
+        for line in self._stream_lines:
+            yield line.encode() if isinstance(line, str) else line
+
+
+def fake_stream_lines(pieces: List[str]) -> List[str]:
+    """Build the newline-delimited-JSON lines Ollama's streaming /api/chat
+    would send for a given sequence of text pieces, ending with a done=true
+    terminator line."""
+    import json as _json
+    lines = [_json.dumps({"message": {"role": "assistant", "content": p}, "done": False}) for p in pieces]
+    lines.append(_json.dumps({"message": {"role": "assistant", "content": ""}, "done": True}))
+    return lines
 
 
 class FakeOllamaHTTP:
@@ -99,14 +114,17 @@ class FakeOllamaHTTP:
     real llm_client parsing/error-handling code instead of stubbing it out.
     """
 
-    def __init__(self, chat_reply: Optional[str] = None, embed_dim: int = 8):
+    def __init__(self, chat_reply: Optional[str] = None, embed_dim: int = 8, stream_pieces: Optional[List[str]] = None):
         self.chat_reply = chat_reply
         self.embed_dim = embed_dim
+        self.stream_pieces = stream_pieces
         self.calls: List[dict] = []
 
-    def __call__(self, url, json=None, timeout=None):
-        self.calls.append({"url": url, "json": json, "timeout": timeout})
+    def __call__(self, url, json=None, timeout=None, stream=False):
+        self.calls.append({"url": url, "json": json, "timeout": timeout, "stream": stream})
         if url.endswith("/api/chat"):
+            if stream and self.stream_pieces is not None:
+                return _FakeHTTPResponse({}, stream_lines=fake_stream_lines(self.stream_pieces))
             return _FakeHTTPResponse(fake_chat_response(self.chat_reply or "{}"))
         if url.endswith("/api/embed"):
             n = len(json["input"]) if isinstance(json.get("input"), list) else 1

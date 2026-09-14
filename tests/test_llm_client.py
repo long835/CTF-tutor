@@ -77,6 +77,51 @@ class TestCallOllamaChat(unittest.TestCase):
         self.assertEqual(result, "hi there")
         self.assertEqual(fake.calls[0]["url"], llm_client.OLLAMA_URL)
 
+    def test_non_streaming_by_default(self):
+        fake = FakeOllamaHTTP(chat_reply="hi there")
+        with patch("requests.post", side_effect=fake):
+            llm_client.call_ollama("system", "user")
+        self.assertFalse(fake.calls[0]["stream"])
+        self.assertFalse(fake.calls[0]["json"]["stream"])
+
+
+class TestCallOllamaChatStreaming(unittest.TestCase):
+    def test_assembles_full_text_from_streamed_pieces(self):
+        fake = FakeOllamaHTTP(stream_pieces=["Hello", ", ", "world", "!"])
+        with patch("requests.post", side_effect=fake):
+            result = llm_client.call_ollama("system", "user", stream=True)
+        self.assertEqual(result, "Hello, world!")
+        self.assertTrue(fake.calls[0]["stream"])
+        self.assertTrue(fake.calls[0]["json"]["stream"])
+
+    def test_calls_on_token_for_each_piece_in_order(self):
+        fake = FakeOllamaHTTP(stream_pieces=["a", "b", "c"])
+        received = []
+        with patch("requests.post", side_effect=fake):
+            llm_client.call_ollama("system", "user", stream=True, on_token=received.append)
+        self.assertEqual(received, ["a", "b", "c"])
+
+    def test_on_token_is_optional(self):
+        fake = FakeOllamaHTTP(stream_pieces=["only piece"])
+        with patch("requests.post", side_effect=fake):
+            result = llm_client.call_ollama("system", "user", stream=True)  # no on_token given
+        self.assertEqual(result, "only piece")
+
+
+class TestWarmUp(unittest.TestCase):
+    def test_sends_a_trivial_request_to_the_configured_model(self):
+        fake = FakeOllamaHTTP(chat_reply="ready")
+        with patch("requests.post", side_effect=fake):
+            llm_client.warm_up(model="qwen3:8b")
+        self.assertEqual(len(fake.calls), 1)
+        self.assertEqual(fake.calls[0]["json"]["model"], "qwen3:8b")
+
+    def test_propagates_connection_error_as_runtime_error(self):
+        with patch("requests.post", side_effect=requests.exceptions.ConnectionError()):
+            with self.assertRaises(RuntimeError) as ctx:
+                llm_client.warm_up()
+        self.assertIn("Could not reach Ollama", str(ctx.exception))
+
 
 class TestExtractJsonObjectLenient(unittest.TestCase):
     def test_returns_parsed_json_when_present(self):

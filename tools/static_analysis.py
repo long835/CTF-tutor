@@ -2,6 +2,8 @@
 import shutil
 from typing import Optional
 
+from tools.ghidra_headless import decompile_with_ghidra
+
 
 def _run(cmd: list, timeout: int = 15) -> str:
     exe = cmd[0]
@@ -62,11 +64,57 @@ def extract_metadata(path: str) -> str:
     return _run(["exiftool", path])
 
 
-def full_recon(path: str, category_hint: Optional[str] = None) -> dict:
+def list_symbols(path: str, dynamic_only: bool = True) -> str:
+    """nm -- exported/imported function names, often gives away which libc
+    functions are linked (system, execve, gets, strcpy, ...) before you even
+    open a decompiler."""
+    cmd = ["nm", "-D", path] if dynamic_only else ["nm", path]
+    return _run(cmd)
+
+
+def read_elf_headers(path: str) -> str:
+    """readelf -h -d -- ELF header + dynamic section (architecture, entry
+    point, linked shared libraries). Cheap and often enough to plan an
+    approach before reaching for objdump/Ghidra."""
+    return _run(["readelf", "-h", "-d", path])
+
+
+def disassemble(path: str, function: Optional[str] = None, limit_lines: int = 300) -> str:
+    """objdump -d -- quick disassembly without needing Ghidra installed.
+    Pass `function` to disassemble just one function (objdump --disassemble=NAME)
+    when you already know what you're looking for; omit it to dump everything
+    (truncated to limit_lines, since a full binary's disassembly can be huge)."""
+    cmd = ["objdump", "-d", "-M", "intel"]
+    if function:
+        cmd.append(f"--disassemble={function}")
+    cmd.append(path)
+    out = _run(cmd)
+    lines = out.splitlines()
+    if len(lines) > limit_lines:
+        lines = lines[:limit_lines] + [f"... [{len(out.splitlines()) - limit_lines} more lines truncated]"]
+    return "\n".join(lines)
+
+
+def full_recon(
+    path: str,
+    category_hint: Optional[str] = None,
+    include_decompile: bool = False,
+) -> dict:
+    """
+    Run the cheap, fast checks (file/strings, and checksec+nm+readelf or
+    binwalk+exiftool depending on category_hint) always. Ghidra
+    decompilation is opt-in via include_decompile=True since it's much
+    slower (a real headless analysis pass, not a one-shot CLI call) and
+    requires a local Ghidra install -- see tools/ghidra_headless.py.
+    """
     evidence = {"file_type": identify_file(path)}
     evidence["strings_sample"] = extract_strings(path)
     if category_hint in (None, "pwn", "rev"):
         evidence["binary_protections"] = check_binary_protections(path)
+        evidence["dynamic_symbols"] = list_symbols(path)
+        evidence["elf_headers"] = read_elf_headers(path)
+        if include_decompile:
+            evidence["decompiled"] = decompile_with_ghidra(path)
     if category_hint in (None, "forensics", "misc"):
         evidence["binwalk"] = run_binwalk(path)
         evidence["metadata"] = extract_metadata(path)

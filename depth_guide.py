@@ -17,6 +17,7 @@ from dataclasses import dataclass, field
 from enum import IntEnum
 from typing import Dict, List
 
+from concurrency import map_concurrent
 from llm_client import call_ollama, extract_json_object, DEFAULT_MODEL
 
 
@@ -128,12 +129,14 @@ def get_hint_ladder(
     matches: list,
     up_to: HintLevel = HintLevel.WALKTHROUGH,
     model: str = DEFAULT_MODEL,
+    max_workers: int = 4,
 ) -> List[Hint]:
     """Get every hint level from NAME up through (and including) `up_to`,
-    in order -- one LLM call per level."""
-    hints = []
-    for level in HintLevel:
-        if level > up_to:
-            break
-        hints.append(get_hint(sub_problem, matches, level, model=model))
-    return hints
+    concurrently (each level is an independent Ollama call), returned in
+    level order regardless of which one finishes first."""
+    levels = [level for level in HintLevel if level <= up_to]
+    return map_concurrent(
+        lambda level: get_hint(sub_problem, matches, level, model=model),
+        levels,
+        max_workers=max_workers,
+    )

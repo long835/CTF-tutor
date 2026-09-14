@@ -2,3 +2,4 @@ requests
 youtube-transcript-api
 chromadb
 python-dotenv
+pytest

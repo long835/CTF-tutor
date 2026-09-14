@@ -110,7 +110,41 @@ class TestFullPipeline(unittest.TestCase):
         # no depth requested -> no hints computed, no LLM calls for them
         self.assertEqual(result["hints_by_id"], {})
 
-    def test_run_with_depth_populates_hint_ladder(self):
+    def test_verbose_prints_stage_progress(self):
+        retriever = _build_populated_retriever()
+
+        with patch.object(decomposer, "call_ollama", return_value=DECOMPOSER_REPLY), \
+             patch.object(synthesizer, "call_ollama", return_value=SYNTHESIS_REPLY), \
+             patch.object(explainer, "call_ollama", return_value=EXPLANATION_REPLY):
+            buf = io.StringIO()
+            with contextlib.redirect_stdout(buf):
+                run(
+                    "A login portal issues JWTs signed with RS256...",
+                    category="web",
+                    retriever=retriever,
+                    verbose=True,
+                )
+        output = buf.getvalue()
+        self.assertIn("Decomposing", output)
+        self.assertIn("Searching", output)
+        self.assertIn("Cross-referencing", output)
+
+    def test_not_verbose_by_default_produces_no_stdout(self):
+        retriever = _build_populated_retriever()
+
+        with patch.object(decomposer, "call_ollama", return_value=DECOMPOSER_REPLY), \
+             patch.object(synthesizer, "call_ollama", return_value=SYNTHESIS_REPLY), \
+             patch.object(explainer, "call_ollama", return_value=EXPLANATION_REPLY):
+            buf = io.StringIO()
+            with contextlib.redirect_stdout(buf):
+                run(
+                    "A login portal issues JWTs signed with RS256...",
+                    category="web",
+                    retriever=retriever,
+                )
+        self.assertEqual(buf.getvalue(), "")
+
+
         retriever = _build_populated_retriever()
 
         with patch.object(decomposer, "call_ollama", return_value=DECOMPOSER_REPLY), \

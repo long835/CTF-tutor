@@ -66,15 +66,21 @@ def decompose(
     category: Optional[str] = None,
     file_path: Optional[str] = None,
     model: str = DEFAULT_MODEL,
+    include_decompile: bool = False,
 ) -> List[SubProblem]:
     """
     Main entry point. Optionally pass file_path to a challenge binary/pcap/etc.
     so real static-analysis evidence grounds the decomposition instead of the
-    model guessing purely from the text prompt.
+    model guessing purely from the text prompt. include_decompile=True adds
+    a Ghidra headless decompilation pass for pwn/rev files (slow, requires a
+    local Ghidra install -- see tools/ghidra_headless.py) on top of the
+    always-on fast checks (file/strings/checksec/binwalk/exiftool).
     """
     evidence = None
     if file_path:
-        evidence = static_analysis.full_recon(file_path, category_hint=category)
+        evidence = static_analysis.full_recon(
+            file_path, category_hint=category, include_decompile=include_decompile
+        )
 
     user_prompt = build_user_prompt(challenge_description, category, evidence)
     raw = call_ollama(DECOMPOSE_SYSTEM_PROMPT, user_prompt, model=model)
