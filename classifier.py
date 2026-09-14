@@ -62,14 +62,22 @@ _KEYWORDS: Dict[str, List[str]] = {
     ],
 }
 
+# Minimum keyword hits required before trusting the heuristic classifier.
+# Avoids confidently misclassifying very short or ambiguous descriptions.
+MIN_HEURISTIC_CONFIDENCE = 2
+
 
 def classify_heuristic(description: str) -> Tuple[Optional[str], Dict[str, int]]:
     """
     Score each category by counting keyword occurrences in the description
     (case-insensitive). Returns (best_category_or_None, scores). Returns
-    None for best_category when there are no hits at all, or when the top
-    two categories are tied -- an ambiguous heuristic result should defer
-    to the LLM rather than confidently guess wrong.
+    None for best_category when:
+    - There are no hits at all
+    - The top two categories are tied
+    - The top category has fewer than MIN_HEURISTIC_CONFIDENCE hits
+    
+    An ambiguous heuristic result defers to the LLM rather than confidently
+    guess wrong.
     """
     text = description.lower()
     scores = {cat: 0 for cat in CATEGORIES if cat != "misc"}
@@ -83,6 +91,11 @@ def classify_heuristic(description: str) -> Tuple[Optional[str], Dict[str, int]]
 
     if top_score == 0 or top_score == runner_up_score:
         return None, scores
+    
+    # Require minimum confidence before trusting the heuristic
+    if top_score < MIN_HEURISTIC_CONFIDENCE:
+        return None, scores
+    
     return top_cat, scores
 
 
@@ -96,7 +109,7 @@ if truly none of the others fit), confidence (one of: low, medium, high)
 def classify(description: str, model: str = DEFAULT_MODEL) -> str:
     """
     Best-effort category guess: try the free heuristic first, only fall
-    back to an LLM call when the heuristic is ambiguous (no clear winner).
+    back to an LLM call when the heuristic is ambiguous or low-confidence.
     Always returns one of CATEGORIES -- never raises, since a wrong guess
     just means slightly less-targeted retrieval/static-analysis, not a
     broken run, so "misc" is a safe fallback for a genuinely-unclear case.
