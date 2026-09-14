@@ -1,99 +1,102 @@
-"""
-explainer.py
+import sys
+import os
+import json
+import unittest
+from unittest.mock import patch
 
-Turns one SubProblem (plus whatever archive matches retriever.py found for
-it) into a plain-language explanation of the underlying technique -- WHY it
-works, not just its name. Grounded in the learner's own past solves when a
-match exists ("this resembles X, here's why"); falls back to general
-knowledge, clearly labeled as such, when the archive has nothing relevant.
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-Design principle (see README): explain and guide, never hand over a full
-solution or exact exploit steps. Both system prompts below enforce that.
-"""
-
-from dataclasses import dataclass, field
-from typing import Dict, List
-
-from llm_client import call_ollama, extract_json_object, DEFAULT_MODEL
+from schema import ArchiveEntry, SubProblem
+import explainer
+from explainer import explain, explain_all, build_user_prompt
+from retriever import RetrievedMatch
 
 
-EXPLAIN_SYSTEM_PROMPT_GROUNDED = """You are a CTF tutor explaining ONE piece \
-of a decomposed challenge to a learner in plain language. You've been given \
-past archive matches that resemble this piece -- ground your explanation in \
-WHY the technique works, explicitly citing which past challenge(s) it \
-resembles and why, so the learner builds a transferable mental model \
-instead of just memorizing a label.
-
-Do not include a flag, a full solution, or exact exploit steps -- explain \
-the underlying concept and why it applies here.
-
-Respond ONLY with a JSON object with keys:
-explanation (string), cited_entries (array of the past challenge names
-actually drawn on)
-"""
-
-EXPLAIN_SYSTEM_PROMPT_UNGROUNDED = """You are a CTF tutor explaining ONE \
-piece of a decomposed challenge to a learner in plain language. No matching \
-past challenges were found in their archive for this piece, so explain the \
-underlying concept from general security knowledge instead -- be upfront \
-that this isn't grounded in one of the learner's own past solves, since \
-that's worth knowing when deciding how much to trust it.
-
-Do not include a flag, a full solution, or exact exploit steps -- explain \
-the underlying concept and why it applies here.
-
-Respond ONLY with a JSON object with keys:
-explanation (string), cited_entries (array, should be empty here)
-"""
-
-
-@dataclass
-class Explanation:
-    sub_problem_id: str
-    text: str
-    grounded: bool
-    cited_entries: List[str] = field(default_factory=list)
-
-
-def build_user_prompt(sub_problem, matches: list) -> str:
-    parts = [f"Sub-problem [{sub_problem.id}]: {sub_problem.description}"]
-    if getattr(sub_problem, "likely_techniques", None):
-        parts.append(f"Likely techniques: {', '.join(sub_problem.likely_techniques)}")
-    if getattr(sub_problem, "evidence", ""):
-        parts.append(f"Evidence: {sub_problem.evidence}")
-
-    if not matches:
-        parts.append("\nNo matching past challenges were found in the archive for this piece.")
-    else:
-        parts.append("\nClosest past-challenge matches:")
-        for m in matches:
-            parts.append(
-                f"- {m.entry.challenge_name} ({m.entry.category}, "
-                f"techniques: {', '.join(m.entry.techniques)}): {m.entry.explanation}"
-            )
-    return "\n".join(parts)
-
-
-def explain(sub_problem, matches: list, model: str = DEFAULT_MODEL) -> Explanation:
-    grounded = bool(matches)
-    system_prompt = EXPLAIN_SYSTEM_PROMPT_GROUNDED if grounded else EXPLAIN_SYSTEM_PROMPT_UNGROUNDED
-    user_prompt = build_user_prompt(sub_problem, matches)
-    raw = call_ollama(system_prompt, user_prompt, model=model)
-
-    try:
-        parsed = extract_json_object(raw)
-        text = parsed.get("explanation") or raw.strip()
-        cited_entries = parsed.get("cited_entries", [])
-    except ValueError:
-        text = raw.strip()
-        cited_entries = []
-
-    return Explanation(
-        sub_problem_id=sub_problem.id, text=text, grounded=grounded, cited_entries=cited_entries
+def make_entry(name="AuthBreaker"):
+    return ArchiveEntry(
+        challenge_name=name,
+        category="web",
+        techniques=["jwt-alg-confusion"],
+        source="ExampleCTF",
+        description="desc",
+        explanation="The server trusts alg=none tokens.",
+        solve_steps=["a", "b"],
     )
 
 
-def explain_all(sub_problems, matches_by_id: Dict[str, list], model: str = DEFAULT_MODEL) -> List[Explanation]:
-    """Explain every sub-problem. Sub-problems missing from matches_by_id are
-    treated as having no matches (ungrounded) rather than raising KeyError."""
-    return [explain(sp, matches_by_id.get(sp.id, []), model=model) for sp in sub_problems]
+def make_match(entry, score=0.8):
+    return RetrievedMatch(entry=entry, score=score, distance=1 - score, matched_on="q")
+
+
+def make_sub_problem(id="sp1", description="the token seems forgeable", techniques=None, evidence=""):
+    return SubProblem(id=id, description=description, likely_techniques=techniques or [], evidence=evidence)
+
+
+class TestBuildUserPrompt(unittest.TestCase):
+    def test_includes_matches_when_present(self):
+        sp = make_sub_problem()
+        matches = [make_match(make_entry("AuthBreaker"))]
+        prompt = build_user_prompt(sp, matches)
+        self.assertIn("AuthBreaker", prompt)
+        self.assertIn("The server trusts alg=none tokens.", prompt)
+
+    def test_notes_absence_when_no_matches(self):
+        sp = make_sub_problem()
+        prompt = build_user_prompt(sp, [])
+        self.assertIn("No matching past challenges were found", prompt)
+
+
+class TestExplain(unittest.TestCase):
+    def test_grounded_explanation_uses_grounded_system_prompt(self):
+        sp = make_sub_problem()
+        matches = [make_match(make_entry("AuthBreaker"))]
+        fake_reply = json.dumps({
+            "explanation": "This resembles AuthBreaker's alg=none bypass.",
+            "cited_entries": ["AuthBreaker"],
+        })
+        with patch.object(explainer, "call_ollama", return_value=fake_reply) as mock_call:
+            result = explain(sp, matches)
+
+        used_system_prompt = mock_call.call_args[0][0]
+        self.assertEqual(used_system_prompt, explainer.EXPLAIN_SYSTEM_PROMPT_GROUNDED)
+        self.assertTrue(result.grounded)
+        self.assertEqual(result.text, "This resembles AuthBreaker's alg=none bypass.")
+        self.assertEqual(result.cited_entries, ["AuthBreaker"])
+        self.assertEqual(result.sub_problem_id, "sp1")
+
+    def test_ungrounded_explanation_uses_ungrounded_system_prompt(self):
+        sp = make_sub_problem()
+        fake_reply = json.dumps({"explanation": "General idea of JWT confusion.", "cited_entries": []})
+        with patch.object(explainer, "call_ollama", return_value=fake_reply) as mock_call:
+            result = explain(sp, [])
+
+        used_system_prompt = mock_call.call_args[0][0]
+        self.assertEqual(used_system_prompt, explainer.EXPLAIN_SYSTEM_PROMPT_UNGROUNDED)
+        self.assertFalse(result.grounded)
+        self.assertEqual(result.cited_entries, [])
+
+    def test_falls_back_gracefully_on_non_json_reply(self):
+        sp = make_sub_problem()
+        with patch.object(explainer, "call_ollama", return_value="It's basically a JWT trick."):
+            result = explain(sp, [])
+        self.assertEqual(result.text, "It's basically a JWT trick.")
+        self.assertEqual(result.cited_entries, [])
+
+
+class TestExplainAll(unittest.TestCase):
+    def test_maps_matches_by_sub_problem_id(self):
+        sp1 = make_sub_problem(id="sp1")
+        sp2 = make_sub_problem(id="sp2")
+        matches_by_id = {"sp1": [make_match(make_entry("A"))]}  # sp2 intentionally missing
+
+        with patch.object(explainer, "call_ollama", return_value='{"explanation": "x", "cited_entries": []}'):
+            results = explain_all([sp1, sp2], matches_by_id)
+
+        self.assertEqual(len(results), 2)
+        by_id = {r.sub_problem_id: r for r in results}
+        self.assertTrue(by_id["sp1"].grounded)
+        self.assertFalse(by_id["sp2"].grounded)  # missing key defaults to no matches, no KeyError
+
+
+if __name__ == "__main__":
+    unittest.main()

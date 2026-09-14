@@ -1,168 +1,175 @@
-"""
-main.py
-
-CLI entrypoint that wires the whole pipeline together:
-
-    decomposer  -> break the challenge into sub-problems
-    retriever   -> find similar past challenges per sub-problem
-    synthesizer -> notice when sub-problems combine techniques from
-                   different past challenges
-    explainer   -> plain-language explanation per sub-problem
-    depth_guide -> (optional) tiered hints per sub-problem, up to a
-                   requested depth
-
-If chromadb/Ollama-embeddings aren't set up yet (or this is running
-somewhere that can't reach them, like a test sandbox), retrieval degrades
-gracefully to "no matches" rather than crashing the whole run -- you still
-get decomposition and ungrounded explanations.
-
-Usage:
-    python main.py "A login portal issues JWTs signed with RS256. \\
-The admin panel trusts the role claim in the token." \\
-        --category web --file ./challenge_files/app.js --depth approach
-"""
-
-import argparse
 import sys
-from typing import Dict, Optional
+import os
+import io
+import json
+import contextlib
+import unittest
+from unittest.mock import patch
 
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
+from schema import ArchiveEntry
 import decomposer
 import synthesizer
 import explainer
 import depth_guide
-from depth_guide import HintLevel, level_from_str
+import main
+from main import run, _print_report
+from depth_guide import HintLevel
 from retriever import Retriever
-from llm_client import DEFAULT_MODEL
+from tests.fakes import FakeCollection
 
 
-def run(
-    challenge_description: str,
-    category: Optional[str] = None,
-    file_path: Optional[str] = None,
-    retriever: Optional[Retriever] = None,
-    depth: Optional[HintLevel] = None,
-    model: str = DEFAULT_MODEL,
-) -> dict:
-    """
-    Run the full pipeline and return a dict with keys:
-    sub_problems, matches_by_id, synthesis, explanations, hints_by_id
-    (hints_by_id is {} unless `depth` is given).
-    """
-    sub_problems = decomposer.decompose(
-        challenge_description, category=category, file_path=file_path, model=model
+DECOMPOSER_REPLY = json.dumps([
+    {
+        "id": "jwt-part",
+        "description": "the jwt token uses alg none bypass",
+        "likely_techniques": ["jwt-alg-confusion"],
+        "evidence": "header shows alg none",
+    },
+    {
+        "id": "ssrf-part",
+        "description": "the server fetches an internal url causing ssrf",
+        "likely_techniques": ["ssrf"],
+        "evidence": "url parameter accepted unchecked",
+    },
+])
+
+SYNTHESIS_REPLY = json.dumps({
+    "combined": True,
+    "summary": "The JWT forgery is used to reach an admin-only SSRF endpoint.",
+    "contributing_matches": ["JWT None Confusion Challenge", "SSRF Internal Fetch"],
+    "shared_techniques": ["jwt-alg-confusion", "ssrf"],
+})
+
+EXPLANATION_REPLY = json.dumps({
+    "explanation": "This matches a known technique from the archive.",
+    "cited_entries": ["JWT None Confusion Challenge"],
+})
+
+HINT_REPLY = json.dumps({"hint": "some hint text", "cited_entries": []})
+
+
+def _make_entry(name, category, techniques, explanation):
+    return ArchiveEntry(
+        challenge_name=name,
+        category=category,
+        techniques=techniques,
+        source="ExampleCTF",
+        description="an archived challenge",
+        explanation=explanation,
+        solve_steps=["step one", "step two"],
     )
 
-    if retriever is None:
-        try:
-            retriever = Retriever()
-        except RuntimeError:
-            # no chromadb / no embedding model set up -- degrade gracefully
-            retriever = None
 
-    if retriever is None:
-        matches_by_id: Dict[str, list] = {sp.id: [] for sp in sub_problems}
-    else:
-        matches_by_id = {
-            sp.id: retriever.query_sub_problem(sp, category=category) for sp in sub_problems
-        }
+def _build_populated_retriever() -> Retriever:
+    retriever = Retriever(collection=FakeCollection())
+    retriever.index_entry(_make_entry(
+        "JWT None Confusion Challenge", "web", ["jwt-alg-confusion"],
+        "the jwt token uses alg none bypass technique",
+    ))
+    retriever.index_entry(_make_entry(
+        "SSRF Internal Fetch", "web", ["ssrf"],
+        "the server fetches an internal url causing ssrf issues",
+    ))
+    return retriever
 
-    synthesis = synthesizer.synthesize(challenge_description, sub_problems, matches_by_id, model=model)
-    explanations = explainer.explain_all(sub_problems, matches_by_id, model=model)
 
-    hints_by_id: Dict[str, list] = {}
-    if depth is not None:
-        for sp in sub_problems:
-            hints_by_id[sp.id] = depth_guide.get_hint_ladder(
-                sp, matches_by_id.get(sp.id, []), up_to=depth, model=model
+class TestFullPipeline(unittest.TestCase):
+    def test_run_wires_all_stages_together(self):
+        retriever = _build_populated_retriever()
+
+        with patch.object(decomposer, "call_ollama", return_value=DECOMPOSER_REPLY), \
+             patch.object(synthesizer, "call_ollama", return_value=SYNTHESIS_REPLY), \
+             patch.object(explainer, "call_ollama", return_value=EXPLANATION_REPLY):
+            result = run(
+                "A login portal issues JWTs signed with RS256...",
+                category="web",
+                retriever=retriever,
             )
 
-    return {
-        "sub_problems": sub_problems,
-        "matches_by_id": matches_by_id,
-        "synthesis": synthesis,
-        "explanations": explanations,
-        "hints_by_id": hints_by_id,
-    }
+        sub_problem_ids = [sp.id for sp in result["sub_problems"]]
+        self.assertEqual(sub_problem_ids, ["jwt-part", "ssrf-part"])
+
+        # retrieval actually ran and found the closest archive entry for
+        # the JWT sub-problem specifically (not just "some matches")
+        jwt_matches = result["matches_by_id"]["jwt-part"]
+        self.assertTrue(jwt_matches)
+        self.assertEqual(jwt_matches[0].entry.challenge_name, "JWT None Confusion Challenge")
+
+        self.assertTrue(result["synthesis"].combined)
+        self.assertEqual(
+            result["synthesis"].summary,
+            "The JWT forgery is used to reach an admin-only SSRF endpoint.",
+        )
+
+        self.assertEqual(len(result["explanations"]), 2)
+        for exp in result["explanations"]:
+            self.assertEqual(exp.text, "This matches a known technique from the archive.")
+
+        # no depth requested -> no hints computed, no LLM calls for them
+        self.assertEqual(result["hints_by_id"], {})
+
+    def test_run_with_depth_populates_hint_ladder(self):
+        retriever = _build_populated_retriever()
+
+        with patch.object(decomposer, "call_ollama", return_value=DECOMPOSER_REPLY), \
+             patch.object(synthesizer, "call_ollama", return_value=SYNTHESIS_REPLY), \
+             patch.object(explainer, "call_ollama", return_value=EXPLANATION_REPLY), \
+             patch.object(depth_guide, "call_ollama", return_value=HINT_REPLY) as mock_hint_call:
+            result = run(
+                "A login portal issues JWTs signed with RS256...",
+                retriever=retriever,
+                depth=HintLevel.APPROACH,
+            )
+
+        # 2 sub-problems x 2 levels (NAME, APPROACH) = 4 calls
+        self.assertEqual(mock_hint_call.call_count, 4)
+        self.assertEqual(set(result["hints_by_id"].keys()), {"jwt-part", "ssrf-part"})
+        for hints in result["hints_by_id"].values():
+            self.assertEqual([h.level for h in hints], [HintLevel.NAME, HintLevel.APPROACH])
+
+    def test_run_degrades_gracefully_when_chromadb_is_unavailable(self):
+        # Simulate the sandbox-style situation: no injected retriever, and
+        # the real chromadb-backed one can't even be constructed. The
+        # pipeline should still produce (ungrounded) explanations rather
+        # than crashing.
+        with patch.dict(sys.modules, {"chromadb": None}), \
+             patch.object(decomposer, "call_ollama", return_value=DECOMPOSER_REPLY), \
+             patch.object(synthesizer, "call_ollama") as mock_synth_call, \
+             patch.object(explainer, "call_ollama", return_value=EXPLANATION_REPLY):
+            result = run("A login portal issues JWTs signed with RS256...", retriever=None)
+
+        self.assertEqual(result["matches_by_id"], {"jwt-part": [], "ssrf-part": []})
+        # nothing to cross-reference with zero matches everywhere
+        mock_synth_call.assert_not_called()
+        self.assertFalse(result["synthesis"].combined)
+        for exp in result["explanations"]:
+            self.assertFalse(exp.grounded)
 
 
-def _print_report(result: dict) -> None:
-    print("=== Sub-problems ===")
-    for sp in result["sub_problems"]:
-        print(f"\n[{sp.id}] {sp.description}")
-        if sp.likely_techniques:
-            print(f"  likely techniques: {', '.join(sp.likely_techniques)}")
-        if sp.evidence:
-            print(f"  evidence: {sp.evidence}")
-        matches = result["matches_by_id"].get(sp.id, [])
-        if matches:
-            print("  closest archive matches:")
-            for m in matches:
-                print(f"    - {m.entry.challenge_name}  (score {m.score:.2f})")
-        else:
-            print("  no archive matches found")
+class TestPrintReport(unittest.TestCase):
+    def test_does_not_crash_on_a_full_result(self):
+        retriever = _build_populated_retriever()
+        with patch.object(decomposer, "call_ollama", return_value=DECOMPOSER_REPLY), \
+             patch.object(synthesizer, "call_ollama", return_value=SYNTHESIS_REPLY), \
+             patch.object(explainer, "call_ollama", return_value=EXPLANATION_REPLY), \
+             patch.object(depth_guide, "call_ollama", return_value=HINT_REPLY):
+            result = run(
+                "A login portal issues JWTs signed with RS256...",
+                retriever=retriever,
+                depth=HintLevel.NAME,
+            )
 
-    print("\n=== Cross-reference ===")
-    synthesis = result["synthesis"]
-    print(synthesis.summary)
-    if synthesis.combined:
-        if synthesis.contributing_matches:
-            print(f"  drawing on: {', '.join(synthesis.contributing_matches)}")
-        if synthesis.shared_techniques:
-            print(f"  shared techniques: {', '.join(synthesis.shared_techniques)}")
-
-    print("\n=== Explanations ===")
-    for exp in result["explanations"]:
-        tag = "grounded in your archive" if exp.grounded else "general knowledge"
-        print(f"\n[{exp.sub_problem_id}] ({tag})")
-        print(f"  {exp.text}")
-        if exp.cited_entries:
-            print(f"  cites: {', '.join(exp.cited_entries)}")
-
-    hints_by_id = result.get("hints_by_id") or {}
-    if hints_by_id:
-        print("\n=== Hints ===")
-        for sp_id, hints in hints_by_id.items():
-            print(f"\n[{sp_id}]")
-            for hint in hints:
-                print(f"  ({hint.level.name.lower()}) {hint.text}")
-
-
-def _build_arg_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(
-        description="A free, local, learning-focused CTF assistant. Does NOT auto-solve or submit flags."
-    )
-    parser.add_argument("challenge_description", help="the challenge prompt/description")
-    parser.add_argument("--category", default=None, help="web | pwn | crypto | rev | forensics | misc")
-    parser.add_argument("--file", dest="file_path", default=None, help="path to a challenge binary/pcap/etc.")
-    parser.add_argument(
-        "--depth", default=None,
-        help="how deep to hint: name | approach | commands | walkthrough (omit for no hints)",
-    )
-    parser.add_argument("--model", default=DEFAULT_MODEL, help=f"Ollama model to use (default: {DEFAULT_MODEL})")
-    return parser
-
-
-def main(argv=None) -> int:
-    args = _build_arg_parser().parse_args(argv)
-
-    depth = None
-    if args.depth is not None:
-        try:
-            depth = level_from_str(args.depth)
-        except ValueError as e:
-            print(f"error: {e}", file=sys.stderr)
-            return 1
-
-    result = run(
-        args.challenge_description,
-        category=args.category,
-        file_path=args.file_path,
-        depth=depth,
-        model=args.model,
-    )
-    _print_report(result)
-    return 0
+        buf = io.StringIO()
+        with contextlib.redirect_stdout(buf):
+            _print_report(result)
+        output = buf.getvalue()
+        self.assertIn("Sub-problems", output)
+        self.assertIn("Explanations", output)
+        self.assertIn("Cross-reference", output)
+        self.assertIn("Hints", output)
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    unittest.main()
