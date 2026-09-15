@@ -1,0 +1,15 @@
+{
+  "challenge_name": "Pattern WEB: UNION SQLi",
+  "category": "web",
+  "difficulty": "medium",
+  "description": "PHP search vulnerable to UNION-based SQL injection.",
+  "techniques": [
+    "sql-injection",
+    "sqli-union"
+  ],
+  "approach": "Find column count, union select readable fields.",
+  "tools": [
+    "source review",
+    "sqlmap offline notes"
+  ]
+}

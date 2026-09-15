@@ -1,0 +1,15 @@
+{
+  "challenge_name": "Pattern WEB: SSTI Jinja",
+  "category": "web",
+  "difficulty": "medium",
+  "description": "User-controlled template expression reaches Jinja renderer.",
+  "techniques": [
+    "ssti"
+  ],
+  "approach": "See skill pack first checks; validate in isolated lab only.",
+  "tools": [
+    "static_analysis",
+    "web_recon",
+    "research"
+  ]
+}

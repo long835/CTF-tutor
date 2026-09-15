@@ -484,14 +484,203 @@ def cmd_session(argv) -> int:
         print(f"error: {exc}", file=sys.stderr); return 1
 
 
-SUBCOMMAND_NAMES = ["run", "search", "list", "history", "chat", "generate", "session"]
+def cmd_agent(argv) -> int:
+    """Closed-loop investigative agent (hypotheses → tools → observe → verify)."""
+    import argparse
+    parser = argparse.ArgumentParser(
+        prog="main.py agent",
+        description="Run the closed-loop CTF agent (state + hypotheses + tools + verification).",
+    )
+    parser.add_argument("description", help="Challenge description or question")
+    parser.add_argument("--category", default=None, help="Optional category hint")
+    parser.add_argument("--path", default=None, help="Local challenge directory or file to triage")
+    parser.add_argument("--fetch", default=None, help="Fetch public GitHub/zip source first, then triage it")
+    parser.add_argument("--max-steps", type=int, default=10, help="Max agent steps (default 10)")
+    parser.add_argument("--hint-level", type=int, default=2, help="Teaching hint depth 1-6 (default 2)")
+    parser.add_argument("--quiet", action="store_true", help="Suppress step-by-step trace")
+    parser.add_argument("--json", action="store_true", help="Emit final AgentState as JSON")
+    parser.add_argument("--writeup", action="store_true", help="Print structured writeup only")
+    args = parser.parse_args(argv)
+
+    # Optional public fetch before agent run
+    if args.fetch:
+        from agent.challenge_fetch import fetch_auto
+        fr = fetch_auto(args.fetch)
+        if not fr.ok:
+            print(f"fetch failed: {fr.error}", file=sys.stderr)
+            return 1
+        args.path = fr.local_path
+        print(f"fetched → {fr.local_path} ({fr.files} files)")
+
+    from agent.loop import run_agent, AgentLoop
+    # Use AgentLoop directly so we can set hint_level
+    events = []
+    def on_event(name, payload):
+        if args.quiet:
+            return
+        if name == "triage_done":
+            events.append(f"⊞ triage: {payload.get('files', 0)} files")
+        elif name == "action_planned":
+            events.append(f"→ plan: {payload.get('tool')} — {str(payload.get('reason',''))[:80]}")
+        elif name == "action_finished":
+            ok = "ok" if payload.get("success") else "FAIL"
+            events.append(f"  [{ok}] {payload.get('tool')}: {str(payload.get('summary',''))[:100]}")
+        elif name == "verification":
+            events.append(f"✓ verify: {payload.get('verdict')} ({payload.get('confidence', 0):.2f})")
+        elif name == "finished":
+            events.append(f"done: status={payload.get('status')} conf={payload.get('confidence', 0):.2f}")
+
+    agent = AgentLoop(
+        challenge_summary=args.description,
+        category=args.category,
+        max_steps=args.max_steps,
+        on_event=on_event,
+        challenge_path=args.path,
+    )
+    agent.hint_level = max(1, min(6, args.hint_level))
+    state = agent.run()
+    if not args.quiet:
+        print("\n".join(events))
+        print()
+        print(agent.teaching_summary())
+    if args.writeup:
+        from agent.writeup import render_writeup
+        print(render_writeup(state))
+    if args.json:
+        print(state.to_json())
+    return 0
+
+
+
+def cmd_fetch(argv) -> int:
+    """Fetch public CTF challenges from GitHub or archive URLs into a local workspace."""
+    import argparse
+    import json
+    parser = argparse.ArgumentParser(
+        prog="main.py fetch",
+        description="Download public challenge material (GitHub repo/path or .zip URL) for local study.",
+    )
+    parser.add_argument("source", nargs="?", help="GitHub URL|owner/repo[/path] or https://.../chal.zip")
+    parser.add_argument("--search", default=None, help="Search public GitHub repos for CTF challenges")
+    parser.add_argument("--ctftime", type=int, default=None, help="Fetch public CTFtime event metadata by id")
+    parser.add_argument("--id", default=None, help="Workspace challenge id")
+    parser.add_argument("--json", action="store_true")
+    args = parser.parse_args(argv)
+
+    from agent.challenge_fetch import fetch_auto, search_github_challenges, fetch_ctftime_event
+
+    if args.search:
+        results = search_github_challenges(args.search)
+        if args.json:
+            print(json.dumps(results, indent=2))
+        else:
+            for r in results:
+                if "error" in r:
+                    print("error:", r["error"])
+                else:
+                    print(f"{r.get('stars', 0):5}  {r.get('full_name')}  {r.get('url')}")
+                    if r.get("description"):
+                        print(f"       {r['description'][:100]}")
+        return 0
+
+    if args.ctftime is not None:
+        meta = fetch_ctftime_event(args.ctftime)
+        print(json.dumps(meta, indent=2))
+        return 0 if "error" not in meta else 1
+
+    if not args.source:
+        parser.error("source required unless --search or --ctftime")
+
+    result = fetch_auto(args.source, challenge_id=args.id)
+    if args.json:
+        print(json.dumps(result.to_dict(), indent=2, default=str))
+    else:
+        if result.ok:
+            print(f"OK  source={result.source}  id={result.challenge_id}")
+            print(f"    path={result.local_path}")
+            print(f"    files={result.files}  bytes={result.bytes}")
+            print(f"    next: python main.py agent --path {result.local_path} \"<description>\"")
+        else:
+            print(f"FAIL  {result.error}")
+            return 1
+    return 0 if result.ok else 1
+
+
+
+def cmd_experiment(argv) -> int:
+    """Run a reproducible agent experiment or full benchmark."""
+    import argparse, json
+    p = argparse.ArgumentParser(prog="main.py experiment")
+    p.add_argument("description", nargs="?", help="Single challenge text")
+    p.add_argument("--benchmark", action="store_true", help="Run all ground_truth cases")
+    p.add_argument("--ablation", action="store_true", help="Run ablation study")
+    p.add_argument("--max-steps", type=int, default=4)
+    args = p.parse_args(argv)
+    if args.ablation:
+        from agent.ablation import run_ablation
+        print(json.dumps(run_ablation(max_steps=args.max_steps), indent=2))
+        return 0
+    if args.benchmark:
+        from agent.experiment import run_benchmark, ExperimentConfig
+        s = run_benchmark(ExperimentConfig(max_steps=args.max_steps, enable_trace=False))
+        print(json.dumps({k: v for k, v in s.items() if k != "rows"}, indent=2))
+        return 0
+    if not args.description:
+        p.error("description required unless --benchmark/--ablation")
+    from agent.experiment import run_experiment, ExperimentConfig
+    r = run_experiment(args.description, ExperimentConfig(max_steps=args.max_steps))
+    print(json.dumps(r.to_dict(), indent=2))
+    return 0
+
+
+def cmd_corpus(argv) -> int:
+    """Build local 100+ challenge/technique corpus."""
+    import argparse, json
+    p = argparse.ArgumentParser(prog="main.py corpus")
+    p.add_argument("--min", type=int, default=120, help="Minimum entries (default 120)")
+    args = p.parse_args(argv)
+    from agent.corpus_builder import build_corpus
+    print(json.dumps(build_corpus(args.min), indent=2))
+    return 0
+
+
+def cmd_platform(argv) -> int:
+    """Query optional CTFd / HTB APIs (tokens via env)."""
+    import argparse, json
+    p = argparse.ArgumentParser(prog="main.py platform")
+    sub = p.add_subparsers(dest="cmd", required=True)
+    c = sub.add_parser("ctfd"); c.add_argument("base_url"); c.add_argument("--id", type=int, default=None)
+    h = sub.add_parser("htb"); h.add_argument("--profile", action="store_true"); h.add_argument("--limit", type=int, default=20)
+    args = p.parse_args(argv)
+    if args.cmd == "ctfd":
+        from agent.platforms import ctfd_list_challenges, ctfd_challenge_detail
+        if args.id:
+            print(json.dumps(ctfd_challenge_detail(args.base_url, args.id), indent=2))
+        else:
+            print(json.dumps(ctfd_list_challenges(args.base_url), indent=2))
+    else:
+        from agent.platforms import htb_list_machines, htb_profile
+        if args.profile:
+            print(json.dumps(htb_profile(), indent=2))
+        else:
+            print(json.dumps(htb_list_machines(args.limit), indent=2))
+    return 0
+
+
+def cmd_webui(argv) -> int:
+    """Start MVP web UI (http://127.0.0.1:8765)."""
+    from webui.server import main as web_main
+    web_main()
+    return 0
+
+SUBCOMMAND_NAMES = ["run", "search", "list", "history", "chat", "generate", "session", "agent", "fetch", "experiment", "corpus", "platform", "webui"]
 
 
 def main(argv=None) -> int:
     argv = list(sys.argv[1:]) if argv is None else list(argv)
 
     if not argv or argv[0] in ("-h", "--help"):
-        print("usage: main.py {run,search,list,history,chat,generate,session} ...")
+        print("usage: main.py {run,search,list,history,chat,generate,session,agent,fetch,experiment,corpus,platform,webui} ...")
         print()
         print("A free, local, learning-focused CTF assistant. Does NOT auto-solve or submit flags.")
         print()
@@ -503,6 +692,9 @@ def main(argv=None) -> int:
         print("  chat      chat with the local CTF tutor")
         print("  generate  generate a safe local CTF challenge specification")
         print("  session   manage multi-language challenge sessions")
+        print("  agent     closed-loop investigative agent (hypotheses, tools, verification)")
+        print("  fetch     download public challenges (GitHub / zip URL) for local study")
+        print("  experiment run/benchmark/ablation harness")
         print()
         print("run `python main.py <subcommand> --help` for that subcommand's options.")
         if not argv:

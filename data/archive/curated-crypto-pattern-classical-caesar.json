@@ -1,0 +1,14 @@
+{
+  "challenge_name": "Pattern CRYPTO: Classical Caesar",
+  "category": "crypto",
+  "difficulty": "easy",
+  "description": "Caesar or simple substitution on English text.",
+  "techniques": [
+    "classical-substitution"
+  ],
+  "approach": "See skill pack first checks; validate in isolated lab only.",
+  "tools": [
+    "retrieve_archive",
+    "auto_decode"
+  ]
+}

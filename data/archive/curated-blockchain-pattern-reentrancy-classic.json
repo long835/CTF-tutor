@@ -1,0 +1,15 @@
+{
+  "challenge_name": "Pattern BLOCKCHAIN: Reentrancy Classic",
+  "category": "blockchain",
+  "difficulty": "hard",
+  "description": "Withdraw pattern allows reentrant drain.",
+  "techniques": [
+    "reentrancy"
+  ],
+  "approach": "See skill pack first checks; validate in isolated lab only.",
+  "tools": [
+    "static_analysis",
+    "web_recon",
+    "research"
+  ]
+}

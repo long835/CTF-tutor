@@ -28,3 +28,8 @@ HISTORY_MAX_ENTRIES = _int_env("CTF_TUTOR_HISTORY_MAX_ENTRIES", 400, minimum=20)
 MAX_DECOMPRESSED_SIZE = _int_env("CTF_TUTOR_MAX_DECOMPRESSED_BYTES", 50 * 1024 * 1024, minimum=1024)
 EVIDENCE_CHAR_LIMIT = _int_env("CTF_TUTOR_EVIDENCE_CHAR_LIMIT", 1500, minimum=200)
 HEURISTIC_MIN_SCORE = _int_env("CTF_TUTOR_HEURISTIC_MIN_SCORE", 2, minimum=1)
+
+
+# Safety: tools must not open network unless explicitly enabled
+NETWORK_ENABLED = os.getenv("CTF_TUTOR_NETWORK", "0") in ("1", "true", "True")
+ONLINE_RESEARCH = os.getenv("CTF_TUTOR_ONLINE_RESEARCH", "0") in ("1", "true", "True")

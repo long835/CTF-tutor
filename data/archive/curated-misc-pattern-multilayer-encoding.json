@@ -1,0 +1,14 @@
+{
+  "challenge_name": "Pattern MISC: Multilayer Encoding",
+  "category": "misc",
+  "difficulty": "easy",
+  "description": "Flag through multiple encoding layers.",
+  "techniques": [
+    "encoding-recognition"
+  ],
+  "approach": "See skill pack first checks; validate in isolated lab only.",
+  "tools": [
+    "retrieve_archive",
+    "auto_decode"
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "challenge_name": "Pattern MISC: Layered Encoding",
+  "category": "misc",
+  "difficulty": "easy",
+  "description": "Flag wrapped in base64 then hex repeatedly.",
+  "techniques": [
+    "encoding-recognition"
+  ],
+  "approach": "Detect encoding by alphabet/charset; peel layers.",
+  "tools": [
+    "decode_toolkit",
+    "python"
+  ]
+}

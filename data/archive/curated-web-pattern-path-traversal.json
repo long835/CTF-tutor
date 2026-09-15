@@ -1,0 +1,15 @@
+{
+  "challenge_name": "Pattern WEB: Path Traversal",
+  "category": "web",
+  "difficulty": "easy",
+  "description": "File download endpoint concatenates user path without normalization.",
+  "techniques": [
+    "path-traversal"
+  ],
+  "approach": "See skill pack first checks; validate in isolated lab only.",
+  "tools": [
+    "static_analysis",
+    "web_recon",
+    "research"
+  ]
+}

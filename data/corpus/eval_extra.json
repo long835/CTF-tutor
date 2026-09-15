@@ -1,0 +1,677 @@
+[
+  {
+    "id": "synth-sql-injection-1-0",
+    "description": "Login form concatenates username into SQL WHERE clause. [variant 1 \u2014 local study pattern card]",
+    "expected_category": "web",
+    "expected_techniques": [
+      "sql-injection"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "synth-sqli-union-1-1",
+    "description": "Search page allows UNION SELECT after column enumeration. [variant 1 \u2014 local study pattern card]",
+    "expected_category": "web",
+    "expected_techniques": [
+      "sqli-union"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "synth-ssti-1-2",
+    "description": "Greeting page renders user name inside Jinja template. [variant 1 \u2014 local study pattern card]",
+    "expected_category": "web",
+    "expected_techniques": [
+      "ssti"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "synth-path-traversal-1-3",
+    "description": "Download handler joins ../ user input onto base directory. [variant 1 \u2014 local study pattern card]",
+    "expected_category": "web",
+    "expected_techniques": [
+      "path-traversal"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "synth-jwt-none-bypass-1-4",
+    "description": "API accepts JWT with alg=none and trusts role claim. [variant 1 \u2014 local study pattern card]",
+    "expected_category": "web",
+    "expected_techniques": [
+      "jwt-none-bypass"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "synth-ssrf-1-5",
+    "description": "URL preview feature fetches attacker-controlled addresses. [variant 1 \u2014 local study pattern card]",
+    "expected_category": "web",
+    "expected_techniques": [
+      "ssrf"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "synth-xss-reflected-1-6",
+    "description": "Search reflects q= without encoding into HTML. [variant 1 \u2014 local study pattern card]",
+    "expected_category": "web",
+    "expected_techniques": [
+      "xss-reflected"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "synth-xxe-1-7",
+    "description": "XML upload parses external entities. [variant 1 \u2014 local study pattern card]",
+    "expected_category": "web",
+    "expected_techniques": [
+      "xxe"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "synth-idor-1-8",
+    "description": "Profile API uses sequential user id without authz checks. [variant 1 \u2014 local study pattern card]",
+    "expected_category": "web",
+    "expected_techniques": [
+      "idor"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "synth-deserialization-rce-1-9",
+    "description": "Cookie untrusted pickle/object deserialize. [variant 1 \u2014 local study pattern card]",
+    "expected_category": "web",
+    "expected_techniques": [
+      "deserialization-rce"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "synth-stack-buffer-overflow-1-10",
+    "description": "gets() into 64-byte stack buffer; win() present. [variant 1 \u2014 local study pattern card]",
+    "expected_category": "pwn",
+    "expected_techniques": [
+      "stack-buffer-overflow"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "synth-format-string-1-11",
+    "description": "printf(user) with writable GOT entry. [variant 1 \u2014 local study pattern card]",
+    "expected_category": "pwn",
+    "expected_techniques": [
+      "format-string"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "synth-ret2libc-1-12",
+    "description": "NX enabled overflow; system/binsh available via libc leak. [variant 1 \u2014 local study pattern card]",
+    "expected_category": "pwn",
+    "expected_techniques": [
+      "ret2libc"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "synth-rop-chain-1-13",
+    "description": "NX+ASLR; need ROP to call mprotect or system. [variant 1 \u2014 local study pattern card]",
+    "expected_category": "pwn",
+    "expected_techniques": [
+      "rop-chain"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "synth-canary-bypass-1-14",
+    "description": "Stack canary present; leak via format string first. [variant 1 \u2014 local study pattern card]",
+    "expected_category": "pwn",
+    "expected_techniques": [
+      "canary-bypass"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "synth-heap-overflow-1-15",
+    "description": "Custom allocator chunk overflow into metadata. [variant 1 \u2014 local study pattern card]",
+    "expected_category": "pwn",
+    "expected_techniques": [
+      "heap-overflow"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "synth-integer-overflow-1-16",
+    "description": "Size calculation wraps before malloc. [variant 1 \u2014 local study pattern card]",
+    "expected_category": "pwn",
+    "expected_techniques": [
+      "integer-overflow"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "synth-use-after-free-1-17",
+    "description": "Freed structure still used for function pointer. [variant 1 \u2014 local study pattern card]",
+    "expected_category": "pwn",
+    "expected_techniques": [
+      "use-after-free"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "synth-xor-single-byte-1-18",
+    "description": "Ciphertext XORed with one repeating key byte. [variant 1 \u2014 local study pattern card]",
+    "expected_category": "crypto",
+    "expected_techniques": [
+      "xor-single-byte"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "synth-xor-repeating-key-1-19",
+    "description": "Vigenere-like XOR with short key. [variant 1 \u2014 local study pattern card]",
+    "expected_category": "crypto",
+    "expected_techniques": [
+      "xor-repeating-key"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "synth-rsa-small-e-1-20",
+    "description": "RSA e=3 with small message, no padding. [variant 1 \u2014 local study pattern card]",
+    "expected_category": "crypto",
+    "expected_techniques": [
+      "rsa-small-e"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "synth-rsa-common-modulus-1-21",
+    "description": "Same n, different e for related messages. [variant 1 \u2014 local study pattern card]",
+    "expected_category": "crypto",
+    "expected_techniques": [
+      "rsa-common-modulus"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "synth-ecb-byte-at-a-time-1-22",
+    "description": "AES-ECB oracle with prefix control. [variant 1 \u2014 local study pattern card]",
+    "expected_category": "crypto",
+    "expected_techniques": [
+      "ecb-byte-at-a-time"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "synth-padding-oracle-1-23",
+    "description": "CBC padding error oracle on decrypt API. [variant 1 \u2014 local study pattern card]",
+    "expected_category": "crypto",
+    "expected_techniques": [
+      "padding-oracle"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "synth-classical-substitution-1-24",
+    "description": "Caesar/substitution on English text. [variant 1 \u2014 local study pattern card]",
+    "expected_category": "crypto",
+    "expected_techniques": [
+      "classical-substitution"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "synth-hash-length-extension-1-25",
+    "description": "Secret-prefix hash allows extension. [variant 1 \u2014 local study pattern card]",
+    "expected_category": "crypto",
+    "expected_techniques": [
+      "hash-length-extension"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "synth-encoding-recognition-1-26",
+    "description": "Layered base64/hex wraps the flag. [variant 1 \u2014 local study pattern card]",
+    "expected_category": "crypto",
+    "expected_techniques": [
+      "encoding-recognition"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "synth-string-decryption-1-27",
+    "description": "Password compared after XOR decode of .rodata. [variant 1 \u2014 local study pattern card]",
+    "expected_category": "rev",
+    "expected_techniques": [
+      "string-decryption"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "synth-anti-debug-bypass-1-28",
+    "description": "ptrace anti-debug exits under debugger. [variant 1 \u2014 local study pattern card]",
+    "expected_category": "rev",
+    "expected_techniques": [
+      "anti-debug-bypass"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "synth-vm-obfuscation-1-29",
+    "description": "Custom bytecode VM protects check. [variant 1 \u2014 local study pattern card]",
+    "expected_category": "rev",
+    "expected_techniques": [
+      "vm-obfuscation"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "synth-packed-binary-1-30",
+    "description": "UPX or custom packer hides real code. [variant 1 \u2014 local study pattern card]",
+    "expected_category": "rev",
+    "expected_techniques": [
+      "packed-binary"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "synth-control-flow-flattening-1-31",
+    "description": "State machine obscures comparison logic. [variant 1 \u2014 local study pattern card]",
+    "expected_category": "rev",
+    "expected_techniques": [
+      "control-flow-flattening"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "synth-pcap-carving-1-32",
+    "description": "HTTP objects in PCAP hide flag file. [variant 1 \u2014 local study pattern card]",
+    "expected_category": "forensics",
+    "expected_techniques": [
+      "pcap-carving"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "synth-steganography-1-33",
+    "description": "LSB stego in PNG. [variant 1 \u2014 local study pattern card]",
+    "expected_category": "forensics",
+    "expected_techniques": [
+      "steganography"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "synth-file-carving-1-34",
+    "description": "Deleted JPEG in disk image. [variant 1 \u2014 local study pattern card]",
+    "expected_category": "forensics",
+    "expected_techniques": [
+      "file-carving"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "synth-memory-forensics-1-35",
+    "description": "Process memory dump holds credentials. [variant 1 \u2014 local study pattern card]",
+    "expected_category": "forensics",
+    "expected_techniques": [
+      "memory-forensics"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "synth-image-metadata-1-36",
+    "description": "EXIF GPS points to location puzzle. [variant 1 \u2014 local study pattern card]",
+    "expected_category": "forensics",
+    "expected_techniques": [
+      "image-metadata"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "synth-osint-geolocation-1-37",
+    "description": "Photo landmarks identify city. [variant 1 \u2014 local study pattern card]",
+    "expected_category": "osint",
+    "expected_techniques": [
+      "osint-geolocation"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "synth-osint-username-1-38",
+    "description": "Same handle across public sites. [variant 1 \u2014 local study pattern card]",
+    "expected_category": "osint",
+    "expected_techniques": [
+      "osint-username"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "synth-osint-domain-dns-1-39",
+    "description": "DNS history reveals staging host. [variant 1 \u2014 local study pattern card]",
+    "expected_category": "osint",
+    "expected_techniques": [
+      "osint-domain-dns"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "synth-encoding-recognition-1-40",
+    "description": "Multiple encoding layers. [variant 1 \u2014 local study pattern card]",
+    "expected_category": "misc",
+    "expected_techniques": [
+      "encoding-recognition"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "synth-nested-archive-1-41",
+    "description": "Zip of zip of flag.txt. [variant 1 \u2014 local study pattern card]",
+    "expected_category": "misc",
+    "expected_techniques": [
+      "nested-archive"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "synth-esoteric-lang-1-42",
+    "description": "Program in unusual language prints flag. [variant 1 \u2014 local study pattern card]",
+    "expected_category": "misc",
+    "expected_techniques": [
+      "esoteric-lang"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "synth-reentrancy-1-43",
+    "description": "Classic withdraw reentrancy. [variant 1 \u2014 local study pattern card]",
+    "expected_category": "blockchain",
+    "expected_techniques": [
+      "reentrancy"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "synth-access-control-1-44",
+    "description": "Missing onlyOwner on mint. [variant 1 \u2014 local study pattern card]",
+    "expected_category": "blockchain",
+    "expected_techniques": [
+      "access-control"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "synth-integer-accounting-1-45",
+    "description": "Unchecked arithmetic drains pool. [variant 1 \u2014 local study pattern card]",
+    "expected_category": "blockchain",
+    "expected_techniques": [
+      "integer-accounting"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "synth-android-exported-component-1-46",
+    "description": "Exported activity leaks data. [variant 1 \u2014 local study pattern card]",
+    "expected_category": "mobile",
+    "expected_techniques": [
+      "android-exported-component"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "synth-insecure-storage-1-47",
+    "description": "Secrets in SharedPreferences. [variant 1 \u2014 local study pattern card]",
+    "expected_category": "mobile",
+    "expected_techniques": [
+      "insecure-storage"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "synth-hardcoded-secret-1-48",
+    "description": "API key in APK strings. [variant 1 \u2014 local study pattern card]",
+    "expected_category": "mobile",
+    "expected_techniques": [
+      "hardcoded-secret"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "synth-sql-injection-2-49",
+    "description": "Login form concatenates username into SQL WHERE clause. [variant 2 \u2014 local study pattern card]",
+    "expected_category": "web",
+    "expected_techniques": [
+      "sql-injection"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "synth-sqli-union-2-50",
+    "description": "Search page allows UNION SELECT after column enumeration. [variant 2 \u2014 local study pattern card]",
+    "expected_category": "web",
+    "expected_techniques": [
+      "sqli-union"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "synth-ssti-2-51",
+    "description": "Greeting page renders user name inside Jinja template. [variant 2 \u2014 local study pattern card]",
+    "expected_category": "web",
+    "expected_techniques": [
+      "ssti"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "synth-path-traversal-2-52",
+    "description": "Download handler joins ../ user input onto base directory. [variant 2 \u2014 local study pattern card]",
+    "expected_category": "web",
+    "expected_techniques": [
+      "path-traversal"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "synth-jwt-none-bypass-2-53",
+    "description": "API accepts JWT with alg=none and trusts role claim. [variant 2 \u2014 local study pattern card]",
+    "expected_category": "web",
+    "expected_techniques": [
+      "jwt-none-bypass"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "synth-ssrf-2-54",
+    "description": "URL preview feature fetches attacker-controlled addresses. [variant 2 \u2014 local study pattern card]",
+    "expected_category": "web",
+    "expected_techniques": [
+      "ssrf"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "synth-xss-reflected-2-55",
+    "description": "Search reflects q= without encoding into HTML. [variant 2 \u2014 local study pattern card]",
+    "expected_category": "web",
+    "expected_techniques": [
+      "xss-reflected"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "synth-xxe-2-56",
+    "description": "XML upload parses external entities. [variant 2 \u2014 local study pattern card]",
+    "expected_category": "web",
+    "expected_techniques": [
+      "xxe"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "synth-idor-2-57",
+    "description": "Profile API uses sequential user id without authz checks. [variant 2 \u2014 local study pattern card]",
+    "expected_category": "web",
+    "expected_techniques": [
+      "idor"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "synth-deserialization-rce-2-58",
+    "description": "Cookie untrusted pickle/object deserialize. [variant 2 \u2014 local study pattern card]",
+    "expected_category": "web",
+    "expected_techniques": [
+      "deserialization-rce"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "synth-stack-buffer-overflow-2-59",
+    "description": "gets() into 64-byte stack buffer; win() present. [variant 2 \u2014 local study pattern card]",
+    "expected_category": "pwn",
+    "expected_techniques": [
+      "stack-buffer-overflow"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "synth-format-string-2-60",
+    "description": "printf(user) with writable GOT entry. [variant 2 \u2014 local study pattern card]",
+    "expected_category": "pwn",
+    "expected_techniques": [
+      "format-string"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "synth-ret2libc-2-61",
+    "description": "NX enabled overflow; system/binsh available via libc leak. [variant 2 \u2014 local study pattern card]",
+    "expected_category": "pwn",
+    "expected_techniques": [
+      "ret2libc"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "synth-rop-chain-2-62",
+    "description": "NX+ASLR; need ROP to call mprotect or system. [variant 2 \u2014 local study pattern card]",
+    "expected_category": "pwn",
+    "expected_techniques": [
+      "rop-chain"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "synth-canary-bypass-2-63",
+    "description": "Stack canary present; leak via format string first. [variant 2 \u2014 local study pattern card]",
+    "expected_category": "pwn",
+    "expected_techniques": [
+      "canary-bypass"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "synth-heap-overflow-2-64",
+    "description": "Custom allocator chunk overflow into metadata. [variant 2 \u2014 local study pattern card]",
+    "expected_category": "pwn",
+    "expected_techniques": [
+      "heap-overflow"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "synth-integer-overflow-2-65",
+    "description": "Size calculation wraps before malloc. [variant 2 \u2014 local study pattern card]",
+    "expected_category": "pwn",
+    "expected_techniques": [
+      "integer-overflow"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "synth-use-after-free-2-66",
+    "description": "Freed structure still used for function pointer. [variant 2 \u2014 local study pattern card]",
+    "expected_category": "pwn",
+    "expected_techniques": [
+      "use-after-free"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "synth-xor-single-byte-2-67",
+    "description": "Ciphertext XORed with one repeating key byte. [variant 2 \u2014 local study pattern card]",
+    "expected_category": "crypto",
+    "expected_techniques": [
+      "xor-single-byte"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "synth-xor-repeating-key-2-68",
+    "description": "Vigenere-like XOR with short key. [variant 2 \u2014 local study pattern card]",
+    "expected_category": "crypto",
+    "expected_techniques": [
+      "xor-repeating-key"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "synth-rsa-small-e-2-69",
+    "description": "RSA e=3 with small message, no padding. [variant 2 \u2014 local study pattern card]",
+    "expected_category": "crypto",
+    "expected_techniques": [
+      "rsa-small-e"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "synth-rsa-common-modulus-2-70",
+    "description": "Same n, different e for related messages. [variant 2 \u2014 local study pattern card]",
+    "expected_category": "crypto",
+    "expected_techniques": [
+      "rsa-common-modulus"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "synth-ecb-byte-at-a-time-2-71",
+    "description": "AES-ECB oracle with prefix control. [variant 2 \u2014 local study pattern card]",
+    "expected_category": "crypto",
+    "expected_techniques": [
+      "ecb-byte-at-a-time"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "synth-padding-oracle-2-72",
+    "description": "CBC padding error oracle on decrypt API. [variant 2 \u2014 local study pattern card]",
+    "expected_category": "crypto",
+    "expected_techniques": [
+      "padding-oracle"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "synth-classical-substitution-2-73",
+    "description": "Caesar/substitution on English text. [variant 2 \u2014 local study pattern card]",
+    "expected_category": "crypto",
+    "expected_techniques": [
+      "classical-substitution"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "synth-hash-length-extension-2-74",
+    "description": "Secret-prefix hash allows extension. [variant 2 \u2014 local study pattern card]",
+    "expected_category": "crypto",
+    "expected_techniques": [
+      "hash-length-extension"
+    ],
+    "difficulty": "medium"
+  }
+]

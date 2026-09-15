@@ -31,7 +31,7 @@ _KEYWORDS: Dict[str, List[str]] = {
     ],
     "pwn": [
         "buffer overflow", "stack overflow", "shellcode", "rop", "ret2libc",
-        "ret2win", "canary", "nx", "aslr", "gets(", "strcpy", "format string",
+        "ret2win", "canary", "nx", "aslr", "gets(", "strcpy", "format string", "format-string", "printf(user)",
         "segfault", "heap overflow", "use-after-free", "double free", "gdb",
         "pwntools", "libc", "exploit the binary", "got overwrite",
         "unsafe rust", "rust binary",
@@ -48,7 +48,7 @@ _KEYWORDS: Dict[str, List[str]] = {
         "assembly", "opcodes", "control flow", "ilspy", "dnspy", "javap",
     ],
     "forensics": [
-        "pcap", "wireshark", "memory dump", "disk image", "steganography",
+        "pcap", "wireshark", "memory dump", "disk image", "steganography", "stego", "lsb",
         "stego", "exif", "hidden file", "file carving", "volatility",
         "network capture", "log file", "artifact",
     ],

@@ -1,0 +1,15 @@
+{
+  "challenge_name": "Pattern FORENSICS: LSB Stego",
+  "category": "forensics",
+  "difficulty": "easy",
+  "description": "PNG hides flag in least significant bits.",
+  "techniques": [
+    "steganography"
+  ],
+  "approach": "Extract LSB planes; try common stego tools offline.",
+  "tools": [
+    "file",
+    "exiftool",
+    "stegsolve"
+  ]
+}

@@ -9,7 +9,7 @@ It is designed for **authorized CTFs, security labs, education, and research**. 
 ## Highlights
 
 - Local Ollama models for chat, classification, decomposition, explanations, and challenge generation.
-- A **32-entry curated archive** spanning PWN, reverse engineering, web, crypto, forensics, OSINT, misc, blockchain, and mobile.
+- A **45+ curated archive** plus **120+ corpus** pattern cards spanning PWN, reverse engineering, web, crypto, forensics, OSINT, misc, blockchain, and mobile.
 - Semantic archive retrieval with optional **category and difficulty filters**.
 - `suggest_tools()` recommendations grounded in retrieved archive entries; recommendations are not executed automatically.
 - Tiered and interactive hints: `name` → `approach` → `commands` → `walkthrough`.
@@ -20,9 +20,82 @@ It is designed for **authorized CTFs, security labs, education, and research**. 
 - Multi-language challenge sessions for **Python, Rust, Java, and .NET** with shared notes/artifacts/execution history.
 - Safe local challenge-spec generation and a local chat command.
 - Archive validation and duplicate detection through `archive_quality.py`.
-- 186 automated tests in the supplied development snapshot.
+- Automated tests covering agent core, security, fetch, auto_decode, corpus, and toolkits.
+
+- **Closed-loop agent** (`python main.py agent ...`): explicit AgentState, ranked hypotheses with confidence, tool planner, observation feedback, and verification. Works offline with keyword seeding when Ollama is unavailable.
+- Challenge **triage** (`--path`): automatic file inventory, magic, category hints, recommended tools.
+- **Hybrid retrieval**: lexical BM25-style archive search always available; vector when Chroma/Ollama present.
+- **Sandbox** wrapper for subprocesses (timeout, CPU/mem limits, no shell).
+- **Learner memory** + **Socratic teaching** with progressive hints (levels 1–6).
+- Per-challenge **workspace** under `data/workspaces/` (state, notes, logs).
+- Tool **permission** levels (read_only → analysis → sandbox_exec → full_approval).
+- Offline eval: `python -m agent.eval_agent` (category + technique hit rate).
+- **Skill graph** with technique prerequisites for adaptive teaching paths.
+- **Tool registry** for plugin-style toolkit registration.
+- Optional **Docker sandbox** helper (network=none, read-only) when Docker is installed.
+- Offline eval set (**20** ground-truth cases) + difficulty matrix.
+- **Research agent** (local archive + concepts; optional online via `CTF_TUTOR_ONLINE_RESEARCH=1`).
+- **Prompt-injection** filtering and secret redaction for untrusted challenge/tool text.
+- **Provider abstraction** (`LLM_PROVIDER=ollama|openai_compatible`) for local servers.
+- See `ARCHITECTURE.md` for the full agent diagram and safety model.
+- **Public challenge fetch**: `python main.py fetch owner/repo[/path]` or zip URL; `fetch --search "picoctf"`; `agent --fetch ...` to download then investigate.
 
 ---
+
+---
+
+## Current status (roadmap)
+
+CTF-Tutor is a **usable local-first CTF agent + tutor (v1)**. It is **not** complete relative to the full 7-phase research/product roadmap.
+
+### Phase summary
+
+| Phase | Focus | Approx. done |
+|-------|--------|--------------|
+| **1** | Actual agent (state, hypotheses, plan, tools, observe, verify, budgets, traces) | **~90%** |
+| **2** | Measurable (benchmark, solve-rate, difficulty, matrix, ablation, CI) | **~45%** |
+| **3** | Strong at CTFs (triage, RAG, category depth) | **~40%** |
+| **4** | Genuine tutor (skill graph, hints, Socratic, learner model) | **~50%** |
+| **5** | Robust (sandbox, permissions, injection defenses, limits) | **~60%** |
+| **6** | Scale knowledge (500+ quality entries, provenance, validation) | **~15%** |
+| **7** | Professionalize (plugin, UI, experiments, dashboard, paper) | **~35%** |
+
+### Phase 1 — Agent core: mostly done
+- Agent state, hypothesis engine, planner, executor, observation, loop, verification, step budgets, JSONL traces: **done**
+- Failure recovery: **partial** (catch/continue; not rich retry policies)
+
+### Phase 2 — Measurable: partial
+- Difficulty tags + category matrix + ablation harness: **done**
+- 100+ **pattern/corpus** cards: **done** (not 100 real contest solve benchmarks)
+- Real live solve-rate / public benchmark integration / multi-model comparison: **not done**
+
+### Phase 3 — CTF strength: partial
+- Artifact triage, hybrid retrieval: **done**
+- Reranking, challenge graph, deep language-specific RE, full dynamic web/crypto: **not done**
+- Binary/web/crypto/forensics/rev: **partial** (toolkits + auto_decode + GDB batch)
+
+### Phase 4 — Tutor: partial
+- Skill graph, progressive hints (1–6), Socratic prompts: **done / basic**
+- Personalized curriculum, full misconception engine, strong adaptive difficulty: **not done / partial**
+
+### Phase 5 — Robust: partial–good
+- Permissions, resource limits, audit traces, injection filters, secret redaction: **done / partial**
+- Strong default Docker everywhere, full provider failover: **partial**
+
+### Phase 6 — Knowledge scale: early
+- ~45 archive + 120 corpus entries, fetch + corpus builder: **partial**
+- 500+ quality entries with provenance/versioning/contradiction detection: **not done**
+
+### Phase 7 — Professionalize: early–MVP
+- Provider abstraction, experiment framework, MVP web UI, basic leaderboard JSONL: **partial**
+- Trace viewer, benchmark dashboard, research paper, full plugin ecosystem: **not done**
+
+### Verdict
+- **v1 local agent + tutor: shippable**
+- **Full 7-phase roadmap: not finished**
+
+Highest-value remaining work: real challenge quality (not only synthetic cards), deeper category tools, full UI, and a locked regression benchmark on real tasks.
+
 
 ## Architecture
 
@@ -441,3 +514,27 @@ This project is intended for **education, CTF competitions, security research, a
 ## Status
 
 Active development. Interfaces may evolve as the project grows.
+
+
+## MVP Web UI / corpus / platforms / GDB
+
+```bash
+# 120+ local corpus
+python main.py corpus --min 120
+
+# Web UI
+python main.py webui
+# open http://127.0.0.1:8765
+
+# GDB inspect (needs gdb)
+# used automatically by agent on pwn/rev binaries when permission allows
+
+# CTFd (public or CTFD_TOKEN)
+python main.py platform ctfd https://your-ctfd.example
+
+# HTB (requires HTB_TOKEN)
+export HTB_TOKEN=...
+python main.py platform htb
+
+# Docker: auto when available; disable with CTF_TUTOR_USE_DOCKER=0
+```

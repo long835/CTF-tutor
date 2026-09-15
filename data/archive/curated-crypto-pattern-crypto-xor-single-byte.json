@@ -1,0 +1,14 @@
+{
+  "challenge_name": "Pattern CRYPTO: XOR Single Byte",
+  "category": "crypto",
+  "difficulty": "easy",
+  "description": "Ciphertext XORed with one repeating key byte. Recover plaintext.",
+  "techniques": [
+    "xor-single-byte"
+  ],
+  "approach": "Brute key 0-255 scoring English frequency.",
+  "tools": [
+    "xor_crack",
+    "python"
+  ]
+}

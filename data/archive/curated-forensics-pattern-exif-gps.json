@@ -1,0 +1,15 @@
+{
+  "challenge_name": "Pattern FORENSICS: EXIF GPS",
+  "category": "forensics",
+  "difficulty": "easy",
+  "description": "Image GPS EXIF used for geolocation.",
+  "techniques": [
+    "osint-geolocation"
+  ],
+  "approach": "See skill pack first checks; validate in isolated lab only.",
+  "tools": [
+    "static_analysis",
+    "web_recon",
+    "research"
+  ]
+}

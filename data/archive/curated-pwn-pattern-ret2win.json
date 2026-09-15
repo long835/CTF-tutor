@@ -1,0 +1,15 @@
+{
+  "challenge_name": "Pattern PWN: Ret2win",
+  "category": "pwn",
+  "difficulty": "easy",
+  "description": "Stack overflow; win() exists; overwrite return address.",
+  "techniques": [
+    "stack-buffer-overflow"
+  ],
+  "approach": "See skill pack first checks; validate in isolated lab only.",
+  "tools": [
+    "static_analysis",
+    "web_recon",
+    "research"
+  ]
+}

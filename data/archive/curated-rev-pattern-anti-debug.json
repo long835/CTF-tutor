@@ -1,0 +1,15 @@
+{
+  "challenge_name": "Pattern REV: Anti Debug",
+  "category": "rev",
+  "difficulty": "medium",
+  "description": "Binary exits under debugger via ptrace-style checks.",
+  "techniques": [
+    "anti-debug-bypass"
+  ],
+  "approach": "See skill pack first checks; validate in isolated lab only.",
+  "tools": [
+    "static_analysis",
+    "web_recon",
+    "research"
+  ]
+}

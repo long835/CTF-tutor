@@ -3,48 +3,190 @@
     "id": "web-jwt",
     "description": "A login portal issues JWTs signed with RS256. The admin panel trusts the role claim in the token and also accepts alg=none.",
     "expected_category": "web",
-    "expected_techniques": ["jwt-alg-confusion", "jwt-none-bypass", "auth-bypass"]
+    "expected_techniques": [
+      "jwt-alg-confusion",
+      "jwt-none-bypass",
+      "auth-bypass"
+    ],
+    "difficulty": "medium"
   },
   {
     "id": "pwn-bof",
     "description": "A binary reads a name into a fixed stack buffer with gets(), no canary, NX enabled. Get a shell with ret2libc.",
     "expected_category": "pwn",
-    "expected_techniques": ["stack-buffer-overflow", "ret2libc"]
+    "expected_techniques": [
+      "stack-buffer-overflow",
+      "ret2libc"
+    ],
+    "difficulty": "hard"
   },
   {
     "id": "crypto-rsa",
     "description": "Messages are encrypted with RSA using a small public exponent and a shared modulus across users.",
     "expected_category": "crypto",
-    "expected_techniques": ["rsa-small-e", "rsa-common-modulus"]
+    "expected_techniques": [
+      "rsa-small-e",
+      "rsa-common-modulus"
+    ],
+    "difficulty": "medium"
   },
   {
     "id": "rev-crackme",
     "description": "Reverse engineer this crackme -- disassemble it in Ghidra and find the keygen algorithm.",
     "expected_category": "rev",
-    "expected_techniques": ["string-decryption"]
+    "expected_techniques": [
+      "string-decryption"
+    ],
+    "difficulty": "easy"
   },
   {
     "id": "forensics-pcap",
     "description": "Analyze this pcap in Wireshark to find hidden files in the network capture using file carving.",
     "expected_category": "forensics",
-    "expected_techniques": ["pcap-carving", "file-carving"]
+    "expected_techniques": [
+      "pcap-carving",
+      "file-carving"
+    ],
+    "difficulty": "medium"
   },
   {
     "id": "osint-geo",
     "description": "Use the photo metadata to geolocate the photographer and correlate the username on social media.",
     "expected_category": "osint",
-    "expected_techniques": ["geolocation", "image-metadata", "username-osint"]
+    "expected_techniques": [
+      "geolocation",
+      "image-metadata",
+      "username-osint"
+    ],
+    "difficulty": "medium"
   },
   {
     "id": "chain-sol",
     "description": "Audit this Solidity smart contract on Ethereum. A withdraw function looks like a reentrancy bug and gas is relevant.",
     "expected_category": "blockchain",
-    "expected_techniques": ["reentrancy"]
+    "expected_techniques": [
+      "reentrancy"
+    ],
+    "difficulty": "hard"
   },
   {
     "id": "mobile-apk",
     "description": "Decompile this Android APK. An exported activity stores the session token in shared preferences.",
     "expected_category": "mobile",
-    "expected_techniques": ["android-exported-component", "insecure-storage"]
+    "expected_techniques": [
+      "android-exported-component",
+      "insecure-storage"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "web-ssti",
+    "description": "A Flask app renders user input in a Jinja2 template without sanitization. Recover the secret config value.",
+    "expected_category": "web",
+    "expected_techniques": [
+      "ssti"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "web-sqli-union",
+    "description": "Search box on a PHP site is vulnerable to UNION-based SQL injection. Dump the users table.",
+    "expected_category": "web",
+    "expected_techniques": [
+      "sql-injection",
+      "sqli-union"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "crypto-xor",
+    "description": "Ciphertext was XORed with a single repeating key byte. Recover the plaintext flag.",
+    "expected_category": "crypto",
+    "expected_techniques": [
+      "xor-single-byte"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "pwn-fmt",
+    "description": "Binary prints user input with printf(user) and has a writable GOT. Leak libc and get a shell.",
+    "expected_category": "pwn",
+    "expected_techniques": [
+      "format-string"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "forensics-stego",
+    "description": "A PNG image hides a flag using LSB steganography. Extract the hidden message.",
+    "expected_category": "forensics",
+    "expected_techniques": [
+      "steganography"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "rev-xor-strings",
+    "description": "Crackme XORs its comparison string at runtime. Find the correct password with static analysis.",
+    "expected_category": "rev",
+    "expected_techniques": [
+      "string-decryption",
+      "xor-single-byte"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "misc-encoding",
+    "description": "Layered Base64 then hex encoding wraps the flag. Peel the layers.",
+    "expected_category": "misc",
+    "expected_techniques": [
+      "encoding-recognition"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "crypto-ecb",
+    "description": "Oracle encrypts attacker-controlled prefixes under AES-ECB. Recover the secret suffix byte-by-byte.",
+    "expected_category": "crypto",
+    "expected_techniques": [
+      "ecb-byte-at-a-time"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "web-path",
+    "description": "Download endpoint joins user-controlled filename into /var/data without normalization.",
+    "expected_category": "web",
+    "expected_techniques": [
+      "path-traversal"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "pwn-ret2win",
+    "description": "32-bit binary with gets overflow and a win function that prints the flag.",
+    "expected_category": "pwn",
+    "expected_techniques": [
+      "stack-buffer-overflow"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "crypto-caesar",
+    "description": "Message encrypted with Caesar cipher shift. Recover English plaintext flag.",
+    "expected_category": "crypto",
+    "expected_techniques": [
+      "classical-substitution"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "misc-layers",
+    "description": "The flag is hidden under base64 and hex encoding layers.",
+    "expected_category": "misc",
+    "expected_techniques": [
+      "encoding-recognition"
+    ],
+    "difficulty": "easy"
   }
 ]
