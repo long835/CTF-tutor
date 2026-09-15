@@ -112,6 +112,29 @@ class TestMagicDecode(unittest.TestCase):
         results = dt.magic_decode("hi")
         self.assertEqual(results, [])
 
+    def test_detects_repeating_key_xor(self):
+        # Wires tools/xor_crack.py's repeating-key XOR cracker in as one
+        # more magic_decode candidate (see tools/xor_crack.py and
+        # POLYGLOT_CORE_ADDITIONS.md). Needs a realistic-length payload
+        # for keysize detection to converge reliably -- same "long enough
+        # English sample" constraint documented on xor_crack's own tests
+        # (short blobs are covered by test_no_false_positive_on_plain_short_text
+        # above, and are cheap because magic_decode skips this candidate
+        # below its own minimum length).
+        secret = (
+            "THE QUICK BROWN FOX JUMPS OVER THE LAZY DOG. "
+            "PACK MY BOX WITH FIVE DOZEN LIQUOR JUGS. HOW VEXINGLY QUICK DAFT "
+            "ZEBRAS JUMP. THE FIVE BOXING WIZARDS JUMP QUICKLY. "
+        ) * 6
+        key = b"KEY"
+        ciphertext = bytes(
+            b ^ key[i % len(key)] for i, b in enumerate(secret.encode())
+        )
+        results = dt.magic_decode(ciphertext)
+        self.assertTrue(any(r["output"] == secret.encode() for r in results))
+        winning = next(r for r in results if r["output"] == secret.encode())
+        self.assertEqual(winning["recipe"], ["repeating_xor(key=b'KEY')"])
+
 
 if __name__ == "__main__":
     unittest.main()

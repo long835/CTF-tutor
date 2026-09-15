@@ -32,6 +32,7 @@ from typing import List, Optional, Tuple, Union
 from urllib.parse import quote, unquote
 
 from config import MAX_DECOMPRESSED_SIZE
+from tools.xor_crack import crack_repeating_xor
 
 Bytes = Union[str, bytes]
 
@@ -390,6 +391,40 @@ def _magic_search(data: bytes, recipe_so_far: List[str], results: List[dict], de
         if decoded == data:
             continue  # no-op decode, avoid infinite loops on self-mapping input
         _magic_search(decoded, recipe_so_far + [name], results, depth_left - 1)
+
+    # Repeating-key XOR: a distinct technique from the single-byte
+    # XOR/base64/hex/rot13 candidates above, so it's tried once against
+    # the raw input rather than folded into the chained-recipe search --
+    # unlike those steps it isn't meant to compose arbitrarily deep, it's
+    # a standalone ranked guess (see tools/xor_crack.py). Only attempted
+    # at the top of the search (recipe_so_far empty, i.e. against the
+    # original blob, not already-decoded intermediate output) and only on
+    # payload-sized input: repeating-key keysize detection needs several
+    # blocks to be statistically reliable, and this avoids the cost (and
+    # false-positive risk) of running a 256-way-per-column search against
+    # every short/no-op blob magic_decode() is handed.
+    if not recipe_so_far and len(data) >= 40:
+        try:
+            # Cap the keysize search relative to input length, not just at
+            # the CryptoPals-standard 40: each candidate keysize needs
+            # several samples per column for the per-column English-score
+            # search to converge on the true key rather than overfitting
+            # noise in a too-short column (see tests/test_decode_toolkit.py
+            # for a worked example of this failure mode at keysize:data
+            # ratios beyond roughly 1:8).
+            xor_guesses = crack_repeating_xor(
+                data, max_keysize=min(40, max(2, len(data) // 8)), candidates=1
+            )
+        except (TypeError, ValueError):
+            xor_guesses = []
+        for key, plaintext, _score in xor_guesses:
+            if len(key) > 1 and _looks_printable(plaintext, threshold=0.85):
+                printable = sum(1 for b in plaintext if 32 <= b < 127)
+                results.append({
+                    "recipe": [f"repeating_xor(key={key!r})"],
+                    "output": plaintext,
+                    "printable_ratio": printable / len(plaintext) if plaintext else 0,
+                })
 
 
 if __name__ == "__main__":
