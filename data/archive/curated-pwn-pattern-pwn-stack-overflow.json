@@ -1,0 +1,26 @@
+{
+  "challenge_name": "Pattern PWN: Stack Overflow",
+  "category": "pwn",
+  "techniques": [
+    "buffer-overflow",
+    "stack-smashing"
+  ],
+  "difficulty": "easy",
+  "source": "CTF-Tutor curated pattern library",
+  "description": "A program copies more attacker-controlled bytes into a fixed stack buffer than it can hold.",
+  "explanation": "Overwriting adjacent stack state can change control flow when the binary lacks sufficient bounds checks.",
+  "solve_steps": [
+    "Inspect protections and input path",
+    "Determine the overwrite boundary",
+    "Explain how mitigations change the next step"
+  ],
+  "tools_used": [
+    "checksec",
+    "gdb",
+    "pwndbg"
+  ],
+  "references": [
+    "local:ctf-tutor-curated-patterns"
+  ],
+  "notes": "Original educational pattern summary; no flag or challenge-specific payload stored."
+}

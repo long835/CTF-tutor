@@ -1,0 +1,26 @@
+{
+  "challenge_name": "Pattern MISC: Encoding Recognition",
+  "category": "misc",
+  "techniques": [
+    "encoding",
+    "file-signature"
+  ],
+  "difficulty": "easy",
+  "source": "CTF-Tutor curated pattern library",
+  "description": "An unfamiliar blob may be text, encoded bytes, or a compressed container.",
+  "explanation": "Early type recognition prevents applying arbitrary decoders and destroying useful structure.",
+  "solve_steps": [
+    "Check file signature and printable ratio",
+    "Identify likely encoding families",
+    "Decode conservatively and validate each result"
+  ],
+  "tools_used": [
+    "file",
+    "xxd",
+    "python"
+  ],
+  "references": [
+    "local:ctf-tutor-curated-patterns"
+  ],
+  "notes": "Original educational pattern summary; no flag or challenge-specific payload stored."
+}

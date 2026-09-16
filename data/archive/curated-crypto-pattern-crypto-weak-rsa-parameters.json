@@ -1,0 +1,25 @@
+{
+  "challenge_name": "Pattern CRYPTO: Weak RSA Parameters",
+  "category": "crypto",
+  "techniques": [
+    "rsa",
+    "number-theory"
+  ],
+  "difficulty": "hard",
+  "source": "CTF-Tutor curated pattern library",
+  "description": "An RSA challenge exposes public parameters with a suspicious mathematical relationship.",
+  "explanation": "RSA security depends on parameter choices; certain relationships make private information derivable.",
+  "solve_steps": [
+    "Validate key structure",
+    "Check for known weak parameter conditions",
+    "Explain the mathematical condition before applying a method"
+  ],
+  "tools_used": [
+    "openssl",
+    "RsaCtfTool"
+  ],
+  "references": [
+    "local:ctf-tutor-curated-patterns"
+  ],
+  "notes": "Original educational pattern summary; no flag or challenge-specific payload stored."
+}

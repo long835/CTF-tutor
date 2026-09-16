@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <title>CTF-Tutor</title>
+  <style>
+    body { font-family: ui-sans-serif, system-ui; margin: 2rem; background: #0b1220; color: #e7ecf3; }
+    h1 { color: #7dd3fc; }
+    code { background: #1e293b; padding: 0.15rem 0.4rem; border-radius: 4px; }
+    .card { background: #111827; border: 1px solid #1f2937; border-radius: 12px; padding: 1.25rem; margin: 1rem 0; }
+    a { color: #93c5fd; }
+  </style>
+</head>
+<body>
+  <h1>CTF-Tutor</h1>
+  <p>Local-first CTF agent. This is a static dashboard stub — run the CLI for the full agent.</p>
+  <div class="card">
+    <h2>Quick start</h2>
+    <pre>python main.py agent "JWT accepts alg=none"
+python main.py fetch --search "ctf web"
+python main.py experiment --benchmark
+python -m agent.eval_agent</pre>
+  </div>
+  <div class="card">
+    <h2>Architecture</h2>
+    <p>See <code>ARCHITECTURE.md</code> for the agent loop, safety model, and tool permissions.</p>
+  </div>
+</body>
+</html>

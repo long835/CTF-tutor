@@ -1,0 +1,26 @@
+{
+  "challenge_name": "Pattern WEB: UNION SQLi",
+  "category": "web",
+  "techniques": [
+    "sql-injection",
+    "sqli-union"
+  ],
+  "difficulty": "medium",
+  "source": "CTF-Tutor curated pattern library",
+  "description": "PHP search vulnerable to UNION-based SQL injection.",
+  "explanation": "PHP search vulnerable to UNION-based SQL injection. The teaching point is the sql-injection, sqli-union pattern itself: recognise the shape of the weakness, then reason about which mitigation would change the outcome. Find column count, union select readable fields.",
+  "solve_steps": [
+    "Inventory the artifacts and confirm the category before touching tools",
+    "Look for the signals that distinguish sql-injection, sqli-union from lookalike patterns",
+    "State one testable claim and run a single local analysis that could falsify it",
+    "Explain why the working approach works before moving on"
+  ],
+  "tools_used": [
+    "source review",
+    "sqlmap offline notes"
+  ],
+  "references": [
+    "local:ctf-tutor-curated-patterns"
+  ],
+  "notes": "Educational pattern summary; no flag, target, or challenge-specific payload stored."
+}

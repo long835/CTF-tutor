@@ -1,0 +1,25 @@
+{
+  "challenge_name": "Pattern MOBILE: Android Manifest Review",
+  "category": "mobile",
+  "techniques": [
+    "android",
+    "static-analysis"
+  ],
+  "difficulty": "easy",
+  "source": "CTF-Tutor curated pattern library",
+  "description": "An Android package may expose components through its manifest configuration.",
+  "explanation": "Exported components and permissions define which interactions are available outside the app.",
+  "solve_steps": [
+    "Inspect manifest",
+    "List exported components",
+    "Trace the component entry points"
+  ],
+  "tools_used": [
+    "apktool",
+    "jadx"
+  ],
+  "references": [
+    "local:ctf-tutor-curated-patterns"
+  ],
+  "notes": "Original educational pattern summary; no flag or challenge-specific payload stored."
+}

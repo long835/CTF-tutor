@@ -1,0 +1,2261 @@
+[
+  {
+    "id": "scenario-sql-injection-1",
+    "description": "Login form concatenates the username directly into a WHERE clause. User input reaches a SQL query as code rather than as data.",
+    "expected_category": "web",
+    "expected_techniques": [
+      "sql-injection"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "scenario-sql-injection-2",
+    "description": "Product filter builds an ORDER BY clause from a query parameter. User input reaches a SQL query as code rather than as data.",
+    "expected_category": "web",
+    "expected_techniques": [
+      "sql-injection"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "scenario-sql-injection-3",
+    "description": "Legacy admin search endpoint interpolates a LIKE pattern without escaping. User input reaches a SQL query as code rather than as data.",
+    "expected_category": "web",
+    "expected_techniques": [
+      "sql-injection"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "scenario-sql-injection-4",
+    "description": "REST API passes a JSON field into a raw query for a report export. User input reaches a SQL query as code rather than as data.",
+    "expected_category": "web",
+    "expected_techniques": [
+      "sql-injection"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "scenario-sql-injection-5",
+    "description": "Password-reset lookup trusts an email parameter inside a subquery. User input reaches a SQL query as code rather than as data.",
+    "expected_category": "web",
+    "expected_techniques": [
+      "sql-injection"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "scenario-sqli-union-1",
+    "description": "Search results page reflects rows directly from a single SELECT. An injectable SELECT can be extended to read from other tables once column count and types line up.",
+    "expected_category": "web",
+    "expected_techniques": [
+      "sqli-union"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "scenario-sqli-union-2",
+    "description": "CSV export endpoint renders arbitrary columns it is handed. An injectable SELECT can be extended to read from other tables once column count and types line up.",
+    "expected_category": "web",
+    "expected_techniques": [
+      "sqli-union"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "scenario-sqli-union-3",
+    "description": "Paginated listing exposes the underlying query through a sort parameter. An injectable SELECT can be extended to read from other tables once column count and types line up.",
+    "expected_category": "web",
+    "expected_techniques": [
+      "sqli-union"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "scenario-sqli-union-4",
+    "description": "Public API returns rows as JSON, making column types easy to probe. An injectable SELECT can be extended to read from other tables once column count and types line up.",
+    "expected_category": "web",
+    "expected_techniques": [
+      "sqli-union"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "scenario-sqli-blind-boolean-1",
+    "description": "Login returns the same generic message but different HTTP status. Even with no output, a difference in behaviour is a single bit of data per request.",
+    "expected_category": "web",
+    "expected_techniques": [
+      "sqli-blind-boolean"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "scenario-sqli-blind-boolean-2",
+    "description": "Coupon-check endpoint returns valid/invalid with no error detail. Even with no output, a difference in behaviour is a single bit of data per request.",
+    "expected_category": "web",
+    "expected_techniques": [
+      "sqli-blind-boolean"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "scenario-sqli-blind-boolean-3",
+    "description": "Availability API answers only yes or no for a given identifier. Even with no output, a difference in behaviour is a single bit of data per request.",
+    "expected_category": "web",
+    "expected_techniques": [
+      "sqli-blind-boolean"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "scenario-sqli-blind-boolean-4",
+    "description": "Rate-limited endpoint leaks state through response timing alone. Even with no output, a difference in behaviour is a single bit of data per request.",
+    "expected_category": "web",
+    "expected_techniques": [
+      "sqli-blind-boolean"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "scenario-ssti-1",
+    "description": "Greeting page builds the template string from a display name. Input concatenated into a template is evaluated as template syntax, not printed as text.",
+    "expected_category": "web",
+    "expected_techniques": [
+      "ssti"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "scenario-ssti-2",
+    "description": "Email templating service renders a user-supplied subject line. Input concatenated into a template is evaluated as template syntax, not printed as text.",
+    "expected_category": "web",
+    "expected_techniques": [
+      "ssti"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "scenario-ssti-3",
+    "description": "Error page interpolates the requested path into the template source. Input concatenated into a template is evaluated as template syntax, not printed as text.",
+    "expected_category": "web",
+    "expected_techniques": [
+      "ssti"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "scenario-ssti-4",
+    "description": "Report generator lets users define their own header format. Input concatenated into a template is evaluated as template syntax, not printed as text.",
+    "expected_category": "web",
+    "expected_techniques": [
+      "ssti"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "scenario-ssti-5",
+    "description": "Notification system renders admin-configured message templates. Input concatenated into a template is evaluated as template syntax, not printed as text.",
+    "expected_category": "web",
+    "expected_techniques": [
+      "ssti"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "scenario-path-traversal-1",
+    "description": "Download handler joins a filename parameter onto an uploads directory. Joining user input onto a base path lets the input walk back out of it.",
+    "expected_category": "web",
+    "expected_techniques": [
+      "path-traversal"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "scenario-path-traversal-2",
+    "description": "Static asset route serves files by a user-controlled relative path. Joining user input onto a base path lets the input walk back out of it.",
+    "expected_category": "web",
+    "expected_techniques": [
+      "path-traversal"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "scenario-path-traversal-3",
+    "description": "Language selector loads a translation file named by a cookie value. Joining user input onto a base path lets the input walk back out of it.",
+    "expected_category": "web",
+    "expected_techniques": [
+      "path-traversal"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "scenario-path-traversal-4",
+    "description": "Log viewer opens files under a directory chosen by a query string. Joining user input onto a base path lets the input walk back out of it.",
+    "expected_category": "web",
+    "expected_techniques": [
+      "path-traversal"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "scenario-path-traversal-5",
+    "description": "Archive extractor writes entries using paths taken from the archive. Joining user input onto a base path lets the input walk back out of it.",
+    "expected_category": "web",
+    "expected_techniques": [
+      "path-traversal"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "scenario-jwt-none-bypass-1",
+    "description": "API accepts a token whose header declares no signature algorithm. If the token says which algorithm to verify with, the token controls verification.",
+    "expected_category": "web",
+    "expected_techniques": [
+      "jwt-none-bypass"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "scenario-jwt-none-bypass-2",
+    "description": "Session middleware verifies with whatever algorithm the header names. If the token says which algorithm to verify with, the token controls verification.",
+    "expected_category": "web",
+    "expected_techniques": [
+      "jwt-none-bypass"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "scenario-jwt-none-bypass-3",
+    "description": "Microservice trusts an internal token without re-checking the algorithm. If the token says which algorithm to verify with, the token controls verification.",
+    "expected_category": "web",
+    "expected_techniques": [
+      "jwt-none-bypass"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "scenario-jwt-none-bypass-4",
+    "description": "Mobile backend falls back to unverified decode when verification errors. If the token says which algorithm to verify with, the token controls verification.",
+    "expected_category": "web",
+    "expected_techniques": [
+      "jwt-none-bypass"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "scenario-jwt-alg-confusion-1",
+    "description": "Service publishes its RSA public key at a well-known JWKS endpoint. A public key is public; using it as a symmetric secret collapses the trust model.",
+    "expected_category": "web",
+    "expected_techniques": [
+      "jwt-alg-confusion"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "scenario-jwt-alg-confusion-2",
+    "description": "Certificate embedded in the client bundle is also the verification key. A public key is public; using it as a symmetric secret collapses the trust model.",
+    "expected_category": "web",
+    "expected_techniques": [
+      "jwt-alg-confusion"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "scenario-jwt-alg-confusion-3",
+    "description": "Token verifier passes the key through a single generic verify helper. A public key is public; using it as a symmetric secret collapses the trust model.",
+    "expected_category": "web",
+    "expected_techniques": [
+      "jwt-alg-confusion"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "scenario-jwt-alg-confusion-4",
+    "description": "Key rotation endpoint exposes historical public keys. A public key is public; using it as a symmetric secret collapses the trust model.",
+    "expected_category": "web",
+    "expected_techniques": [
+      "jwt-alg-confusion"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "scenario-auth-bypass-1",
+    "description": "Admin panel checks a role claim the client can set. Authentication that can be satisfied by data the user controls is not authentication.",
+    "expected_category": "web",
+    "expected_techniques": [
+      "auth-bypass"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "scenario-auth-bypass-2",
+    "description": "Internal endpoints trust an X-Forwarded-For style header for origin. Authentication that can be satisfied by data the user controls is not authentication.",
+    "expected_category": "web",
+    "expected_techniques": [
+      "auth-bypass"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "scenario-auth-bypass-3",
+    "description": "Session id is derived from a timestamp and a username. Authentication that can be satisfied by data the user controls is not authentication.",
+    "expected_category": "web",
+    "expected_techniques": [
+      "auth-bypass"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "scenario-auth-bypass-4",
+    "description": "Debug parameter left in production skips the auth middleware. Authentication that can be satisfied by data the user controls is not authentication.",
+    "expected_category": "web",
+    "expected_techniques": [
+      "auth-bypass"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "scenario-idor-1",
+    "description": "Profile API fetches by a sequential numeric user id. Knowing an identifier is not the same as being allowed to use it.",
+    "expected_category": "web",
+    "expected_techniques": [
+      "idor"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "scenario-idor-2",
+    "description": "Invoice download accepts any document id from any account. Knowing an identifier is not the same as being allowed to use it.",
+    "expected_category": "web",
+    "expected_techniques": [
+      "idor"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "scenario-idor-3",
+    "description": "Support ticket thread is keyed only by an incrementing number. Knowing an identifier is not the same as being allowed to use it.",
+    "expected_category": "web",
+    "expected_techniques": [
+      "idor"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "scenario-idor-4",
+    "description": "File-sharing link uses a short predictable identifier. Knowing an identifier is not the same as being allowed to use it.",
+    "expected_category": "web",
+    "expected_techniques": [
+      "idor"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "scenario-xss-reflected-1",
+    "description": "Search page echoes the query term back into the results heading. Output encoding is context-dependent; HTML-escaping does not protect a JavaScript context.",
+    "expected_category": "web",
+    "expected_techniques": [
+      "xss-reflected"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "scenario-xss-reflected-2",
+    "description": "Error message renders an unescaped parameter inside an attribute. Output encoding is context-dependent; HTML-escaping does not protect a JavaScript context.",
+    "expected_category": "web",
+    "expected_techniques": [
+      "xss-reflected"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "scenario-xss-reflected-3",
+    "description": "Analytics snippet inlines a campaign parameter into a script block. Output encoding is context-dependent; HTML-escaping does not protect a JavaScript context.",
+    "expected_category": "web",
+    "expected_techniques": [
+      "xss-reflected"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "scenario-xss-reflected-4",
+    "description": "Redirect notice prints the destination URL into the page body. Output encoding is context-dependent; HTML-escaping does not protect a JavaScript context.",
+    "expected_category": "web",
+    "expected_techniques": [
+      "xss-reflected"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "scenario-ssrf-1",
+    "description": "Link preview feature fetches whatever URL a user submits. A server fetching a URL for you is a request that carries the server's trust, not yours.",
+    "expected_category": "web",
+    "expected_techniques": [
+      "ssrf"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "scenario-ssrf-2",
+    "description": "Webhook tester performs an outbound request to a configured endpoint. A server fetching a URL for you is a request that carries the server's trust, not yours.",
+    "expected_category": "web",
+    "expected_techniques": [
+      "ssrf"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "scenario-ssrf-3",
+    "description": "PDF renderer loads remote images referenced in user HTML. A server fetching a URL for you is a request that carries the server's trust, not yours.",
+    "expected_category": "web",
+    "expected_techniques": [
+      "ssrf"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "scenario-ssrf-4",
+    "description": "Image proxy resizes pictures fetched from arbitrary addresses. A server fetching a URL for you is a request that carries the server's trust, not yours.",
+    "expected_category": "web",
+    "expected_techniques": [
+      "ssrf"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "scenario-xxe-1",
+    "description": "Document import endpoint accepts XML from users. XML parsers that resolve external entities turn a document into a file-read primitive.",
+    "expected_category": "web",
+    "expected_techniques": [
+      "xxe"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "scenario-xxe-2",
+    "description": "SVG upload is parsed before it is rendered. XML parsers that resolve external entities turn a document into a file-read primitive.",
+    "expected_category": "web",
+    "expected_techniques": [
+      "xxe"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "scenario-xxe-3",
+    "description": "SAML assertion consumer parses attacker-influenced XML. XML parsers that resolve external entities turn a document into a file-read primitive.",
+    "expected_category": "web",
+    "expected_techniques": [
+      "xxe"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "scenario-xxe-4",
+    "description": "Legacy SOAP API left entity resolution enabled. XML parsers that resolve external entities turn a document into a file-read primitive.",
+    "expected_category": "web",
+    "expected_techniques": [
+      "xxe"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "scenario-deserialization-rce-1",
+    "description": "Session cookie carries a serialized object rather than an id. Deserializing untrusted bytes can construct objects, and constructing objects runs code.",
+    "expected_category": "web",
+    "expected_techniques": [
+      "deserialization-rce"
+    ],
+    "difficulty": "insane"
+  },
+  {
+    "id": "scenario-deserialization-rce-2",
+    "description": "Cache layer stores serialized objects keyed by user input. Deserializing untrusted bytes can construct objects, and constructing objects runs code.",
+    "expected_category": "web",
+    "expected_techniques": [
+      "deserialization-rce"
+    ],
+    "difficulty": "insane"
+  },
+  {
+    "id": "scenario-deserialization-rce-3",
+    "description": "Message queue consumer deserializes payloads from an open topic. Deserializing untrusted bytes can construct objects, and constructing objects runs code.",
+    "expected_category": "web",
+    "expected_techniques": [
+      "deserialization-rce"
+    ],
+    "difficulty": "insane"
+  },
+  {
+    "id": "scenario-deserialization-rce-4",
+    "description": "Remember-me token is a signed but attacker-influenced object graph. Deserializing untrusted bytes can construct objects, and constructing objects runs code.",
+    "expected_category": "web",
+    "expected_techniques": [
+      "deserialization-rce"
+    ],
+    "difficulty": "insane"
+  },
+  {
+    "id": "scenario-race-condition-1",
+    "description": "Gift-card redemption checks the balance before decrementing it. A check and the action it guards are two events; anything can happen in between.",
+    "expected_category": "web",
+    "expected_techniques": [
+      "race-condition"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "scenario-race-condition-2",
+    "description": "One-per-user signup bonus verifies then inserts without a constraint. A check and the action it guards are two events; anything can happen in between.",
+    "expected_category": "web",
+    "expected_techniques": [
+      "race-condition"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "scenario-race-condition-3",
+    "description": "File upload validates a name before writing it to disk. A check and the action it guards are two events; anything can happen in between.",
+    "expected_category": "web",
+    "expected_techniques": [
+      "race-condition"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "scenario-race-condition-4",
+    "description": "Vote endpoint counts existing votes before recording a new one. A check and the action it guards are two events; anything can happen in between.",
+    "expected_category": "web",
+    "expected_techniques": [
+      "race-condition"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "scenario-prototype-pollution-1",
+    "description": "Settings endpoint deep-merges submitted JSON into defaults. Recursive merges over untrusted keys can reach shared object internals.",
+    "expected_category": "web",
+    "expected_techniques": [
+      "prototype-pollution"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "scenario-prototype-pollution-2",
+    "description": "Query-string parser builds nested objects from bracket notation. Recursive merges over untrusted keys can reach shared object internals.",
+    "expected_category": "web",
+    "expected_techniques": [
+      "prototype-pollution"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "scenario-prototype-pollution-3",
+    "description": "Plugin loader clones user configuration into a shared object. Recursive merges over untrusted keys can reach shared object internals.",
+    "expected_category": "web",
+    "expected_techniques": [
+      "prototype-pollution"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "scenario-prototype-pollution-4",
+    "description": "Template context is merged from multiple untrusted sources. Recursive merges over untrusted keys can reach shared object internals.",
+    "expected_category": "web",
+    "expected_techniques": [
+      "prototype-pollution"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "scenario-stack-buffer-overflow-1",
+    "description": "Menu-driven program reads a name into a small fixed buffer. Writing past a fixed buffer overwrites the stack state that tells the CPU where to return.",
+    "expected_category": "pwn",
+    "expected_techniques": [
+      "stack-buffer-overflow"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "scenario-stack-buffer-overflow-2",
+    "description": "Parser copies a length-prefixed field without validating the length. Writing past a fixed buffer overwrites the stack state that tells the CPU where to return.",
+    "expected_category": "pwn",
+    "expected_techniques": [
+      "stack-buffer-overflow"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "scenario-stack-buffer-overflow-3",
+    "description": "Legacy service reads a line into a stack array with no limit. Writing past a fixed buffer overwrites the stack state that tells the CPU where to return.",
+    "expected_category": "pwn",
+    "expected_techniques": [
+      "stack-buffer-overflow"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "scenario-stack-buffer-overflow-4",
+    "description": "Config loader copies an environment variable into a local buffer. Writing past a fixed buffer overwrites the stack state that tells the CPU where to return.",
+    "expected_category": "pwn",
+    "expected_techniques": [
+      "stack-buffer-overflow"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "scenario-stack-buffer-overflow-5",
+    "description": "Network handler reuses a stack buffer across differently sized messages. Writing past a fixed buffer overwrites the stack state that tells the CPU where to return.",
+    "expected_category": "pwn",
+    "expected_techniques": [
+      "stack-buffer-overflow"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "scenario-ret2libc-1",
+    "description": "Overflow exists but the stack is non-executable and libc is dynamic. When you cannot run your own code, run code that is already there.",
+    "expected_category": "pwn",
+    "expected_techniques": [
+      "ret2libc"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "scenario-ret2libc-2",
+    "description": "A format-string bug leaks a libc pointer before the overflow. When you cannot run your own code, run code that is already there.",
+    "expected_category": "pwn",
+    "expected_techniques": [
+      "ret2libc"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "scenario-ret2libc-3",
+    "description": "Binary prints a function pointer during normal operation. When you cannot run your own code, run code that is already there.",
+    "expected_category": "pwn",
+    "expected_techniques": [
+      "ret2libc"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "scenario-ret2libc-4",
+    "description": "Partial overwrite is possible because only the low bytes vary. When you cannot run your own code, run code that is already there.",
+    "expected_category": "pwn",
+    "expected_techniques": [
+      "ret2libc"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "scenario-rop-chain-1",
+    "description": "Statically linked binary offers gadgets but no useful imported call. Short instruction sequences ending in a return can be strung together into a program.",
+    "expected_category": "pwn",
+    "expected_techniques": [
+      "rop-chain"
+    ],
+    "difficulty": "insane"
+  },
+  {
+    "id": "scenario-rop-chain-2",
+    "description": "Overflow is large enough for a chain but the binary is stripped. Short instruction sequences ending in a return can be strung together into a program.",
+    "expected_category": "pwn",
+    "expected_techniques": [
+      "rop-chain"
+    ],
+    "difficulty": "insane"
+  },
+  {
+    "id": "scenario-rop-chain-3",
+    "description": "Only a short write primitive exists, so the chain must be staged. Short instruction sequences ending in a return can be strung together into a program.",
+    "expected_category": "pwn",
+    "expected_techniques": [
+      "rop-chain"
+    ],
+    "difficulty": "insane"
+  },
+  {
+    "id": "scenario-rop-chain-4",
+    "description": "Sandbox restricts syscalls, narrowing which chain is viable. Short instruction sequences ending in a return can be strung together into a program.",
+    "expected_category": "pwn",
+    "expected_techniques": [
+      "rop-chain"
+    ],
+    "difficulty": "insane"
+  },
+  {
+    "id": "scenario-format-string-1",
+    "description": "Logging helper passes the user message straight to printf. A format string taken from input is an interpreter for reading and writing memory.",
+    "expected_category": "pwn",
+    "expected_techniques": [
+      "format-string"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "scenario-format-string-2",
+    "description": "Error handler formats an attacker-influenced string for display. A format string taken from input is an interpreter for reading and writing memory.",
+    "expected_category": "pwn",
+    "expected_techniques": [
+      "format-string"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "scenario-format-string-3",
+    "description": "Debug build prints a banner assembled from an environment variable. A format string taken from input is an interpreter for reading and writing memory.",
+    "expected_category": "pwn",
+    "expected_techniques": [
+      "format-string"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "scenario-format-string-4",
+    "description": "Echo service formats input before writing it back. A format string taken from input is an interpreter for reading and writing memory.",
+    "expected_category": "pwn",
+    "expected_techniques": [
+      "format-string"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "scenario-canary-bypass-1",
+    "description": "A read primitive discloses stack contents before the write happens. A canary only helps if the attacker cannot learn it or can avoid crossing it.",
+    "expected_category": "pwn",
+    "expected_techniques": [
+      "canary-bypass"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "scenario-canary-bypass-2",
+    "description": "Child processes inherit the same canary across forks. A canary only helps if the attacker cannot learn it or can avoid crossing it.",
+    "expected_category": "pwn",
+    "expected_techniques": [
+      "canary-bypass"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "scenario-canary-bypass-3",
+    "description": "An index bug writes past the canary without touching it. A canary only helps if the attacker cannot learn it or can avoid crossing it.",
+    "expected_category": "pwn",
+    "expected_techniques": [
+      "canary-bypass"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "scenario-canary-bypass-4",
+    "description": "Byte-at-a-time output lets the value be recovered incrementally. A canary only helps if the attacker cannot learn it or can avoid crossing it.",
+    "expected_category": "pwn",
+    "expected_techniques": [
+      "canary-bypass"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "scenario-aslr-bypass-1",
+    "description": "Program prints a heap pointer in a diagnostic message. Randomised layout stops guessing, not leaking; one real address often reveals the rest.",
+    "expected_category": "pwn",
+    "expected_techniques": [
+      "aslr-bypass"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "scenario-aslr-bypass-2",
+    "description": "Only the low twelve bits are fixed, enabling a partial overwrite. Randomised layout stops guessing, not leaking; one real address often reveals the rest.",
+    "expected_category": "pwn",
+    "expected_techniques": [
+      "aslr-bypass"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "scenario-aslr-bypass-3",
+    "description": "An uninitialised read discloses a leftover stack address. Randomised layout stops guessing, not leaking; one real address often reveals the rest.",
+    "expected_category": "pwn",
+    "expected_techniques": [
+      "aslr-bypass"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "scenario-aslr-bypass-4",
+    "description": "Repeated connections reuse the same layout in a forking server. Randomised layout stops guessing, not leaking; one real address often reveals the rest.",
+    "expected_category": "pwn",
+    "expected_techniques": [
+      "aslr-bypass"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "scenario-heap-overflow-1",
+    "description": "Note manager copies content using a length from the previous record. Allocator metadata lives next to your data, so overflowing data corrupts bookkeeping.",
+    "expected_category": "pwn",
+    "expected_techniques": [
+      "heap-overflow"
+    ],
+    "difficulty": "insane"
+  },
+  {
+    "id": "scenario-heap-overflow-2",
+    "description": "Struct with an inline buffer is resized without reallocating. Allocator metadata lives next to your data, so overflowing data corrupts bookkeeping.",
+    "expected_category": "pwn",
+    "expected_techniques": [
+      "heap-overflow"
+    ],
+    "difficulty": "insane"
+  },
+  {
+    "id": "scenario-heap-overflow-3",
+    "description": "Off-by-one null byte overwrites the neighbouring size field. Allocator metadata lives next to your data, so overflowing data corrupts bookkeeping.",
+    "expected_category": "pwn",
+    "expected_techniques": [
+      "heap-overflow"
+    ],
+    "difficulty": "insane"
+  },
+  {
+    "id": "scenario-heap-overflow-4",
+    "description": "Custom pool allocator keeps free-list pointers inside user data. Allocator metadata lives next to your data, so overflowing data corrupts bookkeeping.",
+    "expected_category": "pwn",
+    "expected_techniques": [
+      "heap-overflow"
+    ],
+    "difficulty": "insane"
+  },
+  {
+    "id": "scenario-use-after-free-1",
+    "description": "Menu program deletes an entry but keeps the reference. Freeing memory without clearing the pointer leaves a handle to someone else's data.",
+    "expected_category": "pwn",
+    "expected_techniques": [
+      "use-after-free"
+    ],
+    "difficulty": "insane"
+  },
+  {
+    "id": "scenario-use-after-free-2",
+    "description": "Object with a virtual table is freed while still registered in a list. Freeing memory without clearing the pointer leaves a handle to someone else's data.",
+    "expected_category": "pwn",
+    "expected_techniques": [
+      "use-after-free"
+    ],
+    "difficulty": "insane"
+  },
+  {
+    "id": "scenario-use-after-free-3",
+    "description": "Cached connection struct is reused after close. Freeing memory without clearing the pointer leaves a handle to someone else's data.",
+    "expected_category": "pwn",
+    "expected_techniques": [
+      "use-after-free"
+    ],
+    "difficulty": "insane"
+  },
+  {
+    "id": "scenario-use-after-free-4",
+    "description": "Double free corrupts the free list before reallocation. Freeing memory without clearing the pointer leaves a handle to someone else's data.",
+    "expected_category": "pwn",
+    "expected_techniques": [
+      "use-after-free"
+    ],
+    "difficulty": "insane"
+  },
+  {
+    "id": "scenario-integer-overflow-1",
+    "description": "Array allocation multiplies count by element size without a check. Arithmetic on sizes wraps, so a validated length can still produce a tiny allocation.",
+    "expected_category": "pwn",
+    "expected_techniques": [
+      "integer-overflow"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "scenario-integer-overflow-2",
+    "description": "Signed length is compared against a maximum then used as unsigned. Arithmetic on sizes wraps, so a validated length can still produce a tiny allocation.",
+    "expected_category": "pwn",
+    "expected_techniques": [
+      "integer-overflow"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "scenario-integer-overflow-3",
+    "description": "Offset plus length wraps, passing a range check it should fail. Arithmetic on sizes wraps, so a validated length can still produce a tiny allocation.",
+    "expected_category": "pwn",
+    "expected_techniques": [
+      "integer-overflow"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "scenario-integer-overflow-4",
+    "description": "Sixteen-bit counter truncates a larger user-supplied count. Arithmetic on sizes wraps, so a validated length can still produce a tiny allocation.",
+    "expected_category": "pwn",
+    "expected_techniques": [
+      "integer-overflow"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "scenario-off-by-one-1",
+    "description": "Copy loop runs one iteration too many on the buffer length. A single byte past the end is enough when that byte is structurally important.",
+    "expected_category": "pwn",
+    "expected_techniques": [
+      "off-by-one"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "scenario-off-by-one-2",
+    "description": "Null terminator is written just past the allocated size. A single byte past the end is enough when that byte is structurally important.",
+    "expected_category": "pwn",
+    "expected_techniques": [
+      "off-by-one"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "scenario-off-by-one-3",
+    "description": "Index validation permits the length value itself. A single byte past the end is enough when that byte is structurally important.",
+    "expected_category": "pwn",
+    "expected_techniques": [
+      "off-by-one"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "scenario-off-by-one-4",
+    "description": "Fixed-size record parser assumes a trailing separator exists. A single byte past the end is enough when that byte is structurally important.",
+    "expected_category": "pwn",
+    "expected_techniques": [
+      "off-by-one"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "scenario-xor-single-byte-1",
+    "description": "A short ciphertext file with no header and no structure. A one-byte key has 256 possibilities, so scoring plausible plaintext beats cleverness.",
+    "expected_category": "crypto",
+    "expected_techniques": [
+      "xor-single-byte"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "scenario-xor-single-byte-2",
+    "description": "Hex-encoded blob embedded in a script's constant. A one-byte key has 256 possibilities, so scoring plausible plaintext beats cleverness.",
+    "expected_category": "crypto",
+    "expected_techniques": [
+      "xor-single-byte"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "scenario-xor-single-byte-3",
+    "description": "Obfuscated configuration value in a binary's data section. A one-byte key has 256 possibilities, so scoring plausible plaintext beats cleverness.",
+    "expected_category": "crypto",
+    "expected_techniques": [
+      "xor-single-byte"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "scenario-xor-single-byte-4",
+    "description": "Encoded string stored inside a QR payload. A one-byte key has 256 possibilities, so scoring plausible plaintext beats cleverness.",
+    "expected_category": "crypto",
+    "expected_techniques": [
+      "xor-single-byte"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "scenario-xor-repeating-key-1",
+    "description": "Long text encrypted with a short word as the key. Key reuse turns one hard problem into many easy single-byte problems.",
+    "expected_category": "crypto",
+    "expected_techniques": [
+      "xor-repeating-key"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "scenario-xor-repeating-key-2",
+    "description": "Log file obfuscated with a fixed repeating key. Key reuse turns one hard problem into many easy single-byte problems.",
+    "expected_category": "crypto",
+    "expected_techniques": [
+      "xor-repeating-key"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "scenario-xor-repeating-key-3",
+    "description": "Firmware strings masked with a cycling key byte pattern. Key reuse turns one hard problem into many easy single-byte problems.",
+    "expected_category": "crypto",
+    "expected_techniques": [
+      "xor-repeating-key"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "scenario-xor-repeating-key-4",
+    "description": "Two messages encrypted under the same key stream. Key reuse turns one hard problem into many easy single-byte problems.",
+    "expected_category": "crypto",
+    "expected_techniques": [
+      "xor-repeating-key"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "scenario-rsa-small-e-1",
+    "description": "Exponent three is used with a short unpadded message. Without padding, a small exponent on a small message never wraps the modulus.",
+    "expected_category": "crypto",
+    "expected_techniques": [
+      "rsa-small-e"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "scenario-rsa-small-e-2",
+    "description": "The same message is sent to several recipients with small e. Without padding, a small exponent on a small message never wraps the modulus.",
+    "expected_category": "crypto",
+    "expected_techniques": [
+      "rsa-small-e"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "scenario-rsa-small-e-3",
+    "description": "Textbook RSA is used to encrypt a numeric code. Without padding, a small exponent on a small message never wraps the modulus.",
+    "expected_category": "crypto",
+    "expected_techniques": [
+      "rsa-small-e"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "scenario-rsa-small-e-4",
+    "description": "Signature verification omits padding checks entirely. Without padding, a small exponent on a small message never wraps the modulus.",
+    "expected_category": "crypto",
+    "expected_techniques": [
+      "rsa-small-e"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "scenario-rsa-common-modulus-1",
+    "description": "One message is encrypted twice under different exponents. Two coprime exponents over one modulus let you combine ciphertexts without the key.",
+    "expected_category": "crypto",
+    "expected_techniques": [
+      "rsa-common-modulus"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "scenario-rsa-common-modulus-2",
+    "description": "A key server reuses the modulus across two user accounts. Two coprime exponents over one modulus let you combine ciphertexts without the key.",
+    "expected_category": "crypto",
+    "expected_techniques": [
+      "rsa-common-modulus"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "scenario-rsa-common-modulus-3",
+    "description": "Migration kept the old exponent alongside a new one. Two coprime exponents over one modulus let you combine ciphertexts without the key.",
+    "expected_category": "crypto",
+    "expected_techniques": [
+      "rsa-common-modulus"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "scenario-rsa-common-modulus-4",
+    "description": "Backup key shares the modulus of the production key. Two coprime exponents over one modulus let you combine ciphertexts without the key.",
+    "expected_category": "crypto",
+    "expected_techniques": [
+      "rsa-common-modulus"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "scenario-rsa-factorisation-1",
+    "description": "The modulus is small enough to factor directly. RSA's security rests entirely on factoring being hard for that particular modulus.",
+    "expected_category": "crypto",
+    "expected_techniques": [
+      "rsa-factorisation"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "scenario-rsa-factorisation-2",
+    "description": "The two primes were generated adjacently and sit close together. RSA's security rests entirely on factoring being hard for that particular modulus.",
+    "expected_category": "crypto",
+    "expected_techniques": [
+      "rsa-factorisation"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "scenario-rsa-factorisation-3",
+    "description": "Two keys share a prime factor, revealing both. RSA's security rests entirely on factoring being hard for that particular modulus.",
+    "expected_category": "crypto",
+    "expected_techniques": [
+      "rsa-factorisation"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "scenario-rsa-factorisation-4",
+    "description": "A weak random source produced a repeated prime. RSA's security rests entirely on factoring being hard for that particular modulus.",
+    "expected_category": "crypto",
+    "expected_techniques": [
+      "rsa-factorisation"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "scenario-padding-oracle-1",
+    "description": "Decryption API returns different messages for padding and MAC errors. Any observable difference between 'bad padding' and 'bad content' leaks the plaintext.",
+    "expected_category": "crypto",
+    "expected_techniques": [
+      "padding-oracle"
+    ],
+    "difficulty": "insane"
+  },
+  {
+    "id": "scenario-padding-oracle-2",
+    "description": "Timing differs measurably between the two failure paths. Any observable difference between 'bad padding' and 'bad content' leaks the plaintext.",
+    "expected_category": "crypto",
+    "expected_techniques": [
+      "padding-oracle"
+    ],
+    "difficulty": "insane"
+  },
+  {
+    "id": "scenario-padding-oracle-3",
+    "description": "Cookie decryption raises a distinguishable exception. Any observable difference between 'bad padding' and 'bad content' leaks the plaintext.",
+    "expected_category": "crypto",
+    "expected_techniques": [
+      "padding-oracle"
+    ],
+    "difficulty": "insane"
+  },
+  {
+    "id": "scenario-padding-oracle-4",
+    "description": "Error pages differ only in status code between the two cases. Any observable difference between 'bad padding' and 'bad content' leaks the plaintext.",
+    "expected_category": "crypto",
+    "expected_techniques": [
+      "padding-oracle"
+    ],
+    "difficulty": "insane"
+  },
+  {
+    "id": "scenario-ecb-byte-at-a-time-1",
+    "description": "Profile cookie encrypts attacker data followed by a secret. ECB encrypts identical blocks identically, so alignment turns encryption into a lookup table.",
+    "expected_category": "crypto",
+    "expected_techniques": [
+      "ecb-byte-at-a-time"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "scenario-ecb-byte-at-a-time-2",
+    "description": "Encrypted upload preserves duplicate blocks from a known image. ECB encrypts identical blocks identically, so alignment turns encryption into a lookup table.",
+    "expected_category": "crypto",
+    "expected_techniques": [
+      "ecb-byte-at-a-time"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "scenario-ecb-byte-at-a-time-3",
+    "description": "Token format places user input immediately before a fixed suffix. ECB encrypts identical blocks identically, so alignment turns encryption into a lookup table.",
+    "expected_category": "crypto",
+    "expected_techniques": [
+      "ecb-byte-at-a-time"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "scenario-ecb-byte-at-a-time-4",
+    "description": "Bulk encryption of records reveals duplicate rows. ECB encrypts identical blocks identically, so alignment turns encryption into a lookup table.",
+    "expected_category": "crypto",
+    "expected_techniques": [
+      "ecb-byte-at-a-time"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "scenario-hash-length-extension-1",
+    "description": "API signs requests with a hash of a secret prepended to parameters. Merkle-Damgard hashes can be continued from a digest, so secret-prefix MACs are forgeable.",
+    "expected_category": "crypto",
+    "expected_techniques": [
+      "hash-length-extension"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "scenario-hash-length-extension-2",
+    "description": "Download link integrity uses a secret-prefix digest. Merkle-Damgard hashes can be continued from a digest, so secret-prefix MACs are forgeable.",
+    "expected_category": "crypto",
+    "expected_techniques": [
+      "hash-length-extension"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "scenario-hash-length-extension-3",
+    "description": "Session data is authenticated by concatenation rather than HMAC. Merkle-Damgard hashes can be continued from a digest, so secret-prefix MACs are forgeable.",
+    "expected_category": "crypto",
+    "expected_techniques": [
+      "hash-length-extension"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "scenario-hash-length-extension-4",
+    "description": "Legacy signing scheme predates the move to HMAC. Merkle-Damgard hashes can be continued from a digest, so secret-prefix MACs are forgeable.",
+    "expected_category": "crypto",
+    "expected_techniques": [
+      "hash-length-extension"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "scenario-classical-substitution-1",
+    "description": "A paragraph of English with letters consistently swapped. Substitution preserves letter frequency and word shape, which is exactly what breaks it.",
+    "expected_category": "crypto",
+    "expected_techniques": [
+      "classical-substitution"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "scenario-classical-substitution-2",
+    "description": "A puzzle keeps spacing, making word patterns visible. Substitution preserves letter frequency and word shape, which is exactly what breaks it.",
+    "expected_category": "crypto",
+    "expected_techniques": [
+      "classical-substitution"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "scenario-classical-substitution-3",
+    "description": "A keyword-derived alphabet with repeated structure. Substitution preserves letter frequency and word shape, which is exactly what breaks it.",
+    "expected_category": "crypto",
+    "expected_techniques": [
+      "classical-substitution"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "scenario-classical-substitution-4",
+    "description": "Numbers left in the clear alongside substituted letters. Substitution preserves letter frequency and word shape, which is exactly what breaks it.",
+    "expected_category": "crypto",
+    "expected_techniques": [
+      "classical-substitution"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "scenario-classical-caesar-1",
+    "description": "A short message shifted by a fixed amount. With only 25 shifts, exhaustive search is the correct first move.",
+    "expected_category": "crypto",
+    "expected_techniques": [
+      "classical-caesar"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "scenario-classical-caesar-2",
+    "description": "ROT13 applied twice to different halves of the text. With only 25 shifts, exhaustive search is the correct first move.",
+    "expected_category": "crypto",
+    "expected_techniques": [
+      "classical-caesar"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "scenario-classical-caesar-3",
+    "description": "A shift applied only to letters, leaving digits untouched. With only 25 shifts, exhaustive search is the correct first move.",
+    "expected_category": "crypto",
+    "expected_techniques": [
+      "classical-caesar"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "scenario-classical-caesar-4",
+    "description": "Nested shift inside a base64 layer. With only 25 shifts, exhaustive search is the correct first move.",
+    "expected_category": "crypto",
+    "expected_techniques": [
+      "classical-caesar"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "scenario-encoding-recognition-1",
+    "description": "A string using only base64's alphabet with trailing padding. Identify the encoding from its alphabet and padding before trying to decode anything.",
+    "expected_category": "crypto",
+    "expected_techniques": [
+      "encoding-recognition"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "scenario-encoding-recognition-2",
+    "description": "Uppercase base32 text that looks like nonsense words. Identify the encoding from its alphabet and padding before trying to decode anything.",
+    "expected_category": "crypto",
+    "expected_techniques": [
+      "encoding-recognition"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "scenario-encoding-recognition-3",
+    "description": "Percent-encoded text nested inside a JSON field. Identify the encoding from its alphabet and padding before trying to decode anything.",
+    "expected_category": "crypto",
+    "expected_techniques": [
+      "encoding-recognition"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "scenario-encoding-recognition-4",
+    "description": "A decimal or binary representation of ASCII bytes. Identify the encoding from its alphabet and padding before trying to decode anything.",
+    "expected_category": "crypto",
+    "expected_techniques": [
+      "encoding-recognition"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "scenario-encoding-recognition-5",
+    "description": "Base58 text with no lookalike characters. Identify the encoding from its alphabet and padding before trying to decode anything.",
+    "expected_category": "crypto",
+    "expected_techniques": [
+      "encoding-recognition"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "scenario-multilayer-encoding-1",
+    "description": "Base64 wrapping hex wrapping a compressed blob. Decoding is iterative; each layer tells you what the next one is.",
+    "expected_category": "misc",
+    "expected_techniques": [
+      "multilayer-encoding"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "scenario-multilayer-encoding-2",
+    "description": "Repeated ROT and base64 alternation over many rounds. Decoding is iterative; each layer tells you what the next one is.",
+    "expected_category": "misc",
+    "expected_techniques": [
+      "multilayer-encoding"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "scenario-multilayer-encoding-3",
+    "description": "URL encoding hiding a base32 payload. Decoding is iterative; each layer tells you what the next one is.",
+    "expected_category": "misc",
+    "expected_techniques": [
+      "multilayer-encoding"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "scenario-multilayer-encoding-4",
+    "description": "A QR code whose payload is itself an encoded document. Decoding is iterative; each layer tells you what the next one is.",
+    "expected_category": "misc",
+    "expected_techniques": [
+      "multilayer-encoding"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "scenario-string-decryption-1",
+    "description": "Password is compared after an XOR decode of a data blob. Strings that are absent from the binary are usually built at runtime by a small routine.",
+    "expected_category": "rev",
+    "expected_techniques": [
+      "string-decryption"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "scenario-string-decryption-2",
+    "description": "Error messages are assembled character by character at runtime. Strings that are absent from the binary are usually built at runtime by a small routine.",
+    "expected_category": "rev",
+    "expected_techniques": [
+      "string-decryption"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "scenario-string-decryption-3",
+    "description": "A lookup table maps indices to decoded text. Strings that are absent from the binary are usually built at runtime by a small routine.",
+    "expected_category": "rev",
+    "expected_techniques": [
+      "string-decryption"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "scenario-string-decryption-4",
+    "description": "Strings are decoded lazily on first use and cached. Strings that are absent from the binary are usually built at runtime by a small routine.",
+    "expected_category": "rev",
+    "expected_techniques": [
+      "string-decryption"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "scenario-algorithm-recovery-1",
+    "description": "A licence check applies a reversible transform before comparing. The goal is understanding the transformation well enough to invert it, not reading every instruction.",
+    "expected_category": "rev",
+    "expected_techniques": [
+      "algorithm-recovery"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "scenario-algorithm-recovery-2",
+    "description": "A serial validator sums and rotates digits in a fixed pattern. The goal is understanding the transformation well enough to invert it, not reading every instruction.",
+    "expected_category": "rev",
+    "expected_techniques": [
+      "algorithm-recovery"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "scenario-algorithm-recovery-3",
+    "description": "Input is hashed with a custom function and matched to a constant. The goal is understanding the transformation well enough to invert it, not reading every instruction.",
+    "expected_category": "rev",
+    "expected_techniques": [
+      "algorithm-recovery"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "scenario-algorithm-recovery-4",
+    "description": "A checksum routine mirrors a well-known algorithm with tweaked constants. The goal is understanding the transformation well enough to invert it, not reading every instruction.",
+    "expected_category": "rev",
+    "expected_techniques": [
+      "algorithm-recovery"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "scenario-anti-debug-bypass-1",
+    "description": "The program exits early when a tracer is attached. Anti-debugging checks are ordinary code paths and can be understood like any other branch.",
+    "expected_category": "rev",
+    "expected_techniques": [
+      "anti-debug-bypass"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "scenario-anti-debug-bypass-2",
+    "description": "A timing check detects single-stepping and alters results. Anti-debugging checks are ordinary code paths and can be understood like any other branch.",
+    "expected_category": "rev",
+    "expected_techniques": [
+      "anti-debug-bypass"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "scenario-anti-debug-bypass-3",
+    "description": "Breakpoint bytes are detected via a self-checksum. Anti-debugging checks are ordinary code paths and can be understood like any other branch.",
+    "expected_category": "rev",
+    "expected_techniques": [
+      "anti-debug-bypass"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "scenario-anti-debug-bypass-4",
+    "description": "The binary behaves differently when a debugger environment variable is present. Anti-debugging checks are ordinary code paths and can be understood like any other branch.",
+    "expected_category": "rev",
+    "expected_techniques": [
+      "anti-debug-bypass"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "scenario-packed-binary-1",
+    "description": "A standard packer with a well-known unpacking utility. A packer replaces the real code with a stub that reconstructs it, so find the moment after unpacking.",
+    "expected_category": "rev",
+    "expected_techniques": [
+      "packed-binary"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "scenario-packed-binary-2",
+    "description": "A custom stub that decompresses into freshly allocated memory. A packer replaces the real code with a stub that reconstructs it, so find the moment after unpacking.",
+    "expected_category": "rev",
+    "expected_techniques": [
+      "packed-binary"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "scenario-packed-binary-3",
+    "description": "Only part of the binary is packed, leaving a readable loader. A packer replaces the real code with a stub that reconstructs it, so find the moment after unpacking.",
+    "expected_category": "rev",
+    "expected_techniques": [
+      "packed-binary"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "scenario-packed-binary-4",
+    "description": "The entry point jumps into a section marked writable and executable. A packer replaces the real code with a stub that reconstructs it, so find the moment after unpacking.",
+    "expected_category": "rev",
+    "expected_techniques": [
+      "packed-binary"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "scenario-vm-obfuscation-1",
+    "description": "A custom interpreter validates the input through bytecode. A bytecode interpreter moves the logic into data, so recover the instruction set first.",
+    "expected_category": "rev",
+    "expected_techniques": [
+      "vm-obfuscation"
+    ],
+    "difficulty": "insane"
+  },
+  {
+    "id": "scenario-vm-obfuscation-2",
+    "description": "Handlers are dispatched through a table of function pointers. A bytecode interpreter moves the logic into data, so recover the instruction set first.",
+    "expected_category": "rev",
+    "expected_techniques": [
+      "vm-obfuscation"
+    ],
+    "difficulty": "insane"
+  },
+  {
+    "id": "scenario-vm-obfuscation-3",
+    "description": "The bytecode is itself decrypted before execution. A bytecode interpreter moves the logic into data, so recover the instruction set first.",
+    "expected_category": "rev",
+    "expected_techniques": [
+      "vm-obfuscation"
+    ],
+    "difficulty": "insane"
+  },
+  {
+    "id": "scenario-vm-obfuscation-4",
+    "description": "A stack machine implements the comparison logic. A bytecode interpreter moves the logic into data, so recover the instruction set first.",
+    "expected_category": "rev",
+    "expected_techniques": [
+      "vm-obfuscation"
+    ],
+    "difficulty": "insane"
+  },
+  {
+    "id": "scenario-control-flow-flattening-1",
+    "description": "All basic blocks are reachable only through one dispatcher. Flattening hides order, not logic; recovering the state transitions restores the original flow.",
+    "expected_category": "rev",
+    "expected_techniques": [
+      "control-flow-flattening"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "scenario-control-flow-flattening-2",
+    "description": "State values are computed rather than assigned as constants. Flattening hides order, not logic; recovering the state transitions restores the original flow.",
+    "expected_category": "rev",
+    "expected_techniques": [
+      "control-flow-flattening"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "scenario-control-flow-flattening-3",
+    "description": "Opaque predicates add branches that never actually execute. Flattening hides order, not logic; recovering the state transitions restores the original flow.",
+    "expected_category": "rev",
+    "expected_techniques": [
+      "control-flow-flattening"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "scenario-control-flow-flattening-4",
+    "description": "Only the validation routine is flattened, not the rest of the program. Flattening hides order, not logic; recovering the state transitions restores the original flow.",
+    "expected_category": "rev",
+    "expected_techniques": [
+      "control-flow-flattening"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "scenario-pcap-carving-1",
+    "description": "An HTTP session transfers a file of interest. A capture is a transcript; follow the conversation rather than reading packets one by one.",
+    "expected_category": "forensics",
+    "expected_techniques": [
+      "pcap-carving"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "scenario-pcap-carving-2",
+    "description": "An FTP session shows commands and a data channel. A capture is a transcript; follow the conversation rather than reading packets one by one.",
+    "expected_category": "forensics",
+    "expected_techniques": [
+      "pcap-carving"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "scenario-pcap-carving-3",
+    "description": "DNS queries encode data in subdomain labels. A capture is a transcript; follow the conversation rather than reading packets one by one.",
+    "expected_category": "forensics",
+    "expected_techniques": [
+      "pcap-carving"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "scenario-pcap-carving-4",
+    "description": "Plaintext credentials appear in an unencrypted protocol. A capture is a transcript; follow the conversation rather than reading packets one by one.",
+    "expected_category": "forensics",
+    "expected_techniques": [
+      "pcap-carving"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "scenario-pcap-carving-5",
+    "description": "A file is split across several TCP streams. A capture is a transcript; follow the conversation rather than reading packets one by one.",
+    "expected_category": "forensics",
+    "expected_techniques": [
+      "pcap-carving"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "scenario-file-carving-1",
+    "description": "A deleted image remains in unallocated space on a disk image. Files are recognisable by their headers and footers even when the filesystem has forgotten them.",
+    "expected_category": "forensics",
+    "expected_techniques": [
+      "file-carving"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "scenario-file-carving-2",
+    "description": "An archive is appended after the end of a picture. Files are recognisable by their headers and footers even when the filesystem has forgotten them.",
+    "expected_category": "forensics",
+    "expected_techniques": [
+      "file-carving"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "scenario-file-carving-3",
+    "description": "Several files are concatenated into one blob. Files are recognisable by their headers and footers even when the filesystem has forgotten them.",
+    "expected_category": "forensics",
+    "expected_techniques": [
+      "file-carving"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "scenario-file-carving-4",
+    "description": "A partially overwritten file must be reconstructed from fragments. Files are recognisable by their headers and footers even when the filesystem has forgotten them.",
+    "expected_category": "forensics",
+    "expected_techniques": [
+      "file-carving"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "scenario-image-metadata-1",
+    "description": "Coordinates in the metadata identify where a photo was taken. Photographs carry structured metadata that is easy to forget and easy to read.",
+    "expected_category": "forensics",
+    "expected_techniques": [
+      "image-metadata"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "scenario-image-metadata-2",
+    "description": "A comment field carries text left by the author. Photographs carry structured metadata that is easy to forget and easy to read.",
+    "expected_category": "forensics",
+    "expected_techniques": [
+      "image-metadata"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "scenario-image-metadata-3",
+    "description": "A thumbnail preserves content the full image no longer shows. Photographs carry structured metadata that is easy to forget and easy to read.",
+    "expected_category": "forensics",
+    "expected_techniques": [
+      "image-metadata"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "scenario-image-metadata-4",
+    "description": "Editing software names and timestamps establish a timeline. Photographs carry structured metadata that is easy to forget and easy to read.",
+    "expected_category": "forensics",
+    "expected_techniques": [
+      "image-metadata"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "scenario-steganography-1",
+    "description": "Data is stored in the least significant bits of an image. Check structure before tooling; most 'stego' is data appended or stored in an extra chunk.",
+    "expected_category": "forensics",
+    "expected_techniques": [
+      "steganography"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "scenario-steganography-2",
+    "description": "An extra chunk holds text a viewer ignores. Check structure before tooling; most 'stego' is data appended or stored in an extra chunk.",
+    "expected_category": "forensics",
+    "expected_techniques": [
+      "steganography"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "scenario-steganography-3",
+    "description": "Content is appended after the image's end marker. Check structure before tooling; most 'stego' is data appended or stored in an extra chunk.",
+    "expected_category": "forensics",
+    "expected_techniques": [
+      "steganography"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "scenario-steganography-4",
+    "description": "Two nearly identical images differ only in specific pixels. Check structure before tooling; most 'stego' is data appended or stored in an extra chunk.",
+    "expected_category": "forensics",
+    "expected_techniques": [
+      "steganography"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "scenario-steganography-5",
+    "description": "An audio file carries data in a spectrogram. Check structure before tooling; most 'stego' is data appended or stored in an extra chunk.",
+    "expected_category": "forensics",
+    "expected_techniques": [
+      "steganography"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "scenario-memory-forensics-1",
+    "description": "A process dump contains credentials typed during the capture. A memory image captures what was true at one instant, including things never written to disk.",
+    "expected_category": "forensics",
+    "expected_techniques": [
+      "memory-forensics"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "scenario-memory-forensics-2",
+    "description": "An injected region appears in an otherwise normal process. A memory image captures what was true at one instant, including things never written to disk.",
+    "expected_category": "forensics",
+    "expected_techniques": [
+      "memory-forensics"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "scenario-memory-forensics-3",
+    "description": "Command history survives in a shell's memory. A memory image captures what was true at one instant, including things never written to disk.",
+    "expected_category": "forensics",
+    "expected_techniques": [
+      "memory-forensics"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "scenario-memory-forensics-4",
+    "description": "Network connections reveal a handler that is gone from disk. A memory image captures what was true at one instant, including things never written to disk.",
+    "expected_category": "forensics",
+    "expected_techniques": [
+      "memory-forensics"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "scenario-log-analysis-1",
+    "description": "Web logs contain a single unusual request among many normal ones. Anomalies stand out against a baseline, so establish normal before hunting for strange.",
+    "expected_category": "forensics",
+    "expected_techniques": [
+      "log-analysis"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "scenario-log-analysis-2",
+    "description": "Authentication logs show a successful attempt after many failures. Anomalies stand out against a baseline, so establish normal before hunting for strange.",
+    "expected_category": "forensics",
+    "expected_techniques": [
+      "log-analysis"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "scenario-log-analysis-3",
+    "description": "Timestamps are inconsistent with the claimed sequence of events. Anomalies stand out against a baseline, so establish normal before hunting for strange.",
+    "expected_category": "forensics",
+    "expected_techniques": [
+      "log-analysis"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "scenario-log-analysis-4",
+    "description": "A rare user agent string appears only during the incident window. Anomalies stand out against a baseline, so establish normal before hunting for strange.",
+    "expected_category": "forensics",
+    "expected_techniques": [
+      "log-analysis"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "scenario-osint-geolocation-1",
+    "description": "A photo shows a recognisable skyline. Narrow by what cannot change: architecture, signage, vegetation, sun angle.",
+    "expected_category": "osint",
+    "expected_techniques": [
+      "osint-geolocation"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "scenario-osint-geolocation-2",
+    "description": "Street furniture and signage narrow the country. Narrow by what cannot change: architecture, signage, vegetation, sun angle.",
+    "expected_category": "osint",
+    "expected_techniques": [
+      "osint-geolocation"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "scenario-osint-geolocation-3",
+    "description": "Shadows and vegetation indicate hemisphere and season. Narrow by what cannot change: architecture, signage, vegetation, sun angle.",
+    "expected_category": "osint",
+    "expected_techniques": [
+      "osint-geolocation"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "scenario-osint-geolocation-4",
+    "description": "A reflection reveals detail not directly photographed. Narrow by what cannot change: architecture, signage, vegetation, sun angle.",
+    "expected_category": "osint",
+    "expected_techniques": [
+      "osint-geolocation"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "scenario-osint-username-1",
+    "description": "The same handle appears on several public sites. People reuse handles; correlation across platforms builds a picture no single site holds.",
+    "expected_category": "osint",
+    "expected_techniques": [
+      "osint-username"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "scenario-osint-username-2",
+    "description": "A profile picture is reused across accounts. People reuse handles; correlation across platforms builds a picture no single site holds.",
+    "expected_category": "osint",
+    "expected_techniques": [
+      "osint-username"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "scenario-osint-username-3",
+    "description": "Public commit history links a handle to an email address. People reuse handles; correlation across platforms builds a picture no single site holds.",
+    "expected_category": "osint",
+    "expected_techniques": [
+      "osint-username"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "scenario-osint-username-4",
+    "description": "Archived pages preserve a profile that was later edited. People reuse handles; correlation across platforms builds a picture no single site holds.",
+    "expected_category": "osint",
+    "expected_techniques": [
+      "osint-username"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "scenario-osint-domain-dns-1",
+    "description": "Historical DNS records reveal a staging host. Infrastructure has history, and history is frequently public.",
+    "expected_category": "osint",
+    "expected_techniques": [
+      "osint-domain-dns"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "scenario-osint-domain-dns-2",
+    "description": "A certificate log lists subdomains not linked anywhere. Infrastructure has history, and history is frequently public.",
+    "expected_category": "osint",
+    "expected_techniques": [
+      "osint-domain-dns"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "scenario-osint-domain-dns-3",
+    "description": "Registration data connects two apparently separate domains. Infrastructure has history, and history is frequently public.",
+    "expected_category": "osint",
+    "expected_techniques": [
+      "osint-domain-dns"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "scenario-osint-domain-dns-4",
+    "description": "An archived page references an endpoint that still resolves. Infrastructure has history, and history is frequently public.",
+    "expected_category": "osint",
+    "expected_techniques": [
+      "osint-domain-dns"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "scenario-nested-archive-1",
+    "description": "Hundreds of nested archives wrap a single file. Automate the repetitive part, but cap the depth so a zip bomb cannot exhaust the machine.",
+    "expected_category": "misc",
+    "expected_techniques": [
+      "nested-archive"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "scenario-nested-archive-2",
+    "description": "Each layer uses a different archive format. Automate the repetitive part, but cap the depth so a zip bomb cannot exhaust the machine.",
+    "expected_category": "misc",
+    "expected_techniques": [
+      "nested-archive"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "scenario-nested-archive-3",
+    "description": "Layers are password protected with the password in the previous layer. Automate the repetitive part, but cap the depth so a zip bomb cannot exhaust the machine.",
+    "expected_category": "misc",
+    "expected_techniques": [
+      "nested-archive"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "scenario-nested-archive-4",
+    "description": "A high compression ratio suggests a decompression bomb. Automate the repetitive part, but cap the depth so a zip bomb cannot exhaust the machine.",
+    "expected_category": "misc",
+    "expected_techniques": [
+      "nested-archive"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "scenario-esoteric-lang-1",
+    "description": "A program written in a minimal eight-instruction language. Identify the language from its character set, then use an interpreter rather than reading it.",
+    "expected_category": "misc",
+    "expected_techniques": [
+      "esoteric-lang"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "scenario-esoteric-lang-2",
+    "description": "Source consisting only of whitespace characters. Identify the language from its character set, then use an interpreter rather than reading it.",
+    "expected_category": "misc",
+    "expected_techniques": [
+      "esoteric-lang"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "scenario-esoteric-lang-3",
+    "description": "Code disguised as ordinary English prose. Identify the language from its character set, then use an interpreter rather than reading it.",
+    "expected_category": "misc",
+    "expected_techniques": [
+      "esoteric-lang"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "scenario-esoteric-lang-4",
+    "description": "A two-dimensional program whose control flow moves on a grid. Identify the language from its character set, then use an interpreter rather than reading it.",
+    "expected_category": "misc",
+    "expected_techniques": [
+      "esoteric-lang"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "scenario-reentrancy-1",
+    "description": "A withdrawal sends funds before zeroing the recorded balance. An external call hands control away; state must be settled before that happens.",
+    "expected_category": "blockchain",
+    "expected_techniques": [
+      "reentrancy"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "scenario-reentrancy-2",
+    "description": "A callback hook lets a recipient re-enter during transfer. An external call hands control away; state must be settled before that happens.",
+    "expected_category": "blockchain",
+    "expected_techniques": [
+      "reentrancy"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "scenario-reentrancy-3",
+    "description": "Cross-function reentrancy touches shared state via a second entry point. An external call hands control away; state must be settled before that happens.",
+    "expected_category": "blockchain",
+    "expected_techniques": [
+      "reentrancy"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "scenario-reentrancy-4",
+    "description": "A read-only view returns stale state during an in-flight call. An external call hands control away; state must be settled before that happens.",
+    "expected_category": "blockchain",
+    "expected_techniques": [
+      "reentrancy"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "scenario-access-control-1",
+    "description": "A minting function is missing its owner-only modifier. A privileged function without an ownership check is a public function.",
+    "expected_category": "blockchain",
+    "expected_techniques": [
+      "access-control"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "scenario-access-control-2",
+    "description": "An initialiser can be called again by anyone after deployment. A privileged function without an ownership check is a public function.",
+    "expected_category": "blockchain",
+    "expected_techniques": [
+      "access-control"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "scenario-access-control-3",
+    "description": "Ownership transfer lacks a two-step confirmation. A privileged function without an ownership check is a public function.",
+    "expected_category": "blockchain",
+    "expected_techniques": [
+      "access-control"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "scenario-access-control-4",
+    "description": "A role check reads a variable the caller can influence. A privileged function without an ownership check is a public function.",
+    "expected_category": "blockchain",
+    "expected_techniques": [
+      "access-control"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "scenario-integer-accounting-1",
+    "description": "Share calculation rounds in the depositor's favour every time. Rounding and unchecked arithmetic in accounting logic quietly redistribute value.",
+    "expected_category": "blockchain",
+    "expected_techniques": [
+      "integer-accounting"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "scenario-integer-accounting-2",
+    "description": "An unchecked block skips overflow protection on a subtraction. Rounding and unchecked arithmetic in accounting logic quietly redistribute value.",
+    "expected_category": "blockchain",
+    "expected_techniques": [
+      "integer-accounting"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "scenario-integer-accounting-3",
+    "description": "Fee maths divides before multiplying, truncating value. Rounding and unchecked arithmetic in accounting logic quietly redistribute value.",
+    "expected_category": "blockchain",
+    "expected_techniques": [
+      "integer-accounting"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "scenario-integer-accounting-4",
+    "description": "A first-depositor edge case sets an exploitable exchange rate. Rounding and unchecked arithmetic in accounting logic quietly redistribute value.",
+    "expected_category": "blockchain",
+    "expected_techniques": [
+      "integer-accounting"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "scenario-android-exported-component-1",
+    "description": "An activity handling private data is exported without a permission. Anything exported in the manifest is reachable by any other app on the device.",
+    "expected_category": "mobile",
+    "expected_techniques": [
+      "android-exported-component"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "scenario-android-exported-component-2",
+    "description": "A content provider grants read access far beyond what it needs. Anything exported in the manifest is reachable by any other app on the device.",
+    "expected_category": "mobile",
+    "expected_techniques": [
+      "android-exported-component"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "scenario-android-exported-component-3",
+    "description": "A broadcast receiver acts on unauthenticated intents. Anything exported in the manifest is reachable by any other app on the device.",
+    "expected_category": "mobile",
+    "expected_techniques": [
+      "android-exported-component"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "scenario-android-exported-component-4",
+    "description": "A deep link accepts parameters that bypass the login flow. Anything exported in the manifest is reachable by any other app on the device.",
+    "expected_category": "mobile",
+    "expected_techniques": [
+      "android-exported-component"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "scenario-insecure-storage-1",
+    "description": "Session tokens are saved in shared preferences as plain text. On-device storage is readable given device access; encoding is not protection.",
+    "expected_category": "mobile",
+    "expected_techniques": [
+      "insecure-storage"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "scenario-insecure-storage-2",
+    "description": "A local database holds account details unencrypted. On-device storage is readable given device access; encoding is not protection.",
+    "expected_category": "mobile",
+    "expected_techniques": [
+      "insecure-storage"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "scenario-insecure-storage-3",
+    "description": "Sensitive values are written to the system log. On-device storage is readable given device access; encoding is not protection.",
+    "expected_category": "mobile",
+    "expected_techniques": [
+      "insecure-storage"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "scenario-insecure-storage-4",
+    "description": "A cache directory retains downloaded private documents. On-device storage is readable given device access; encoding is not protection.",
+    "expected_category": "mobile",
+    "expected_techniques": [
+      "insecure-storage"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "scenario-hardcoded-secret-1",
+    "description": "An API key sits in a string resource file. A secret shipped to the client is a secret the client owns.",
+    "expected_category": "mobile",
+    "expected_techniques": [
+      "hardcoded-secret"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "scenario-hardcoded-secret-2",
+    "description": "Credentials appear in decompiled application code. A secret shipped to the client is a secret the client owns.",
+    "expected_category": "mobile",
+    "expected_techniques": [
+      "hardcoded-secret"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "scenario-hardcoded-secret-3",
+    "description": "A key is split across several constants and reassembled. A secret shipped to the client is a secret the client owns.",
+    "expected_category": "mobile",
+    "expected_techniques": [
+      "hardcoded-secret"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "scenario-hardcoded-secret-4",
+    "description": "A native library embeds the secret to make it less obvious. A secret shipped to the client is a secret the client owns.",
+    "expected_category": "mobile",
+    "expected_techniques": [
+      "hardcoded-secret"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "scenario-certificate-pinning-bypass-1",
+    "description": "The app pins a certificate in its network configuration. Pinning is a client-side check, and client-side checks run on hardware the user controls.",
+    "expected_category": "mobile",
+    "expected_techniques": [
+      "certificate-pinning-bypass"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "scenario-certificate-pinning-bypass-2",
+    "description": "Pinning is implemented in a custom trust manager. Pinning is a client-side check, and client-side checks run on hardware the user controls.",
+    "expected_category": "mobile",
+    "expected_techniques": [
+      "certificate-pinning-bypass"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "scenario-certificate-pinning-bypass-3",
+    "description": "A debug build flag disables validation entirely. Pinning is a client-side check, and client-side checks run on hardware the user controls.",
+    "expected_category": "mobile",
+    "expected_techniques": [
+      "certificate-pinning-bypass"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "scenario-certificate-pinning-bypass-4",
+    "description": "Only some endpoints are pinned, leaving others observable. Pinning is a client-side check, and client-side checks run on hardware the user controls.",
+    "expected_category": "mobile",
+    "expected_techniques": [
+      "certificate-pinning-bypass"
+    ],
+    "difficulty": "hard"
+  }
+]

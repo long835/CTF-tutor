@@ -1,0 +1,24 @@
+{
+  "challenge_name": "Pattern CRYPTO: Single-byte XOR",
+  "category": "crypto",
+  "techniques": [
+    "idor",
+    "frequency-analysis"
+  ],
+  "difficulty": "medium",
+  "source": "CTF-Tutor curated pattern library",
+  "description": "A byte string was XORed with one unknown repeated byte.",
+  "explanation": "Trying candidate bytes and scoring outputs for plausible language or structure can identify likely plaintext.",
+  "solve_steps": [
+    "Inspect length and encoding",
+    "Score candidates rather than trusting one guess",
+    "Verify the result against challenge context"
+  ],
+  "tools_used": [
+    "python"
+  ],
+  "references": [
+    "local:ctf-tutor-curated-patterns"
+  ],
+  "notes": "Original educational pattern summary; no flag or challenge-specific payload stored."
+}

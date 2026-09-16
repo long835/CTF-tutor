@@ -1,0 +1,25 @@
+{
+  "challenge_name": "Pattern CRYPTO: Classical Caesar",
+  "category": "crypto",
+  "techniques": [
+    "classical-substitution"
+  ],
+  "difficulty": "easy",
+  "source": "CTF-Tutor curated pattern library",
+  "description": "Caesar or simple substitution on English text.",
+  "explanation": "Caesar or simple substitution on English text. The teaching point is the classical-substitution pattern itself: recognise the shape of the weakness, then reason about which mitigation would change the outcome. See skill pack first checks; validate in isolated lab only.",
+  "solve_steps": [
+    "Inventory the artifacts and confirm the category before touching tools",
+    "Look for the signals that distinguish classical-substitution from lookalike patterns",
+    "State one testable claim and run a single local analysis that could falsify it",
+    "Explain why the working approach works before moving on"
+  ],
+  "tools_used": [
+    "retrieve_archive",
+    "auto_decode"
+  ],
+  "references": [
+    "local:ctf-tutor-curated-patterns"
+  ],
+  "notes": "Educational pattern summary; no flag, target, or challenge-specific payload stored."
+}

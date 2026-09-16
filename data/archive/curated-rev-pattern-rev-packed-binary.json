@@ -1,0 +1,26 @@
+{
+  "challenge_name": "Pattern REV: Packed Binary",
+  "category": "rev",
+  "techniques": [
+    "packing",
+    "static-analysis"
+  ],
+  "difficulty": "hard",
+  "source": "CTF-Tutor curated pattern library",
+  "description": "A binary has little useful static content and appears to unpack code at runtime.",
+  "explanation": "Packers defer access to original code, so the useful program representation may only exist after unpacking.",
+  "solve_steps": [
+    "Check entropy and sections",
+    "Observe runtime behavior safely",
+    "Analyze the unpacked representation"
+  ],
+  "tools_used": [
+    "binwalk",
+    "strings",
+    "ghidra"
+  ],
+  "references": [
+    "local:ctf-tutor-curated-patterns"
+  ],
+  "notes": "Original educational pattern summary; no flag or challenge-specific payload stored."
+}

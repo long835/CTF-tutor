@@ -1,0 +1,24 @@
+{
+  "challenge_name": "Pattern WEB: Server-Side Template Injection",
+  "category": "web",
+  "techniques": [
+    "ssti"
+  ],
+  "difficulty": "hard",
+  "source": "CTF-Tutor curated pattern library",
+  "description": "User-controlled content is rendered by a server-side template engine.",
+  "explanation": "Template syntax can become executable server-side logic when data is evaluated as template code.",
+  "solve_steps": [
+    "Fingerprint the rendering context",
+    "Use harmless probes to distinguish text from evaluation",
+    "Identify the engine and its sandbox model"
+  ],
+  "tools_used": [
+    "whatweb",
+    "burpsuite"
+  ],
+  "references": [
+    "local:ctf-tutor-curated-patterns"
+  ],
+  "notes": "Original educational pattern summary; no flag or challenge-specific payload stored."
+}

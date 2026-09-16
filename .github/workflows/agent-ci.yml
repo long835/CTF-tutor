@@ -1,0 +1,44 @@
+name: agent-ci
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Syntax check
+        run: python -m compileall -q .
+
+      - name: Full test suite
+        run: python -m pytest -q
+
+      - name: Archive quality gate
+        # Fails the build on invalid entries, contradictions, or untracked provenance.
+        run: python main.py audit --sync --strict
+
+      - name: Corpus build (must clear 500 cards)
+        run: |
+          python main.py corpus --min 500 > corpus.json
+          python -c "import json,sys; s=json.load(open('corpus.json')); print(s['total'],'cards'); sys.exit(0 if s['meets_minimum'] else 1)"
+
+      - name: Offline evaluation
+        run: python -m agent.eval_agent
+
+      - name: Build reports
+        run: python main.py dashboard --eval --trace
+
+      - name: Upload dashboard
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ctf-tutor-reports
+          path: data/reports/
+          if-no-files-found: ignore

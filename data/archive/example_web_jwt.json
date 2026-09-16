@@ -1,0 +1,19 @@
+{
+  "challenge_name": "WebCTF2024 - AuthBreaker",
+  "category": "web",
+  "techniques": ["jwt-alg-confusion", "jwt-none-bypass"],
+  "difficulty": "medium",
+  "source": "ExampleCTF 2024",
+  "description": "A login portal issues JWTs signed with RS256. The admin panel trusts the role claim in the token.",
+  "explanation": "The server's JWT verification code accepted tokens with alg set to none, skipping signature verification entirely. Since the signature is never checked, an attacker who can see the token's structure can forge an arbitrary payload -- including an admin role claim -- without knowing any secret key.",
+  "solve_steps": [
+    "Capture a valid JWT from a normal login",
+    "Base64-decode the header and payload",
+    "Change the header's alg field to none",
+    "Change the payload's role claim to admin",
+    "Strip the signature segment entirely and replay the forged token"
+  ],
+  "tools_used": ["jwt_tool", "burpsuite"],
+  "references": ["https://ctf-wiki.org/crypto/jwt/"],
+  "notes": "Worth also trying alg confusion (RS256 -> HS256 using the public key as an HMAC secret) if none-bypass is patched."
+}

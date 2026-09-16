@@ -1,0 +1,26 @@
+{
+  "challenge_name": "Pattern FORENSICS: LSB Stego",
+  "category": "forensics",
+  "techniques": [
+    "steganography"
+  ],
+  "difficulty": "easy",
+  "source": "CTF-Tutor curated pattern library",
+  "description": "PNG hides flag in least significant bits.",
+  "explanation": "PNG hides flag in least significant bits. The teaching point is the steganography pattern itself: recognise the shape of the weakness, then reason about which mitigation would change the outcome. Extract LSB planes; try common stego tools offline.",
+  "solve_steps": [
+    "Inventory the artifacts and confirm the category before touching tools",
+    "Look for the signals that distinguish steganography from lookalike patterns",
+    "State one testable claim and run a single local analysis that could falsify it",
+    "Explain why the working approach works before moving on"
+  ],
+  "tools_used": [
+    "file",
+    "exiftool",
+    "stegsolve"
+  ],
+  "references": [
+    "local:ctf-tutor-curated-patterns"
+  ],
+  "notes": "Educational pattern summary; no flag, target, or challenge-specific payload stored."
+}

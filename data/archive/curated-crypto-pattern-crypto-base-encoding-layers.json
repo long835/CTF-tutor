@@ -1,0 +1,25 @@
+{
+  "challenge_name": "Pattern CRYPTO: Base Encoding Layers",
+  "category": "crypto",
+  "techniques": [
+    "base64",
+    "encoding"
+  ],
+  "difficulty": "easy",
+  "source": "CTF-Tutor curated pattern library",
+  "description": "A text artifact is wrapped in one or more reversible encodings.",
+  "explanation": "Encodings preserve data representation and are not encryption, so recognizing the alphabet and structure guides decoding.",
+  "solve_steps": [
+    "Inspect character set and padding",
+    "Decode one layer at a time",
+    "Stop when the result becomes structured data"
+  ],
+  "tools_used": [
+    "python",
+    "openssl"
+  ],
+  "references": [
+    "local:ctf-tutor-curated-patterns"
+  ],
+  "notes": "Original educational pattern summary; no flag or challenge-specific payload stored."
+}

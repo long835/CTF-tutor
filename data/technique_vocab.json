@@ -1,0 +1,86 @@
+{
+  "web": [
+    "jwt-alg-confusion",
+    "jwt-none-bypass",
+    "ssrf",
+    "idor",
+    "sqli-union",
+    "sqli-blind-boolean",
+    "sql-injection",
+    "xxe",
+    "deserialization-rce",
+    "ssti",
+    "path-traversal",
+    "auth-bypass",
+    "race-condition",
+    "cors-misconfig",
+    "xss-reflected",
+    "csrf"
+  ],
+  "pwn": [
+    "stack-buffer-overflow",
+    "format-string",
+    "rop-chain",
+    "ret2libc",
+    "heap-overflow",
+    "use-after-free",
+    "integer-overflow",
+    "fsop",
+    "got-overwrite",
+    "canary-bypass",
+    "aslr-bypass",
+    "rust-unsafe-bypass"
+  ],
+  "crypto": [
+    "padding-oracle",
+    "xor-repeating-key",
+    "xor-single-byte",
+    "rsa-small-e",
+    "rsa-common-modulus",
+    "ecb-byte-at-a-time",
+    "hash-length-extension",
+    "weak-rng",
+    "ecdsa-nonce-reuse"
+  ],
+  "rev": [
+    "anti-debug-bypass",
+    "vm-obfuscation",
+    "string-decryption",
+    "control-flow-flattening",
+    "packed-binary",
+    "dotnet-decompile",
+    "java-decompile"
+  ],
+  "forensics": [
+    "pcap-carving",
+    "memory-forensics",
+    "steganography",
+    "file-carving",
+    "metadata-analysis",
+    "log-analysis"
+  ],
+  "osint": [
+    "geolocation",
+    "username-osint",
+    "dns-recon",
+    "whois-lookup",
+    "image-metadata"
+  ],
+  "blockchain": [
+    "reentrancy",
+    "integer-overflow-solidity",
+    "access-control-missing",
+    "delegatecall-storage"
+  ],
+  "mobile": [
+    "android-exported-component",
+    "insecure-storage",
+    "certificate-pinning-bypass",
+    "ios-keychain"
+  ],
+  "misc": [
+    "esoteric-encoding",
+    "jail-escape",
+    "side-channel"
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "challenge_name": "Pattern REV: XOR Obfuscation",
+  "category": "rev",
+  "techniques": [
+    "idor",
+    "string-analysis"
+  ],
+  "difficulty": "medium",
+  "source": "CTF-Tutor curated pattern library",
+  "description": "Embedded data is transformed with a repeating XOR operation before comparison.",
+  "explanation": "XOR is reversible with the same key, so understanding the loop reveals how bytes are transformed.",
+  "solve_steps": [
+    "Locate the transform loop",
+    "Identify key material and iteration behavior",
+    "Reproduce the transform on test data"
+  ],
+  "tools_used": [
+    "ghidra",
+    "python"
+  ],
+  "references": [
+    "local:ctf-tutor-curated-patterns"
+  ],
+  "notes": "Original educational pattern summary; no flag or challenge-specific payload stored."
+}

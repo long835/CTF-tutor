@@ -1,0 +1,24 @@
+{
+  "challenge_name": "Pattern CRYPTO: Classical Substitution",
+  "category": "crypto",
+  "techniques": [
+    "substitution-cipher",
+    "frequency-analysis"
+  ],
+  "difficulty": "medium",
+  "source": "CTF-Tutor curated pattern library",
+  "description": "Letter patterns are transformed consistently by a substitution rule.",
+  "explanation": "Natural-language frequency and repeated patterns can constrain possible substitutions.",
+  "solve_steps": [
+    "Preserve spacing and punctuation",
+    "Compare frequencies and repeated sequences",
+    "Test a consistent mapping"
+  ],
+  "tools_used": [
+    "python"
+  ],
+  "references": [
+    "local:ctf-tutor-curated-patterns"
+  ],
+  "notes": "Original educational pattern summary; no flag or challenge-specific payload stored."
+}

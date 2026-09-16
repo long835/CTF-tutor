@@ -1,0 +1,26 @@
+{
+  "challenge_name": "Pattern FORENSICS: EXIF GPS",
+  "category": "forensics",
+  "techniques": [
+    "osint-geolocation"
+  ],
+  "difficulty": "easy",
+  "source": "CTF-Tutor curated pattern library",
+  "description": "Image GPS EXIF used for geolocation.",
+  "explanation": "Image GPS EXIF used for geolocation. The teaching point is the osint-geolocation pattern itself: recognise the shape of the weakness, then reason about which mitigation would change the outcome. See skill pack first checks; validate in isolated lab only.",
+  "solve_steps": [
+    "Inventory the artifacts and confirm the category before touching tools",
+    "Look for the signals that distinguish osint-geolocation from lookalike patterns",
+    "State one testable claim and run a single local analysis that could falsify it",
+    "Explain why the working approach works before moving on"
+  ],
+  "tools_used": [
+    "static_analysis",
+    "web_recon",
+    "research"
+  ],
+  "references": [
+    "local:ctf-tutor-curated-patterns"
+  ],
+  "notes": "Educational pattern summary; no flag, target, or challenge-specific payload stored."
+}

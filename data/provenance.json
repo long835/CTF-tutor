@@ -1,0 +1,714 @@
+{
+  "schema": 1,
+  "updated_at": "2026-09-16T11:22:21.009759+00:00",
+  "records": {
+    "curated-blockchain-pattern-blockchain-integer-accounting": {
+      "entry_id": "curated-blockchain-pattern-blockchain-integer-accounting",
+      "source_type": "curated",
+      "source_url": "local:ctf-tutor-curated-patterns",
+      "added_at": "2026-09-16T11:02:48.355387+00:00",
+      "updated_at": "2026-09-16T11:02:48.355401+00:00",
+      "added_by": "unknown",
+      "license": "unspecified",
+      "version": 1,
+      "content_hash": "242dc94e3c43bc80",
+      "history": [],
+      "verified": false,
+      "notes": ""
+    },
+    "curated-blockchain-pattern-blockchain-solidity-access-control": {
+      "entry_id": "curated-blockchain-pattern-blockchain-solidity-access-control",
+      "source_type": "curated",
+      "source_url": "local:ctf-tutor-curated-patterns",
+      "added_at": "2026-09-16T11:02:48.355435+00:00",
+      "updated_at": "2026-09-16T11:02:48.355437+00:00",
+      "added_by": "unknown",
+      "license": "unspecified",
+      "version": 1,
+      "content_hash": "e05da2084b67dd82",
+      "history": [],
+      "verified": false,
+      "notes": ""
+    },
+    "curated-blockchain-pattern-reentrancy-classic": {
+      "entry_id": "curated-blockchain-pattern-reentrancy-classic",
+      "source_type": "curated",
+      "source_url": "local:ctf-tutor-curated-patterns",
+      "added_at": "2026-09-16T11:02:48.355457+00:00",
+      "updated_at": "2026-09-16T11:17:41.269291+00:00",
+      "added_by": "unknown",
+      "license": "unspecified",
+      "version": 2,
+      "content_hash": "dc49f25bf1ca1e7f",
+      "history": [
+        {
+          "version": "1",
+          "content_hash": "88963aeda54ca38c",
+          "replaced_at": "2026-09-16T11:17:41.269273+00:00"
+        }
+      ],
+      "verified": false,
+      "notes": ""
+    },
+    "curated-crypto-pattern-classical-caesar": {
+      "entry_id": "curated-crypto-pattern-classical-caesar",
+      "source_type": "curated",
+      "source_url": "local:ctf-tutor-curated-patterns",
+      "added_at": "2026-09-16T11:02:48.355472+00:00",
+      "updated_at": "2026-09-16T11:17:41.269319+00:00",
+      "added_by": "unknown",
+      "license": "unspecified",
+      "version": 2,
+      "content_hash": "8dd1fd3a92c1779b",
+      "history": [
+        {
+          "version": "1",
+          "content_hash": "ee69adaf5ba44ca2",
+          "replaced_at": "2026-09-16T11:17:41.269316+00:00"
+        }
+      ],
+      "verified": false,
+      "notes": ""
+    },
+    "curated-crypto-pattern-crypto-base-encoding-layers": {
+      "entry_id": "curated-crypto-pattern-crypto-base-encoding-layers",
+      "source_type": "curated",
+      "source_url": "local:ctf-tutor-curated-patterns",
+      "added_at": "2026-09-16T11:02:48.355493+00:00",
+      "updated_at": "2026-09-16T11:02:48.355495+00:00",
+      "added_by": "unknown",
+      "license": "unspecified",
+      "version": 1,
+      "content_hash": "1707c77f52e051dd",
+      "history": [],
+      "verified": false,
+      "notes": ""
+    },
+    "curated-crypto-pattern-crypto-classical-substitution": {
+      "entry_id": "curated-crypto-pattern-crypto-classical-substitution",
+      "source_type": "curated",
+      "source_url": "local:ctf-tutor-curated-patterns",
+      "added_at": "2026-09-16T11:02:48.355511+00:00",
+      "updated_at": "2026-09-16T11:02:48.355513+00:00",
+      "added_by": "unknown",
+      "license": "unspecified",
+      "version": 1,
+      "content_hash": "273b483235812527",
+      "history": [],
+      "verified": false,
+      "notes": ""
+    },
+    "curated-crypto-pattern-crypto-single-byte-xor": {
+      "entry_id": "curated-crypto-pattern-crypto-single-byte-xor",
+      "source_type": "curated",
+      "source_url": "local:ctf-tutor-curated-patterns",
+      "added_at": "2026-09-16T11:02:48.355528+00:00",
+      "updated_at": "2026-09-16T11:02:48.355530+00:00",
+      "added_by": "unknown",
+      "license": "unspecified",
+      "version": 1,
+      "content_hash": "bc6b8352780fab0b",
+      "history": [],
+      "verified": false,
+      "notes": ""
+    },
+    "curated-crypto-pattern-crypto-weak-rsa-parameters": {
+      "entry_id": "curated-crypto-pattern-crypto-weak-rsa-parameters",
+      "source_type": "curated",
+      "source_url": "local:ctf-tutor-curated-patterns",
+      "added_at": "2026-09-16T11:02:48.355545+00:00",
+      "updated_at": "2026-09-16T11:02:48.355546+00:00",
+      "added_by": "unknown",
+      "license": "unspecified",
+      "version": 1,
+      "content_hash": "f4cfe3776e185111",
+      "history": [],
+      "verified": false,
+      "notes": ""
+    },
+    "curated-crypto-pattern-crypto-xor-single-byte": {
+      "entry_id": "curated-crypto-pattern-crypto-xor-single-byte",
+      "source_type": "curated",
+      "source_url": "local:ctf-tutor-curated-patterns",
+      "added_at": "2026-09-16T11:02:48.355559+00:00",
+      "updated_at": "2026-09-16T11:17:41.269396+00:00",
+      "added_by": "unknown",
+      "license": "unspecified",
+      "version": 2,
+      "content_hash": "3123345cc79b9ec0",
+      "history": [
+        {
+          "version": "1",
+          "content_hash": "271eb9c670c30551",
+          "replaced_at": "2026-09-16T11:17:41.269393+00:00"
+        }
+      ],
+      "verified": false,
+      "notes": ""
+    },
+    "curated-forensics-pattern-exif-gps": {
+      "entry_id": "curated-forensics-pattern-exif-gps",
+      "source_type": "curated",
+      "source_url": "local:ctf-tutor-curated-patterns",
+      "added_at": "2026-09-16T11:02:48.355581+00:00",
+      "updated_at": "2026-09-16T11:17:41.269416+00:00",
+      "added_by": "unknown",
+      "license": "unspecified",
+      "version": 2,
+      "content_hash": "620727ce83c00482",
+      "history": [
+        {
+          "version": "1",
+          "content_hash": "acc82c8d02392a54",
+          "replaced_at": "2026-09-16T11:17:41.269414+00:00"
+        }
+      ],
+      "verified": false,
+      "notes": ""
+    },
+    "curated-forensics-pattern-forensics-file-carving": {
+      "entry_id": "curated-forensics-pattern-forensics-file-carving",
+      "source_type": "curated",
+      "source_url": "local:ctf-tutor-curated-patterns",
+      "added_at": "2026-09-16T11:02:48.355598+00:00",
+      "updated_at": "2026-09-16T11:02:48.355600+00:00",
+      "added_by": "unknown",
+      "license": "unspecified",
+      "version": 1,
+      "content_hash": "4b7386e5992e2e7b",
+      "history": [],
+      "verified": false,
+      "notes": ""
+    },
+    "curated-forensics-pattern-forensics-image-metadata": {
+      "entry_id": "curated-forensics-pattern-forensics-image-metadata",
+      "source_type": "curated",
+      "source_url": "local:ctf-tutor-curated-patterns",
+      "added_at": "2026-09-16T11:02:48.355616+00:00",
+      "updated_at": "2026-09-16T11:02:48.355617+00:00",
+      "added_by": "unknown",
+      "license": "unspecified",
+      "version": 1,
+      "content_hash": "9df1e750cc6863ab",
+      "history": [],
+      "verified": false,
+      "notes": ""
+    },
+    "curated-forensics-pattern-forensics-lsb-stego": {
+      "entry_id": "curated-forensics-pattern-forensics-lsb-stego",
+      "source_type": "curated",
+      "source_url": "local:ctf-tutor-curated-patterns",
+      "added_at": "2026-09-16T11:02:48.355628+00:00",
+      "updated_at": "2026-09-16T11:17:41.269461+00:00",
+      "added_by": "unknown",
+      "license": "unspecified",
+      "version": 2,
+      "content_hash": "c6ff5fb644a22fe2",
+      "history": [
+        {
+          "version": "1",
+          "content_hash": "1a41f349f524c57e",
+          "replaced_at": "2026-09-16T11:17:41.269459+00:00"
+        }
+      ],
+      "verified": false,
+      "notes": ""
+    },
+    "curated-forensics-pattern-forensics-pcap-http": {
+      "entry_id": "curated-forensics-pattern-forensics-pcap-http",
+      "source_type": "curated",
+      "source_url": "local:ctf-tutor-curated-patterns",
+      "added_at": "2026-09-16T11:02:48.355644+00:00",
+      "updated_at": "2026-09-16T11:02:48.355646+00:00",
+      "added_by": "unknown",
+      "license": "unspecified",
+      "version": 1,
+      "content_hash": "ac5fad34ee55f283",
+      "history": [],
+      "verified": false,
+      "notes": ""
+    },
+    "curated-forensics-pattern-forensics-png-steganography": {
+      "entry_id": "curated-forensics-pattern-forensics-png-steganography",
+      "source_type": "curated",
+      "source_url": "local:ctf-tutor-curated-patterns",
+      "added_at": "2026-09-16T11:02:48.355660+00:00",
+      "updated_at": "2026-09-16T11:02:48.355661+00:00",
+      "added_by": "unknown",
+      "license": "unspecified",
+      "version": 1,
+      "content_hash": "0730f7e755bf5010",
+      "history": [],
+      "verified": false,
+      "notes": ""
+    },
+    "curated-misc-pattern-misc-encoding-recognition": {
+      "entry_id": "curated-misc-pattern-misc-encoding-recognition",
+      "source_type": "curated",
+      "source_url": "local:ctf-tutor-curated-patterns",
+      "added_at": "2026-09-16T11:02:48.355675+00:00",
+      "updated_at": "2026-09-16T11:02:48.355677+00:00",
+      "added_by": "unknown",
+      "license": "unspecified",
+      "version": 1,
+      "content_hash": "cb24f0771843214b",
+      "history": [],
+      "verified": false,
+      "notes": ""
+    },
+    "curated-misc-pattern-misc-layered-encoding": {
+      "entry_id": "curated-misc-pattern-misc-layered-encoding",
+      "source_type": "curated",
+      "source_url": "local:ctf-tutor-curated-patterns",
+      "added_at": "2026-09-16T11:02:48.355687+00:00",
+      "updated_at": "2026-09-16T11:17:41.269516+00:00",
+      "added_by": "unknown",
+      "license": "unspecified",
+      "version": 2,
+      "content_hash": "a76d4321f067a67a",
+      "history": [
+        {
+          "version": "1",
+          "content_hash": "5a2b2bd99305728b",
+          "replaced_at": "2026-09-16T11:17:41.269514+00:00"
+        }
+      ],
+      "verified": false,
+      "notes": ""
+    },
+    "curated-misc-pattern-misc-nested-archive": {
+      "entry_id": "curated-misc-pattern-misc-nested-archive",
+      "source_type": "curated",
+      "source_url": "local:ctf-tutor-curated-patterns",
+      "added_at": "2026-09-16T11:02:48.355704+00:00",
+      "updated_at": "2026-09-16T11:02:48.355705+00:00",
+      "added_by": "unknown",
+      "license": "unspecified",
+      "version": 1,
+      "content_hash": "b9d5bd1f9b452c84",
+      "history": [],
+      "verified": false,
+      "notes": ""
+    },
+    "curated-misc-pattern-multilayer-encoding": {
+      "entry_id": "curated-misc-pattern-multilayer-encoding",
+      "source_type": "curated",
+      "source_url": "local:ctf-tutor-curated-patterns",
+      "added_at": "2026-09-16T11:02:48.355715+00:00",
+      "updated_at": "2026-09-16T11:17:41.269546+00:00",
+      "added_by": "unknown",
+      "license": "unspecified",
+      "version": 2,
+      "content_hash": "d23a3f4906ab674b",
+      "history": [
+        {
+          "version": "1",
+          "content_hash": "ca849c20f9bbabfa",
+          "replaced_at": "2026-09-16T11:17:41.269544+00:00"
+        }
+      ],
+      "verified": false,
+      "notes": ""
+    },
+    "curated-mobile-pattern-mobile-android-manifest-review": {
+      "entry_id": "curated-mobile-pattern-mobile-android-manifest-review",
+      "source_type": "curated",
+      "source_url": "local:ctf-tutor-curated-patterns",
+      "added_at": "2026-09-16T11:02:48.355731+00:00",
+      "updated_at": "2026-09-16T11:02:48.355732+00:00",
+      "added_by": "unknown",
+      "license": "unspecified",
+      "version": 1,
+      "content_hash": "f14c8809857c8f05",
+      "history": [],
+      "verified": false,
+      "notes": ""
+    },
+    "curated-mobile-pattern-mobile-hardcoded-secret-discovery": {
+      "entry_id": "curated-mobile-pattern-mobile-hardcoded-secret-discovery",
+      "source_type": "curated",
+      "source_url": "local:ctf-tutor-curated-patterns",
+      "added_at": "2026-09-16T11:02:48.355747+00:00",
+      "updated_at": "2026-09-16T11:02:48.355748+00:00",
+      "added_by": "unknown",
+      "license": "unspecified",
+      "version": 1,
+      "content_hash": "b3e21dcbe372b417",
+      "history": [],
+      "verified": false,
+      "notes": ""
+    },
+    "curated-osint-pattern-osint-domain-dns-pivot": {
+      "entry_id": "curated-osint-pattern-osint-domain-dns-pivot",
+      "source_type": "curated",
+      "source_url": "local:ctf-tutor-curated-patterns",
+      "added_at": "2026-09-16T11:02:48.355762+00:00",
+      "updated_at": "2026-09-16T11:02:48.355764+00:00",
+      "added_by": "unknown",
+      "license": "unspecified",
+      "version": 1,
+      "content_hash": "0fe611e6a63b6041",
+      "history": [],
+      "verified": false,
+      "notes": ""
+    },
+    "curated-osint-pattern-osint-exif-geolocation": {
+      "entry_id": "curated-osint-pattern-osint-exif-geolocation",
+      "source_type": "curated",
+      "source_url": "local:ctf-tutor-curated-patterns",
+      "added_at": "2026-09-16T11:02:48.355778+00:00",
+      "updated_at": "2026-09-16T11:02:48.355779+00:00",
+      "added_by": "unknown",
+      "license": "unspecified",
+      "version": 1,
+      "content_hash": "b98575845f9c5ec2",
+      "history": [],
+      "verified": false,
+      "notes": ""
+    },
+    "curated-osint-pattern-osint-username-correlation": {
+      "entry_id": "curated-osint-pattern-osint-username-correlation",
+      "source_type": "curated",
+      "source_url": "local:ctf-tutor-curated-patterns",
+      "added_at": "2026-09-16T11:02:48.355793+00:00",
+      "updated_at": "2026-09-16T11:02:48.355795+00:00",
+      "added_by": "unknown",
+      "license": "unspecified",
+      "version": 1,
+      "content_hash": "0f424a422c9739d9",
+      "history": [],
+      "verified": false,
+      "notes": ""
+    },
+    "curated-pwn-pattern-pwn-format-string": {
+      "entry_id": "curated-pwn-pattern-pwn-format-string",
+      "source_type": "curated",
+      "source_url": "local:ctf-tutor-curated-patterns",
+      "added_at": "2026-09-16T11:02:48.355809+00:00",
+      "updated_at": "2026-09-16T11:02:48.355810+00:00",
+      "added_by": "unknown",
+      "license": "unspecified",
+      "version": 1,
+      "content_hash": "1abe9eac26972713",
+      "history": [],
+      "verified": false,
+      "notes": ""
+    },
+    "curated-pwn-pattern-pwn-return-to-libc": {
+      "entry_id": "curated-pwn-pattern-pwn-return-to-libc",
+      "source_type": "curated",
+      "source_url": "local:ctf-tutor-curated-patterns",
+      "added_at": "2026-09-16T11:02:48.355825+00:00",
+      "updated_at": "2026-09-16T11:02:48.355826+00:00",
+      "added_by": "unknown",
+      "license": "unspecified",
+      "version": 1,
+      "content_hash": "26549b3cf5e09bde",
+      "history": [],
+      "verified": false,
+      "notes": ""
+    },
+    "curated-pwn-pattern-pwn-stack-overflow": {
+      "entry_id": "curated-pwn-pattern-pwn-stack-overflow",
+      "source_type": "curated",
+      "source_url": "local:ctf-tutor-curated-patterns",
+      "added_at": "2026-09-16T11:02:48.355842+00:00",
+      "updated_at": "2026-09-16T11:02:48.355843+00:00",
+      "added_by": "unknown",
+      "license": "unspecified",
+      "version": 1,
+      "content_hash": "3255797551b2a585",
+      "history": [],
+      "verified": false,
+      "notes": ""
+    },
+    "curated-pwn-pattern-ret2win": {
+      "entry_id": "curated-pwn-pattern-ret2win",
+      "source_type": "curated",
+      "source_url": "local:ctf-tutor-curated-patterns",
+      "added_at": "2026-09-16T11:02:48.355854+00:00",
+      "updated_at": "2026-09-16T11:17:41.269660+00:00",
+      "added_by": "unknown",
+      "license": "unspecified",
+      "version": 2,
+      "content_hash": "5acda6112f12d264",
+      "history": [
+        {
+          "version": "1",
+          "content_hash": "3e87e32e1dfb4c3f",
+          "replaced_at": "2026-09-16T11:17:41.269658+00:00"
+        }
+      ],
+      "verified": false,
+      "notes": ""
+    },
+    "curated-rev-pattern-anti-debug": {
+      "entry_id": "curated-rev-pattern-anti-debug",
+      "source_type": "curated",
+      "source_url": "local:ctf-tutor-curated-patterns",
+      "added_at": "2026-09-16T11:02:48.355865+00:00",
+      "updated_at": "2026-09-16T11:17:41.269678+00:00",
+      "added_by": "unknown",
+      "license": "unspecified",
+      "version": 2,
+      "content_hash": "6f8b7867f8afe794",
+      "history": [
+        {
+          "version": "1",
+          "content_hash": "c8f6053e12d25882",
+          "replaced_at": "2026-09-16T11:17:41.269676+00:00"
+        }
+      ],
+      "verified": false,
+      "notes": ""
+    },
+    "curated-rev-pattern-rev-packed-binary": {
+      "entry_id": "curated-rev-pattern-rev-packed-binary",
+      "source_type": "curated",
+      "source_url": "local:ctf-tutor-curated-patterns",
+      "added_at": "2026-09-16T11:02:48.355881+00:00",
+      "updated_at": "2026-09-16T11:02:48.355882+00:00",
+      "added_by": "unknown",
+      "license": "unspecified",
+      "version": 1,
+      "content_hash": "bfe2ebbc62954cdd",
+      "history": [],
+      "verified": false,
+      "notes": ""
+    },
+    "curated-rev-pattern-rev-simple-crackme": {
+      "entry_id": "curated-rev-pattern-rev-simple-crackme",
+      "source_type": "curated",
+      "source_url": "local:ctf-tutor-curated-patterns",
+      "added_at": "2026-09-16T11:02:48.355897+00:00",
+      "updated_at": "2026-09-16T11:02:48.355898+00:00",
+      "added_by": "unknown",
+      "license": "unspecified",
+      "version": 1,
+      "content_hash": "5f65c4fc903b3932",
+      "history": [],
+      "verified": false,
+      "notes": ""
+    },
+    "curated-rev-pattern-rev-xor-obfuscation": {
+      "entry_id": "curated-rev-pattern-rev-xor-obfuscation",
+      "source_type": "curated",
+      "source_url": "local:ctf-tutor-curated-patterns",
+      "added_at": "2026-09-16T11:02:48.355911+00:00",
+      "updated_at": "2026-09-16T11:02:48.355913+00:00",
+      "added_by": "unknown",
+      "license": "unspecified",
+      "version": 1,
+      "content_hash": "5d1a872b5fe9b426",
+      "history": [],
+      "verified": false,
+      "notes": ""
+    },
+    "curated-web-pattern-path-traversal": {
+      "entry_id": "curated-web-pattern-path-traversal",
+      "source_type": "curated",
+      "source_url": "local:ctf-tutor-curated-patterns",
+      "added_at": "2026-09-16T11:02:48.355923+00:00",
+      "updated_at": "2026-09-16T11:17:41.269732+00:00",
+      "added_by": "unknown",
+      "license": "unspecified",
+      "version": 2,
+      "content_hash": "89ab733fdb907ef1",
+      "history": [
+        {
+          "version": "1",
+          "content_hash": "25696951ade6e6ee",
+          "replaced_at": "2026-09-16T11:17:41.269730+00:00"
+        }
+      ],
+      "verified": false,
+      "notes": ""
+    },
+    "curated-web-pattern-ssti-jinja": {
+      "entry_id": "curated-web-pattern-ssti-jinja",
+      "source_type": "curated",
+      "source_url": "local:ctf-tutor-curated-patterns",
+      "added_at": "2026-09-16T11:02:48.355934+00:00",
+      "updated_at": "2026-09-16T11:17:41.269749+00:00",
+      "added_by": "unknown",
+      "license": "unspecified",
+      "version": 2,
+      "content_hash": "e86fa4581b295bc0",
+      "history": [
+        {
+          "version": "1",
+          "content_hash": "bdd31563749a7645",
+          "replaced_at": "2026-09-16T11:17:41.269747+00:00"
+        }
+      ],
+      "verified": false,
+      "notes": ""
+    },
+    "curated-web-pattern-web-jwt-validation": {
+      "entry_id": "curated-web-pattern-web-jwt-validation",
+      "source_type": "curated",
+      "source_url": "local:ctf-tutor-curated-patterns",
+      "added_at": "2026-09-16T11:02:48.355949+00:00",
+      "updated_at": "2026-09-16T11:02:48.355950+00:00",
+      "added_by": "unknown",
+      "license": "unspecified",
+      "version": 1,
+      "content_hash": "0cc58ecb97373d18",
+      "history": [],
+      "verified": false,
+      "notes": ""
+    },
+    "curated-web-pattern-web-path-traversal": {
+      "entry_id": "curated-web-pattern-web-path-traversal",
+      "source_type": "curated",
+      "source_url": "local:ctf-tutor-curated-patterns",
+      "added_at": "2026-09-16T11:02:48.355964+00:00",
+      "updated_at": "2026-09-16T11:02:48.355966+00:00",
+      "added_by": "unknown",
+      "license": "unspecified",
+      "version": 1,
+      "content_hash": "17c8d187c2fb25e6",
+      "history": [],
+      "verified": false,
+      "notes": ""
+    },
+    "curated-web-pattern-web-server-side-template-injection": {
+      "entry_id": "curated-web-pattern-web-server-side-template-injection",
+      "source_type": "curated",
+      "source_url": "local:ctf-tutor-curated-patterns",
+      "added_at": "2026-09-16T11:02:48.355979+00:00",
+      "updated_at": "2026-09-16T11:02:48.355981+00:00",
+      "added_by": "unknown",
+      "license": "unspecified",
+      "version": 1,
+      "content_hash": "0a974fd9759fd426",
+      "history": [],
+      "verified": false,
+      "notes": ""
+    },
+    "curated-web-pattern-web-sql-injection": {
+      "entry_id": "curated-web-pattern-web-sql-injection",
+      "source_type": "curated",
+      "source_url": "local:ctf-tutor-curated-patterns",
+      "added_at": "2026-09-16T11:02:48.355994+00:00",
+      "updated_at": "2026-09-16T11:02:48.355996+00:00",
+      "added_by": "unknown",
+      "license": "unspecified",
+      "version": 1,
+      "content_hash": "e5525a5874a18f32",
+      "history": [],
+      "verified": false,
+      "notes": ""
+    },
+    "curated-web-pattern-web-ssti-jinja": {
+      "entry_id": "curated-web-pattern-web-ssti-jinja",
+      "source_type": "curated",
+      "source_url": "local:ctf-tutor-curated-patterns",
+      "added_at": "2026-09-16T11:02:48.356006+00:00",
+      "updated_at": "2026-09-16T11:17:41.269813+00:00",
+      "added_by": "unknown",
+      "license": "unspecified",
+      "version": 2,
+      "content_hash": "402705180312688d",
+      "history": [
+        {
+          "version": "1",
+          "content_hash": "297b0280e29b2c9c",
+          "replaced_at": "2026-09-16T11:17:41.269811+00:00"
+        }
+      ],
+      "verified": false,
+      "notes": ""
+    },
+    "curated-web-pattern-web-union-sqli": {
+      "entry_id": "curated-web-pattern-web-union-sqli",
+      "source_type": "curated",
+      "source_url": "local:ctf-tutor-curated-patterns",
+      "added_at": "2026-09-16T11:02:48.356018+00:00",
+      "updated_at": "2026-09-16T11:17:41.269829+00:00",
+      "added_by": "unknown",
+      "license": "unspecified",
+      "version": 2,
+      "content_hash": "3430991a9ef2e285",
+      "history": [
+        {
+          "version": "1",
+          "content_hash": "3a7c2cba49427720",
+          "replaced_at": "2026-09-16T11:17:41.269828+00:00"
+        }
+      ],
+      "verified": false,
+      "notes": ""
+    },
+    "example_pwn_format_string": {
+      "entry_id": "example_pwn_format_string",
+      "source_type": "curated",
+      "source_url": "https://ctf-wiki.org/pwn/linux/mem-corruption/formatstring/fmt-basic/",
+      "added_at": "2026-09-16T11:02:48.356048+00:00",
+      "updated_at": "2026-09-16T11:02:48.356049+00:00",
+      "added_by": "unknown",
+      "license": "unspecified",
+      "version": 1,
+      "content_hash": "cabf26f1529ca586",
+      "history": [],
+      "verified": false,
+      "notes": ""
+    },
+    "example_pwn_ret2libc": {
+      "entry_id": "example_pwn_ret2libc",
+      "source_type": "curated",
+      "source_url": "https://ctf-wiki.org/pwn/linux/stackoverflow/x64/ret2libc/",
+      "added_at": "2026-09-16T11:02:48.356103+00:00",
+      "updated_at": "2026-09-16T11:02:48.356106+00:00",
+      "added_by": "unknown",
+      "license": "unspecified",
+      "version": 1,
+      "content_hash": "5bd1a6d871085487",
+      "history": [],
+      "verified": false,
+      "notes": ""
+    },
+    "example_rev_crackme": {
+      "entry_id": "example_rev_crackme",
+      "source_type": "curated",
+      "source_url": "https://ctf101.org/reverse-engineering/what-is-reverse-engineering/",
+      "added_at": "2026-09-16T11:02:48.356135+00:00",
+      "updated_at": "2026-09-16T11:02:48.356136+00:00",
+      "added_by": "unknown",
+      "license": "unspecified",
+      "version": 1,
+      "content_hash": "6a9ea1ed386500f0",
+      "history": [],
+      "verified": false,
+      "notes": ""
+    },
+    "example_web_jwt": {
+      "entry_id": "example_web_jwt",
+      "source_type": "curated",
+      "source_url": "https://ctf-wiki.org/crypto/jwt/",
+      "added_at": "2026-09-16T11:02:48.356157+00:00",
+      "updated_at": "2026-09-16T11:02:48.356159+00:00",
+      "added_by": "unknown",
+      "license": "unspecified",
+      "version": 1,
+      "content_hash": "3e8282f24cadddd0",
+      "history": [],
+      "verified": false,
+      "notes": ""
+    },
+    "example_web_sqli": {
+      "entry_id": "example_web_sqli",
+      "source_type": "curated",
+      "source_url": "https://portswigger.net/web-security/sql-injection",
+      "added_at": "2026-09-16T11:02:48.356184+00:00",
+      "updated_at": "2026-09-16T11:02:48.356185+00:00",
+      "added_by": "unknown",
+      "license": "unspecified",
+      "version": 1,
+      "content_hash": "c383f0dafc8899e9",
+      "history": [],
+      "verified": false,
+      "notes": ""
+    }
+  }
+}

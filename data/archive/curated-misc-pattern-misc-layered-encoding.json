@@ -1,0 +1,25 @@
+{
+  "challenge_name": "Pattern MISC: Layered Encoding",
+  "category": "misc",
+  "techniques": [
+    "encoding-recognition"
+  ],
+  "difficulty": "easy",
+  "source": "CTF-Tutor curated pattern library",
+  "description": "Flag wrapped in base64 then hex repeatedly.",
+  "explanation": "Flag wrapped in base64 then hex repeatedly. The teaching point is the encoding-recognition pattern itself: recognise the shape of the weakness, then reason about which mitigation would change the outcome. Detect encoding by alphabet/charset; peel layers.",
+  "solve_steps": [
+    "Inventory the artifacts and confirm the category before touching tools",
+    "Look for the signals that distinguish encoding-recognition from lookalike patterns",
+    "State one testable claim and run a single local analysis that could falsify it",
+    "Explain why the working approach works before moving on"
+  ],
+  "tools_used": [
+    "decode_toolkit",
+    "python"
+  ],
+  "references": [
+    "local:ctf-tutor-curated-patterns"
+  ],
+  "notes": "Educational pattern summary; no flag, target, or challenge-specific payload stored."
+}

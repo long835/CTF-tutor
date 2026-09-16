@@ -1,0 +1,31 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+
+# Local vector store (regenerate via `python ingest.py`)
+data/chroma/
+
+# Personal learning state — not meant to be shared or committed
+data/history.jsonl
+data/learner_memory.json
+data/sessions/
+data/workspaces/
+
+# Generated run artifacts
+data/traces/
+data/experiments/
+data/reports/
+
+# Env / secrets
+.env
+*.local
+
+# Third-party plugins (the shipped example is tracked explicitly)
+plugins/*
+!plugins/example_flagcheck.py
+
+# OS cruft
+.DS_Store
+.venv/

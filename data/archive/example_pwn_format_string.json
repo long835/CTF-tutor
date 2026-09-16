@@ -1,0 +1,20 @@
+{
+  "challenge_name": "PwnCTF2024 - PrintfLeak",
+  "category": "pwn",
+  "techniques": ["format-string", "info-leak", "arbitrary-write"],
+  "difficulty": "medium",
+  "source": "ExampleCTF 2024",
+  "description": "A binary passes user-controlled input directly as the format argument to printf() instead of using a fixed format string with the input as a data argument, e.g. printf(user_input) instead of printf(\"%s\", user_input).",
+  "explanation": "printf's format string controls how many arguments it reads off the stack (and, for %n, lets it WRITE to an address it reads off the stack). When the attacker controls the format string itself, they control both: %x/%p specifiers let them read arbitrary stack values (leaking saved addresses, canaries, pointers), and %n lets them write an attacker-chosen value to an attacker-chosen address, which is enough to overwrite a return address, a GOT entry, or any other useful target without needing a separate buffer overflow at all.",
+  "solve_steps": [
+    "Confirm the vulnerability: pass a format specifier like %x or %p and see if it reflects stack data instead of being treated as literal text",
+    "Send a sequence of %p (or %x with explicit positional args like %7$p) to walk the stack and find the offset to your own input",
+    "Use %s at that offset to leak a pointer into libc or the binary (defeats ASLR the same way a ret2libc leak does)",
+    "Compute target addresses (e.g. a GOT entry to overwrite) from the leaked base",
+    "Build a %n-based write primitive (often via pwntools' fmtstr_payload) to overwrite the target with a chosen value",
+    "Trigger the overwritten code path (e.g. call the GOT-hijacked function) to get control"
+  ],
+  "tools_used": ["pwntools", "gdb"],
+  "references": ["https://ctf-wiki.org/pwn/linux/mem-corruption/formatstring/fmt-basic/"],
+  "notes": "Format string bugs are often faster to exploit than a stack overflow once the offset is found -- check for one before assuming you need ROP."
+}
