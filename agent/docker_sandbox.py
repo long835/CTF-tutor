@@ -31,6 +31,20 @@ def docker_available() -> bool:
         return False
 
 
+def docker_image_available(image: str) -> bool:
+    if not docker_available():
+        return False
+    try:
+        r = subprocess.run(
+            ["docker", "image", "inspect", image],
+            capture_output=True,
+            timeout=5,
+        )
+        return r.returncode == 0
+    except (OSError, subprocess.TimeoutExpired):
+        return False
+
+
 def run_in_docker(
     argv: Sequence[str],
     *,
@@ -48,6 +62,16 @@ def run_in_docker(
     """
     if not docker_available():
         return SandboxResult(127, "", "", False, 0.0, error="docker not available")
+
+    if not docker_image_available(image):
+        return SandboxResult(
+            127,
+            "",
+            "",
+            False,
+            0.0,
+            error=f"docker image not available: {image}",
+        )
 
     cmd: List[str] = [
         "docker", "run", "--rm",

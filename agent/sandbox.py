@@ -284,10 +284,24 @@ def run_sandboxed(
             denied=False,
         )
 
-    if os.getenv("CTF_TUTOR_USE_DOCKER", "auto") not in ("0", "false", "False"):
+    docker_mode = os.getenv("CTF_TUTOR_USE_DOCKER", "auto").lower()
+
+    if docker_mode not in ("0", "false"):
         try:
-            from agent.docker_sandbox import docker_available, run_in_docker
-            if docker_available():
+            from agent.docker_sandbox import (
+                docker_available,
+                docker_image_available,
+                run_in_docker,
+            )
+
+            use_docker = docker_available()
+
+            if docker_mode == "auto":
+                use_docker = use_docker and docker_image_available(
+                    "python:3.12-slim"
+                )
+
+            if use_docker:
                 result = run_in_docker(
                     argv,
                     timeout_sec=pol.timeout_sec,
