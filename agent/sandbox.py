@@ -269,7 +269,21 @@ def run_sandboxed(
             if roots and not any(_is_within(resolved_cwd, root) for root in roots):
                 return _denied(f"working directory outside allowed roots: {cwd}")
 
-    # Optional Docker path for higher isolation.
+    # Check whether the executable exists before handing the command to Docker.
+    # Docker would otherwise report a generic command failure instead of the
+    # Phase 4-compatible "not installed" error.
+    if safe_which(argv[0]) is None:
+        return SandboxResult(
+            127,
+            "",
+            "",
+            False,
+            0.0,
+            error=f"not installed: {argv[0]}",
+            policy=pol.name,
+            denied=False,
+        )
+
     if os.getenv("CTF_TUTOR_USE_DOCKER", "auto") not in ("0", "false", "False"):
         try:
             from agent.docker_sandbox import docker_available, run_in_docker

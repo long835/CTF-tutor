@@ -48,6 +48,98 @@ PREREQUISITES: Dict[str, List[str]] = {
     "reentrancy": ["solidity-basics", "smart-contract-state"],
     "android-exported-component": ["android-basics"],
     "insecure-storage": ["android-basics"],
+
+    # -----------------------------------------------------------------------
+    # Filled in after the knowledge-graph join (item 11) reported 34
+    # techniques that the corpus actively teaches with nothing scheduled
+    # before them. The curriculum could offer them, but never in an order --
+    # a learner asking for `heap-overflow` got it cold, with no pointer to
+    # c-memory or heap-layout first.
+    # -----------------------------------------------------------------------
+
+    # Web
+    "sqli-union": ["sql-injection"],
+    "xxe": ["http-basics", "web-input-handling", "file-formats"],
+    "idor": ["http-basics", "auth-bypass"],
+    "solidity-access-control": ["solidity-basics", "smart-contract-state"],
+    "auth-bypass": ["http-basics"],
+    "prototype-pollution": ["web-input-handling"],
+    "deserialization-rce": ["web-input-handling", "file-formats"],
+    "race-condition": ["http-basics", "web-input-handling"],
+    "http-request-smuggling": ["http-basics"],
+    "cors-misconfiguration": ["http-basics"],
+    "cache-poisoning": ["http-basics"],
+    "graphql-introspection": ["http-basics", "web-input-handling"],
+    "nosql-injection": ["http-basics", "web-input-handling"],
+    "file-upload-chain": ["web-input-handling", "file-formats"],
+    "oauth-flow-abuse": ["http-basics", "auth-bypass"],
+
+    # Pwn
+    "heap-overflow": ["c-memory", "heap-layout"],
+    "use-after-free": ["c-memory", "heap-layout"],
+    "tcache-poisoning": ["heap-overflow", "heap-layout"],
+    "fastbin-dup": ["heap-overflow", "heap-layout"],
+    "unsorted-bin-leak": ["heap-layout", "aslr"],
+    "file-structure-abuse": ["heap-layout", "c-memory"],
+    "off-by-one": ["c-memory", "stack-layout"],
+    "integer-overflow": ["c-memory"],
+    "arbitrary-write": ["c-memory", "plt-got"],
+    "ret2csu": ["rop-chain", "calling-convention"],
+    "srop": ["rop-chain", "calling-convention"],
+    "seccomp-escape": ["rop-chain"],
+    "info-leak": ["c-memory", "aslr"],
+
+    # Rev
+    "control-flow-flattening": ["assembly-basics", "control-flow"],
+    "vm-obfuscation": ["assembly-basics", "control-flow"],
+    "opaque-predicates": ["assembly-basics", "control-flow"],
+    "symbolic-execution": ["assembly-basics", "control-flow"],
+    "api-hashing": ["assembly-basics", "file-formats"],
+    "dotnet-deobfuscation": ["static-analysis-basics", "file-formats"],
+    "go-binary-analysis": ["static-analysis-basics", "file-formats"],
+    "rust-binary-analysis": ["static-analysis-basics", "file-formats"],
+    "algorithm-recovery": ["assembly-basics", "static-analysis-basics"],
+    "esoteric-lang": ["control-flow"],
+    "keygen": ["assembly-basics", "algorithm-recovery"],
+    "static-analysis": ["static-analysis-basics"],
+    "string-analysis": ["static-analysis-basics"],
+
+    # Crypto
+    "rsa-factorisation": ["rsa-basics", "modular-arithmetic"],
+    "rsa-wiener": ["rsa-basics", "modular-arithmetic"],
+    "rsa-franklin-reiter": ["rsa-basics", "modular-arithmetic"],
+    "rsa-broadcast": ["rsa-small-e", "modular-arithmetic"],
+    "ecb-byte-at-a-time": ["block-ciphers"],
+    "ctr-nonce-reuse": ["block-ciphers", "xor-properties"],
+    "hash-length-extension": ["encoding-basics"],
+    "ecdsa-nonce-reuse": ["modular-arithmetic"],
+    "lattice-reduction": ["lattice-basics", "modular-arithmetic"],
+    "prng-prediction": ["modular-arithmetic"],
+    "timing-side-channel": ["block-ciphers"],
+    "classical-caesar": ["frequency-analysis"],
+    "classical-substitution": ["frequency-analysis"],
+    "encoding-recognition": ["encoding-basics"],
+    "multilayer-encoding": ["encoding-basics"],
+
+    # Forensics
+    "file-carving": ["file-formats"],
+    "image-metadata": ["image-formats"],
+    "memory-forensics": ["file-formats"],
+    "log-analysis": ["network-basics"],
+    "nested-archive": ["file-formats", "file-carving"],
+    "archive-analysis": ["file-formats"],
+    "file-signature": ["file-formats"],
+    "disk-image-analysis": ["file-formats", "file-carving"],
+
+    # OSINT
+    "osint-username": ["osint-basics"],
+    "osint-domain-dns": ["osint-basics", "network-basics"],
+    "osint-metadata": ["osint-basics", "image-formats"],
+
+    # Blockchain / mobile
+    "integer-accounting": ["solidity-basics", "smart-contract-state"],
+    "certificate-pinning-bypass": ["android-basics", "network-basics"],
+    "hardcoded-secret": ["android-basics"],
 }
 
 
@@ -84,6 +176,13 @@ CONCEPTS: Dict[str, str] = {
     "solidity-basics": "Contracts, msg.sender, storage vs memory, external calls.",
     "smart-contract-state": "How contract state updates across calls and reentrancy risk.",
     "android-basics": "APK layout, manifest, activities/services, and local storage.",
+    # Referenced by the prerequisites added for the heap, lattice and
+    # obfuscation families. A prerequisite with no card is worse than none:
+    # the curriculum schedules it and then has nothing to say.
+    "heap-layout": "Chunks, bins, and allocator metadata — how an allocator reuses memory.",
+    "lattice-basics": "Lattices as integer grids; short vectors recover small unknowns.",
+    "static-analysis-basics": "Reading a binary or source tree without running it.",
+    "control-flow": "Basic blocks, branches, and how obfuscation rewrites them.",
 }
 
 

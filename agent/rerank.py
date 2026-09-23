@@ -49,6 +49,10 @@ DEFAULT_WEIGHTS: Dict[str, float] = {
     "vocab": 0.30,
     "prereq": 0.20,
     "novelty": 0.15,
+    # Item 69. Small on purpose: quality breaks ties between similarly
+    # relevant cards; it must not float a well-formed card about the wrong
+    # technique above a thin card about the right one.
+    "quality": 0.18,
 }
 
 
@@ -83,6 +87,7 @@ class RerankFeatures:
     vocab: float = 0.0
     prereq: float = 0.0
     novelty: float = 0.0
+    quality: float = 0.0
 
     def as_dict(self) -> Dict[str, float]:
         return {k: round(v, 4) for k, v in self.__dict__.items()}
@@ -237,6 +242,15 @@ def score_candidate(
 
     seen = sum(ctx.seen_counts.get(t, 0) for t in tech_set)
     feats.novelty = 1.0 / (1.0 + seen)
+
+    try:
+        from agent.knowledge_quality import quality_feature
+
+        feats.quality = quality_feature(candidate)
+    except Exception:
+        # Quality is a preference, never a requirement: if scoring fails the
+        # ranking should still happen on relevance.
+        feats.quality = 0.0
 
     return feats
 

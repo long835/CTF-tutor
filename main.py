@@ -1008,10 +1008,214 @@ def cmd_trust(argv) -> int:
     return 0
 
 
+def cmd_knowledge(argv) -> int:
+    """The unified technique graph: one node per technique, and its audit."""
+    import argparse, json
+    p = argparse.ArgumentParser(
+        prog="main.py knowledge",
+        description="Look up a technique, audit the knowledge base, or score card quality.",
+    )
+    p.add_argument("query", nargs="?", help="Technique or concept to describe")
+    p.add_argument("--audit", action="store_true", help="Report where the knowledge sources disagree")
+    p.add_argument("--severity", choices=["error", "warning", "info"], help="Filter the audit")
+    p.add_argument("--taxonomy", action="store_true", help="Show canonical ids and duplicate spellings")
+    p.add_argument("--quality", action="store_true", help="Score every knowledge card (item 69)")
+    p.add_argument("--stats", action="store_true", help="Graph statistics")
+    p.add_argument("--json", action="store_true", help="Emit raw JSON")
+    p.add_argument("--strict", action="store_true", help="Exit non-zero on any audit error or warning")
+    args = p.parse_args(argv)
+
+    from agent import knowledge_graph, knowledge_quality, taxonomy
+
+    graph = knowledge_graph.get_graph(force_reload=True)
+
+    if args.quality:
+        report = knowledge_quality.corpus_report()
+        print(json.dumps(report, indent=2) if args.json else knowledge_quality.render_report(report))
+        return 0
+
+    if args.taxonomy:
+        dupes = taxonomy.duplicate_report(graph.tag_counts)
+        if args.json:
+            print(json.dumps({
+                "canonical": taxonomy.all_techniques(),
+                "concepts": taxonomy.all_concepts(),
+                "duplicates": [{"canonical": c, "variants": v, "uses": n} for c, v, n in dupes],
+            }, indent=2))
+            return 0
+        print(f"{len(taxonomy.all_techniques())} technique(s), "
+              f"{len(taxonomy.all_concepts())} concept(s), "
+              f"{len(graph.tag_counts)} spelling(s) in the corpus")
+        if dupes:
+            print()
+            print("Spelled more than one way:")
+            for canon, variants, uses in dupes:
+                print(f"  {taxonomy.path_of(canon)}  <-  {', '.join(variants)}  ({uses} card(s))")
+        return 0
+
+    if args.audit or args.strict:
+        items = graph.audit()
+        if args.json:
+            print(json.dumps([i.to_dict() for i in items], indent=2))
+        else:
+            print(graph.render_audit(args.severity))
+        if args.strict:
+            blocking = [i for i in items if i.severity in ("error", "warning")]
+            return 1 if blocking else 0
+        return 0
+
+    if args.stats or not args.query:
+        print(json.dumps(graph.stats(), indent=2))
+        return 0
+
+    node = graph.node(args.query)
+    if node is None:
+        matches = graph.search(args.query, limit=5)
+        if not matches:
+            print(f"No technique matching '{args.query}'. Try `main.py knowledge --stats`.")
+            return 1
+        print(f"No exact match for '{args.query}'. Closest:")
+        for m in matches:
+            print(f"  {m.path}")
+        return 1
+    print(json.dumps(node.to_dict(), indent=2) if args.json else node.render())
+    return 0
+
+
+def cmd_learner(argv) -> int:
+    """Independence and transfer: did they learn it, or did we tell them?"""
+    import argparse, json
+    p = argparse.ArgumentParser(
+        prog="main.py learner",
+        description="Independent-solve rate, hint dependency, and whether a technique transfers.",
+    )
+    p.add_argument("technique", nargs="?", help="Limit the report to one technique")
+    p.add_argument("--path", default=None, help="Attempt log (default data/learner_attempts.json)")
+    p.add_argument("--record", nargs=2, metavar=("TECHNIQUE", "OUTCOME"),
+                   help="Record an attempt: OUTCOME is solved or failed")
+    p.add_argument("--hint-level", type=int, default=0, help="Deepest hint reached (0-4)")
+    p.add_argument("--scenario", default="", help="Which framing of the technique")
+    p.add_argument("--verified", action="store_true", help="The answer was checked, not asserted")
+    p.add_argument("--next", action="store_true", help="Suggest the next untried variation")
+    p.add_argument("--json", action="store_true", help="Emit raw JSON")
+    args = p.parse_args(argv)
+
+    from agent import learner_model
+
+    path = args.path or learner_model.DEFAULT_PATH
+    record = learner_model.load_record(path)
+
+    if args.record:
+        technique, outcome = args.record
+        record.record_attempt(
+            technique,
+            success=outcome.lower() in ("solved", "success", "pass", "yes"),
+            hint_level=args.hint_level,
+            scenario=args.scenario,
+            verified=args.verified,
+        )
+        learner_model.save_record(record, path)
+        print(record.for_technique(technique).explain())
+        return 0
+
+    if args.next:
+        if not args.technique:
+            print("--next needs a technique.")
+            return 1
+        check = learner_model.transfer_check(args.technique, record)
+        if args.json:
+            print(json.dumps(check, indent=2))
+            return 0
+        print(f"{check['technique']}: {check['verdict']} ({check['status']})")
+        if check["next_variation"]:
+            print(f"  try next: {check['next_variation']}")
+        else:
+            print("  no untried framing left in the library -- move to a related technique")
+        return 0
+
+    if args.technique:
+        prof = record.for_technique(args.technique)
+        print(json.dumps(prof.to_dict(), indent=2) if args.json else prof.explain())
+        return 0
+
+    if args.json:
+        print(json.dumps(record.summary(), indent=2))
+        return 0
+    print(record.render())
+    return 0
+
+
+def cmd_dataset(argv) -> int:
+    """Generate, measure and split the evaluation set (item 20)."""
+    import argparse, json
+    p = argparse.ArgumentParser(
+        prog="main.py dataset",
+        description="Build the generated evaluation set and report what it actually measures.",
+    )
+    p.add_argument("--build", action="store_true", help="Regenerate and save the set")
+    p.add_argument("--seed", type=int, default=20260918)
+    p.add_argument("--per-band", type=int, default=100)
+    p.add_argument("--path", default=None, help="Where to read/write the set")
+    p.add_argument("--measure", action="store_true", help="Classification accuracy, split easy/blind")
+    p.add_argument("--classifier", default="formal", choices=["formal", "heuristic"])
+    p.add_argument("--leakage", action="store_true", help="Overlap with the knowledge corpus")
+    p.add_argument("--split", action="store_true", help="Show the family-wise train/test split")
+    p.add_argument("--show", metavar="CASE_ID", help="Print one case")
+    p.add_argument("--json", action="store_true", help="Emit raw JSON")
+    args = p.parse_args(argv)
+
+    from agent import dataset as ds
+
+    path = args.path or ds.DEFAULT_PATH
+    if args.build:
+        cases = ds.build_dataset(seed=args.seed, per_band=args.per_band)
+        ds.save_dataset(cases, path)
+        gt = os.path.join(os.path.dirname(path), "generated_ground_truth.json")
+        with open(gt, "w", encoding="utf-8") as f:
+            json.dump(ds.to_ground_truth(cases), f, indent=1)
+        print(f"wrote {len(cases)} case(s) to {path}")
+        print(f"eval.py-compatible copy: {gt}")
+        return 0
+
+    cases = ds.load_dataset(path)
+    if not cases:
+        print(f"No dataset at {path}. Run `main.py dataset --build` first.")
+        return 1
+
+    if args.show:
+        for c in cases:
+            if c.id == args.show:
+                print(json.dumps(c.to_dict(), indent=2))
+                return 0
+        print(f"No case with id {args.show}.")
+        return 1
+
+    if args.leakage:
+        report = ds.leakage_report(cases)
+        print(json.dumps(report, indent=2))
+        return 0
+
+    if args.split:
+        train, test = ds.split(cases)
+        from agent.retrieval_eval import family_overlap
+
+        overlap = family_overlap([c.to_dict() for c in train], [c.to_dict() for c in test])
+        print(f"train {len(train)} · test {len(test)} · shared families: {sorted(overlap) or 'none'}")
+        return 0
+
+    report = ds.accuracy_report(cases, args.classifier) if args.measure else None
+    if args.json:
+        print(json.dumps(report or ds.keyword_report(cases), indent=2))
+        return 0
+    print(ds.render_report(cases, report))
+    return 0
+
+
 SUBCOMMAND_NAMES = [
     "run", "search", "list", "history", "chat", "generate", "session", "agent",
     "fetch", "experiment", "corpus", "platform", "webui",
     "curriculum", "graph", "audit", "dashboard", "plugins",
+    "knowledge", "learner", "dataset",
     "doctor", "replay", "metrics", "adversarial", "trust",
 ]
 
@@ -1028,6 +1232,7 @@ def main(argv=None) -> int:
         print("  run         run the full pipeline against a challenge (default if omitted)")
         print("  agent       closed-loop investigative agent (hypotheses, tools, verification)")
         print("  curriculum  what to study next, based on your recorded history")
+        print("  learner     independent-solve rate, hint dependency, transfer to a variation")
         print("  chat        chat with the local CTF tutor")
         print("  history     show past sessions / a technique-frequency progress summary")
         print()
@@ -1035,6 +1240,7 @@ def main(argv=None) -> int:
         print("  search      query your archive directly")
         print("  list        list archive entries on disk, grouped by category")
         print("  graph       see how challenges relate: warm-ups, next steps, routes")
+        print("  knowledge   one node per technique; audit the knowledge base; score card quality")
         print("  corpus      rebuild the local study corpus from the technique library")
         print("  audit       check archive provenance, versions, and contradictions")
         print("  fetch       download public challenges (GitHub / zip URL) for local study")
@@ -1053,6 +1259,7 @@ def main(argv=None) -> int:
         print("  replay      record a run, or replay a saved one against current code")
         print("  metrics     efficiency, hallucination and per-axis scores for a run")
         print("  adversarial run the trap suite: can the agent avoid wrong answers?")
+        print("  dataset     build/measure the generated evaluation set (easy vs blind split)")
         print("  trust       trust policy, and scan a file for injection attempts")
         print()
         print("run `python main.py <subcommand> --help` for that subcommand's options.")

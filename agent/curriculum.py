@@ -237,6 +237,17 @@ def _candidate_techniques() -> List[str]:
             techniques |= {str(t).lower() for t in node.techniques}
     except Exception:
         pass
+    # Resolve through the taxonomy before offering anything. Without this the
+    # plan could schedule "android" and "android-basics" as two separate
+    # lessons, and could offer a concept ("stack-layout") as though it were a
+    # technique the learner could go and solve.
+    try:
+        from agent import taxonomy
+
+        resolved = {taxonomy.canonical(t) for t in techniques if t}
+        techniques = {t for t in resolved if t and not taxonomy.is_concept(t)}
+    except Exception:
+        pass
     return sorted(t for t in techniques if t)
 
 
@@ -264,16 +275,72 @@ def build_curriculum(
     goal: Optional[str] = None,
     length: int = 5,
     last_success: Optional[bool] = None,
+    record: Any = None,
 ) -> Dict[str, Any]:
     """
     Produce an ordered plan.
 
     `goal` optionally pins the curriculum to a target technique, in which
     case the path walks its unmet prerequisites first.
+
+    `record` is an optional `learner_model.LearnerRecord`. Where it exists it
+    outranks raw mastery, because mastery counts successes and the record
+    knows whether the learner was handed the answer. A technique solved three
+    times at hint level 4 has high mastery and no independence; scheduling it
+    as "known" is the mistake item 14 is about.
     """
     profile = build_profile(memory)
     target_difficulty = next_difficulty(profile, last_success)
     lessons: List[Lesson] = []
+
+    # 0. Independence repair — a technique that only ever succeeds with deep
+    #    hints is not learned, whatever the success count says.
+    if record is not None:
+        try:
+            from agent.learner_model import transfer_check
+
+            for technique in list(record.hint_dependent_techniques())[:2]:
+                check = transfer_check(technique, record)
+                lessons.append(Lesson(
+                    kind="repair",
+                    topic=technique,
+                    title=f"Solve unaided: {technique}",
+                    rationale=(
+                        "Solved before, but only after deep hints — retry a different "
+                        "framing with less scaffolding."
+                    ),
+                    difficulty="easy",
+                    concepts=[technique],
+                    challenges=[check["next_variation"]] if check.get("next_variation") else [],
+                    hint_level=1,
+                    priority=1.0,
+                ))
+            # A technique solved unaided once is retested on a new framing
+            # before it counts as transferred (item 15).
+            for technique in record.techniques():
+                if len(lessons) >= length:
+                    break
+                check = transfer_check(technique, record)
+                if check["verdict"] != "retest" or not check.get("next_variation"):
+                    continue
+                lessons.append(Lesson(
+                    kind="practice",
+                    topic=technique,
+                    title=f"Variation: {technique}",
+                    rationale=(
+                        "Solved unaided once. A second, differently-framed challenge is "
+                        "what separates knowing the technique from remembering the puzzle."
+                    ),
+                    difficulty=target_difficulty,
+                    concepts=[technique],
+                    challenges=[check["next_variation"]],
+                    hint_level=1,
+                    priority=0.95,
+                ))
+        except Exception:
+            # The record is an optional input; a malformed one must not cost
+            # the learner their plan.
+            pass
 
     # 1. Repair — recorded misconceptions come first, always.
     for concept in profile.misconception_concepts[:2]:

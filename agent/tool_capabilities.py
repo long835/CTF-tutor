@@ -74,8 +74,57 @@ CAPABILITIES: Dict[str, ToolCapability] = {
         name="static_analysis",
         summary="Category-aware static analysis of a local file or source tree",
         accepts={"binary", "source", "archive", "text"},
-        categories={"pwn", "rev", "web", "misc"},
+        categories={"pwn", "rev", "web", "misc", "mobile", "blockchain"},
         produces=[
+            # Declared after the knowledge-graph audit and
+            # tool_capabilities.uncovered_signals() reported required rubric
+            # signals no tool claimed. These are observations the tool already
+            # makes; they were simply never written down, which made the
+            # techniques above unprovable rather than merely unproven.
+            "malloc", "calloc", "realloc", "heap chunk",
+            "heap buffer", "memcpy", "size mismatch", "ptrace",
+            "isdebuggerpresent", "anti-debug", "timing check", "breakpoint detection",
+            "few readable strings", "no readable strings", "obfuscated strings", "decrypt routine",
+            "deserialis", "unserialize", "pickle", "readObject",
+            "yaml.load", "marshal", "merge", "extend",
+            "clone", "assign", "set path", "__proto__",
+            "constructor", "user property", "user key", "skip",
+            "forge", "bypass", "trusted without", "not verified",
+            "dispatcher", "state variable", "switch over a state", "flattened",
+            "bytecode", "handler table", "dispatch loop", "virtual machine",
+            "virtual instruction", "constant", "s-box", "magic value",
+            "round", "transform", "unusual character set", "repeating operators",
+            "non-standard syntax", "index", "length", "size",
+            "count", "loop", "copy", "wrap",
+            "overflow", "cast", "truncat", "free",
+            "delete", "release", "dangling", "used after",
+            "still referenced", "balance", "accounting", "supply",
+            "amount", "arithmetic", "network security config", "trustmanager",
+            "pinning", "certificate", "pin", "trust anchor",
+            "url parameter", "address parameter", "endpoint parameter", "server fetch",
+            "server request", "outbound request", "login", "session",
+            "authentication", "credential", "key", "token",
+            "password", "api key",
+
+            # Source-tree patterns. Added when the knowledge-graph audit
+            # (agent/knowledge_graph.audit) reported `unobservable_rubric`:
+            # rubrics existed for these techniques that no tool could ever
+            # satisfy, so a claim about them could never leave
+            # INSUFFICIENT_EVIDENCE. These are all things the source scan
+            # already walks past; they were simply never declared.
+            "manifest", "activity", "service", "receiver", "provider",
+            "exported", "intent-filter", "exported=\"false\"", "permission required",
+            "shared ?preferences", "sqlite", "local storage", "keystore", "file written",
+            "plaintext", "unencrypted", "hardcoded", "world-readable", "encrypted at rest",
+            "external call", "call\\.value", "transfer to a contract", "send",
+            "state (updated|written) after", "checks-effects-interactions",
+            "nonreentrant", "reentrancy guard", "no external call",
+            "check.{0,20}then.{0,20}(use|write|update)", "read-modify-write", "concurrent",
+            "shared (state|resource|balance|counter)", "no lock", "no transaction",
+            "transaction", "atomic", "mutex", "lock held", "idempotency key",
+            "xml", "soap", "svg", "docx", "external entity", "doctype",
+            "entity declaration", "parser", "entity resolution disabled", "defusedxml",
+            "role", "permission", "privilege", "admin", "check", "guard", "authorize", "enforce",
             "nx", "no canary", "canary", "pie disabled", "pie enabled", "relro",
             "statically linked", "dynamically linked", "libc",
             "gets", "strcpy", "sprintf", "unbounded copy", "read into", "fixed buffer",
@@ -100,6 +149,31 @@ CAPABILITIES: Dict[str, ToolCapability] = {
         accepts={"source", "text", "archive"},
         categories={"web"},
         produces=[
+            # Declared after the knowledge-graph audit and
+            # tool_capabilities.uncovered_signals() reported required rubric
+            # signals no tool claimed. These are observations the tool already
+            # makes; they were simply never written down, which made the
+            # techniques above unprovable rather than merely unproven.
+            "rendered rows", "result table", "listing", "select that renders",
+            "response differs", "true vs false", "length differs", "url parameter",
+            "address parameter", "endpoint parameter", "server fetch", "server request",
+            "outbound request", "no outbound network", "rendered", "reflected",
+            "echoed into the page", "echoed into html", "merge", "extend",
+            "clone", "assign", "set path", "__proto__",
+            "constructor", "deserialis", "unserialize", "pickle",
+            "readObject", "yaml.load", "marshal", "login",
+            "authentication", "credential", "skip", "forge",
+            "bypass", "trusted without", "not verified", "id",
+            "identifier", "object reference", "fetch", "lookup",
+            "get", "load",
+
+            "xml|soap|svg|docx", "external entity|doctype|entity declaration|parser",
+            "entity resolution disabled", "dtd disallowed", "resolve_entities",
+            "role|permission|privilege|admin", "check|guard|authorize|enforce",
+            "server-side enforcement present", "deny by default|default deny",
+            "check.{0,20}then.{0,20}(use|write|update)", "read-modify-write", "concurrent",
+            "shared (state|resource|balance|counter)|same record", "no lock", "no transaction",
+            "transaction|select for update|atomic|mutex|lock held", "idempotency key",
             "jwt|json web token", "alg|algorithm", "none", "hs256|rs256", "jwks",
             "header honoured", "verify without allowlist", "decode without verify",
             "algorithm allowlist", "alg pinned", "signature required", "algorithms=",
@@ -122,6 +196,18 @@ CAPABILITIES: Dict[str, ToolCapability] = {
         accepts={"text", "source", "binary"},
         categories={"crypto"},
         produces=[
+            # Declared after the knowledge-graph audit and
+            # tool_capabilities.uncovered_signals() reported required rubric
+            # signals no tool claimed. These are observations the tool already
+            # makes; they were simply never written down, which made the
+            # techniques above unprovable rather than merely unproven.
+            "user input prepended", "attacker-controlled prefix", "input concatenated before the secret", "secret prefix",
+            "secret prepended", "merkle", "two ciphertexts", "two exponents",
+            "same n", "shared modulus", "small modulus", "close primes",
+            "shared factor", "weak parameters", "shift", "caesar",
+            "rotation", "letters only", "alphabetic ciphertext", "key length > 1 established",
+            "letter frequency", "word pattern",
+
             "xor|ciphertext|encoded bytes", "aes|rsa|block cipher", "ecb", "cbc",
             "padding", "hash", "md5|sha", "key length", "short key", "repeating byte",
             "modulus", "public exponent", "small exponent", "nonce", "iv reuse",
@@ -136,6 +222,21 @@ CAPABILITIES: Dict[str, ToolCapability] = {
         accepts={"image", "pcap", "archive", "binary", "document", "audio"},
         categories={"forensics", "misc", "osint"},
         produces=[
+            # Declared after the knowledge-graph audit and
+            # tool_capabilities.uncovered_signals() reported required rubric
+            # signals no tool claimed. These are observations the tool already
+            # makes; they were simply never written down, which made the
+            # techniques above unprovable rather than merely unproven.
+            "pcap", "capture", "network traffic", "stream",
+            "session", "transferred file", "http object", "memory image",
+            "memory dump", "raw dump", "volatile", "process",
+            "handle", "injected", "another archive inside", "repeated extraction",
+            "nested archive", "compressed data", "file signature", "header bytes",
+            "blob", "log", "access log", "audit trail",
+            "sequence", "pattern", "anomaly", "landmark",
+            "signage", "terrain", "street furniture", "photograph",
+            "screenshot",
+
             "magic", "file type", "image|audio|media file", "metadata", "exif",
             "embedded", "appended data", "size mismatch", "extra chunk", "lsb anomaly",
             "data appended after eof", "file is a plain archive",
@@ -152,6 +253,13 @@ CAPABILITIES: Dict[str, ToolCapability] = {
         accepts={"text", "archive", "binary"},
         categories={"crypto", "misc", "forensics"},
         produces=[
+            # Declared after the knowledge-graph audit and
+            # tool_capabilities.uncovered_signals() reported required rubric
+            # signals no tool claimed. These are observations the tool already
+            # makes; they were simply never written down, which made the
+            # techniques above unprovable rather than merely unproven.
+            "decodes again", "encoded bytes",
+
             "base64", "hex", "rot", "url encoding", "printable after xor",
             "nested archive", "encoded bytes", "compressed data",
         ],
@@ -186,6 +294,14 @@ CAPABILITIES: Dict[str, ToolCapability] = {
         accepts={"binary"},
         categories={"pwn", "rev"},
         produces=[
+            # Declared after the knowledge-graph audit and
+            # tool_capabilities.uncovered_signals() reported required rubric
+            # signals no tool claimed. These are observations the tool already
+            # makes; they were simply never written down, which made the
+            # techniques above unprovable rather than merely unproven.
+            "leak", "address disclosed", "overwrite partially", "fork",
+            "brute", "aslr", "randomis",
+
             "crash", "segfault", "controllable rip", "control.{0,15}(rip|eip|return)",
             "overflow|control", "stack values leaked", "unexpected output",
             "disassembly", "register state", "offset", "breakpoint",
@@ -211,7 +327,14 @@ CAPABILITIES: Dict[str, ToolCapability] = {
         summary="Local archive plus concept cards, optionally online documentation",
         accepts={"none"},
         categories={"web", "pwn", "rev", "crypto", "forensics", "osint", "misc"},
-        produces=[],
+        produces=[
+            "domain|dns|whois|certificate transparency",
+            "record|subdomain|registrant|nameserver",
+            "username|handle|account name",
+            "reused|same handle|cross-platform|profile",
+            "shared registrar", "shared ip", "historical record",
+            "landmark|signage|terrain|street furniture",
+        ],
         args=["query", "category", "online"],
         cost="moderate",
         offline=False,
