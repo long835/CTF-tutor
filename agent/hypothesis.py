@@ -124,12 +124,26 @@ def update_hypotheses_from_observation(
         f"New observation (source={source}):\n{observation[:2500]}\n\n"
         f"Challenge context:\n{state.challenge_summary[:400]}"
     )
+    # Evidence moves belief, not the model (item 4). The Bayesian update in
+    # agent/belief.py grades the observation against each hypothesis's own
+    # rubric, so the arithmetic is the same whether a model answered or not
+    # — and a repeated observation moves nothing.
+    graded = False
+    try:
+        from agent.belief import update_beliefs
+        graded = bool(update_beliefs(state, observation, source=source))
+    except Exception:
+        graded = False
+
     try:
         raw = call_ollama(SYSTEM_UPDATE, user, model=model)
         data = extract_json_object_lenient(raw) or {}
     except Exception:
-        # Offline / failure path: simple keyword heuristic
-        _heuristic_update(state, observation)
+        # Offline / failure path. The rubric-based grading above has already
+        # run; the keyword heuristic is only needed for hypotheses it could
+        # not grade at all.
+        if not graded:
+            _heuristic_update(state, observation)
         return
 
     id_map = {h.id: h for h in state.hypotheses}
@@ -141,10 +155,20 @@ def update_hypotheses_from_observation(
         delta = float(upd.get("delta", 0.0))
         delta = max(-0.35, min(0.35, delta))
         reason = (upd.get("reason") or "evidence update").strip()
-        h.update_confidence(delta, reason=reason)
+        # A model may lower a hypothesis or reject it — noticing a
+        # contradiction is a real contribution. It may not raise one: that
+        # is what the evidence rubric is for, and a confident-sounding reply
+        # is not an observation.
+        if graded and delta > 0:
+            continue
+        h.update_confidence(delta, reason=f"model: {reason}")
         new_status = upd.get("new_status")
-        if new_status in ("active", "rejected", "confirmed"):
-            h.status = new_status
+        if new_status == "rejected":
+            h.status = "rejected"
+        elif new_status == "active":
+            h.status = "active"
+        elif new_status == "confirmed" and not graded:
+            h.status = "confirmed"
 
     for fact in data.get("new_facts", []) or []:
         if isinstance(fact, str) and fact.strip():

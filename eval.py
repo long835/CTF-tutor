@@ -32,13 +32,31 @@ def load_cases(path: Path):
     return data
 
 
-def run(path: Path = DEFAULT_DATA, decompose: bool = False, model: str = "") -> int:
+def _predict(desc: str, which: str, model: str) -> str:
+    """
+    Pick a classifier.
+
+    The formal classifier always returns a category; the legacy heuristic
+    returns None whenever it is unsure, which scores as a miss. Both are kept
+    so the difference stays measurable rather than becoming folklore.
+    """
+    if which == "formal":
+        from agent.classify_challenge import classify_formal
+
+        return classify_formal(desc)
+    if model:
+        return classifier.classify(desc, model=model)
+    return classifier.classify_heuristic(desc)[0]
+
+
+def run(path: Path = DEFAULT_DATA, decompose: bool = False, model: str = "",
+        which: str = "formal") -> int:
     cases = load_cases(path)
     category_ok = 0
     tp = fp = fn = 0
     for case in cases:
         desc = str(case["description"])
-        predicted = classifier.classify(desc, model=model) if model else classifier.classify_heuristic(desc)[0]
+        predicted = _predict(desc, which, model)
         ok = predicted == case["expected_category"]
         category_ok += int(ok)
         print(f"{case['id']}: category={predicted!r} expected={case['expected_category']!r} {'OK' if ok else 'MISS'}")
@@ -67,5 +85,7 @@ if __name__ == "__main__":
     parser.add_argument("--data", type=Path, default=DEFAULT_DATA)
     parser.add_argument("--decompose", action="store_true", help="also evaluate technique tags using local Ollama")
     parser.add_argument("--model", default="", help="Ollama model for --decompose")
+    parser.add_argument("--classifier", default="formal", choices=["formal", "heuristic"],
+                        help="formal (agent/classify_challenge.py) or the legacy heuristic")
     args = parser.parse_args()
-    raise SystemExit(run(args.data, args.decompose, args.model))
+    raise SystemExit(run(args.data, args.decompose, args.model, args.classifier))

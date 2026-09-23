@@ -43,6 +43,7 @@ import argparse
 import json
 import os
 import sys
+from pathlib import Path
 from typing import Dict, Optional
 
 import classifier
@@ -832,10 +833,186 @@ def cmd_plugins(argv) -> int:
     return 0
 
 
+def cmd_doctor(argv) -> int:
+    """Report what this machine can actually run (items 42, 43, 44)."""
+    p = argparse.ArgumentParser(
+        prog="main.py doctor",
+        description="Check Python, packages, CTF tooling, model backend and hardware.",
+    )
+    p.add_argument("--json", action="store_true", help="Emit raw JSON")
+    p.add_argument("--skip-model", action="store_true",
+                   help="Do not probe the model backend (faster, fully offline)")
+    args = p.parse_args(argv)
+
+    from agent.doctor import probe, render_report, summary
+
+    checks = probe(include_model=not args.skip_model)
+    if args.json:
+        print(json.dumps({"summary": summary(checks),
+                          "checks": [c.to_dict() for c in checks]}, indent=2, default=str))
+    else:
+        print(render_report(checks))
+    # Non-zero only for genuinely blocking problems: a missing optional tool
+    # must not fail someone's CI.
+    return 0 if summary(checks)["usable"] else 1
+
+
+def cmd_replay(argv) -> int:
+    """Record and replay investigations deterministically (items 26, 27)."""
+    p = argparse.ArgumentParser(
+        prog="main.py replay",
+        description="Record an agent run, or replay a saved one against the current code.",
+    )
+    sub = p.add_subparsers(dest="action", required=True)
+
+    rec = sub.add_parser("record", help="run an investigation and save a replayable record")
+    rec.add_argument("challenge")
+    rec.add_argument("--category", default=None)
+    rec.add_argument("--path", default=None, help="challenge files to triage")
+    rec.add_argument("--max-steps", type=int, default=8)
+    rec.add_argument("--out", default=None)
+
+    rep = sub.add_parser("run", help="replay a saved record and diff the decisions")
+    rep.add_argument("record")
+    rep.add_argument("--json", action="store_true")
+
+    show = sub.add_parser("show", help="summarise a saved record")
+    show.add_argument("record")
+
+    args = p.parse_args(argv)
+    from agent.replay import RunRecord, diff_records, record_run, replay
+
+    if args.action == "record":
+        state, record = record_run(
+            challenge=args.challenge,
+            category=args.category,
+            max_steps=args.max_steps,
+            challenge_path=args.path,
+        )
+        path = record.save(args.out)
+        print(f"recorded {len(record.steps)} step(s) -> {path}")
+        print(f"status: {record.final_status} (confidence {record.final_confidence:.2f})")
+        return 0
+
+    record = RunRecord.load(args.record)
+
+    if args.action == "show":
+        print(f"challenge: {record.challenge[:100]}")
+        print(f"category:  {record.category or 'unknown'} | steps: {len(record.steps)}")
+        print(f"outcome:   {record.final_status} ({record.final_confidence:.2f})")
+        print("decisions: " + " -> ".join(record.decisions()) or "(none)")
+        if record.metrics:
+            print("metrics:   " + json.dumps(record.metrics))
+        return 0
+
+    state, executor = replay(record)
+    diff = diff_records(record, state, executor)
+    print(json.dumps(diff.to_dict(), indent=2) if args.json else diff.render())
+    return 1 if diff.regressed else 0
+
+
+def cmd_metrics(argv) -> int:
+    """Score a recorded run on every evaluation axis (items 21, 59, 60)."""
+    p = argparse.ArgumentParser(
+        prog="main.py metrics",
+        description="Efficiency, hallucination and per-dimension scores for a saved run.",
+    )
+    p.add_argument("record", help="a replay record, or a workspace state JSON")
+    p.add_argument("--json", action="store_true")
+    args = p.parse_args(argv)
+
+    from agent.metrics import detect_hallucinations, efficiency, score_run
+    from agent.state import AgentState
+
+    raw = json.loads(Path(args.record).read_text(encoding="utf-8"))
+    if "steps" in raw and "challenge" in raw:
+        # A replay record: re-derive the state by replaying it, which is
+        # cheaper and more faithful than storing a second copy of the state.
+        from agent.replay import RunRecord, replay
+
+        state, _ = replay(RunRecord.from_dict(raw))
+    else:
+        state = AgentState.from_dict(raw)
+
+    graph = None
+    try:
+        from agent.evidence_graph import build_graph
+
+        graph = build_graph(state)
+    except Exception:
+        graph = None
+
+    if args.json:
+        print(json.dumps({
+            "efficiency": efficiency(state).to_dict(),
+            "hallucination": detect_hallucinations(state, graph=graph).to_dict(),
+            "dimensions": score_run(state, graph=graph).to_dict(),
+        }, indent=2, default=str))
+    else:
+        from agent.metrics import scorecard
+
+        print(scorecard(state, graph=graph))
+    return 0
+
+
+def cmd_adversarial(argv) -> int:
+    """Run the adversarial evaluation suite (item 22)."""
+    p = argparse.ArgumentParser(
+        prog="main.py adversarial",
+        description="Challenges built to fool the agent. Reports trap avoidance, "
+                    "not solve rate.",
+    )
+    p.add_argument("--data", default=None, help="path to an adversarial case file")
+    p.add_argument("--trap", default=None, help="run only one trap type")
+    p.add_argument("--max-steps", type=int, default=5)
+    p.add_argument("--json", action="store_true")
+    args = p.parse_args(argv)
+
+    from agent.adversarial import ADVERSARIAL_PATH, default_runner, load_cases, run_suite
+
+    cases = load_cases(Path(args.data) if args.data else ADVERSARIAL_PATH)
+    if args.trap:
+        cases = [c for c in cases if c.trap == args.trap]
+    if not cases:
+        print("no adversarial cases found")
+        return 1
+
+    report = run_suite(lambda case: default_runner(case, max_steps=args.max_steps), cases)
+    print(json.dumps(report.to_dict(), indent=2) if args.json else report.render())
+    # Non-zero when any trap was walked into: this is a suite you want in CI.
+    return 0 if report.avoided == len(report.results) else 1
+
+
+def cmd_trust(argv) -> int:
+    """Show the trust policy and scan text for injection attempts (items 45/46)."""
+    p = argparse.ArgumentParser(
+        prog="main.py trust",
+        description="Trust levels, and what counts as an instruction-position attempt.",
+    )
+    p.add_argument("--scan", default=None, help="a file to scan for injection attempts")
+    args = p.parse_args(argv)
+
+    from agent.trust import Trust, detect_injection, render_trust_policy
+
+    print(render_trust_policy())
+    if args.scan:
+        text = Path(args.scan).read_text(encoding="utf-8", errors="replace")
+        findings = detect_injection(text, Trust.CHALLENGE)
+        print()
+        if not findings:
+            print(f"{args.scan}: no instruction-position attempts found")
+        else:
+            print(f"{args.scan}: {len(findings)} attempt(s)")
+            for finding in findings:
+                print(f"  {finding}")
+    return 0
+
+
 SUBCOMMAND_NAMES = [
     "run", "search", "list", "history", "chat", "generate", "session", "agent",
     "fetch", "experiment", "corpus", "platform", "webui",
     "curriculum", "graph", "audit", "dashboard", "plugins",
+    "doctor", "replay", "metrics", "adversarial", "trust",
 ]
 
 
@@ -870,6 +1047,13 @@ def main(argv=None) -> int:
         print("  webui       start the local web UI")
         print("  plugins     list third-party toolkits from plugins/")
         print("  platform    query optional CTFd / HTB APIs")
+        print()
+        print("diagnostics:")
+        print("  doctor      check what this machine can actually run")
+        print("  replay      record a run, or replay a saved one against current code")
+        print("  metrics     efficiency, hallucination and per-axis scores for a run")
+        print("  adversarial run the trap suite: can the agent avoid wrong answers?")
+        print("  trust       trust policy, and scan a file for injection attempts")
         print()
         print("run `python main.py <subcommand> --help` for that subcommand's options.")
         if not argv:

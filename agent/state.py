@@ -137,6 +137,16 @@ class AgentState:
     solution_summary: str = ""
     flag_candidate: str = ""
 
+    # Audit trail for Bayesian belief updates (agent/belief.py). Doubles as
+    # the de-duplication source: a signal already counted from a given tool
+    # must not move confidence a second time.
+    belief_updates: List[Dict[str, Any]] = field(default_factory=list)
+    # Reasoning-loop bookkeeping (agent/reasoning.py, agent/recovery.py).
+    phase: str = "observe"
+    phase_history: List[str] = field(default_factory=list)
+    abandoned_actions: List[str] = field(default_factory=list)
+    recovery_events: List[Dict[str, Any]] = field(default_factory=list)
+
     max_steps: int = 12
     step_count: int = 0
     created_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())

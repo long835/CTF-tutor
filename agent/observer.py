@@ -81,6 +81,30 @@ def observe(
                 clean.append(fl)
         flags = clean
         if flags:
+            # Grade before accepting (items 62/63). The previous behaviour took
+            # flags[0] on sight, which is exactly how a planted decoy wins: it
+            # is usually placed where the first tool will hit it.
+            accepted = list(flags)
+            try:
+                from agent.flag_check import FlagVerdict, check_flag
+
+                graded = [(fl, check_flag(fl, state=state)) for fl in flags]
+                rejected = [(fl, c) for fl, c in graded
+                            if c.verdict in (FlagVerdict.DECOY, FlagVerdict.REJECTED)]
+                for fl, check in rejected:
+                    state.add_fact(f"Rejected flag-shaped string {fl}: "
+                                   f"{check.verdict.value} — {'; '.join(check.reasons[:2])}")
+                    state.lessons.append(
+                        f"{fl} looks like a flag but is {check.verdict.value}. A "
+                        f"flag-shaped string is not a flag."
+                    )
+                accepted = [fl for fl, c in graded
+                            if c.verdict not in (FlagVerdict.DECOY, FlagVerdict.REJECTED)]
+            except Exception:
+                accepted = list(flags)
+            if not accepted:
+                return evidence
+            flags = accepted
             for fl in flags:
                 state.add_fact(f"FLAG_CANDIDATE: {fl}")
             state.flag_candidate = flags[0]

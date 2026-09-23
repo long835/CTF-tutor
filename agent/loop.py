@@ -21,6 +21,10 @@ from agent.planner import plan_next_action, action_to_record
 from agent.executor import execute_action
 from agent.observer import observe
 from agent.verifier import verify_solution, apply_verification
+from agent.evidence_graph import EvidenceGraph
+from agent.reasoning import Phase, ReasoningMachine
+from agent.recovery import apply_recovery, diagnose, recovery_report
+from agent.tool_result import ToolResult
 
 
 class AgentLoop:
@@ -46,6 +50,7 @@ class AgentLoop:
         model: Optional[str] = None,
         challenge_path: Optional[str] = None,
         enable_trace: bool = True,
+        executor: Optional[Callable[[Any], Any]] = None,
     ):
         self.state = new_challenge_state(
             summary=challenge_summary,
@@ -54,6 +59,10 @@ class AgentLoop:
             max_steps=max_steps,
         )
         self.on_event = on_event or (lambda *_: None)
+        # Injectable so a recorded run can be replayed without re-running
+        # tools, and so end-to-end tests can drive the whole pipeline with
+        # deterministic tool output instead of a live toolchain.
+        self.executor = executor or execute_action
         self.model = model
         self.challenge_path = challenge_path
         self._bootstrapped = False
@@ -62,6 +71,14 @@ class AgentLoop:
         self.learner = None
         self.hint_level = 2
         self.step_timeout_sec = 25.0
+        # Phase 2 reasoning layer. The graph is the fused view of what has
+        # actually been observed; the machine tracks which phase the
+        # investigation is in and makes each step state its disconfirming
+        # outcome before the step is spent.
+        self.graph = EvidenceGraph(challenge_id=self.state.challenge_id)
+        self.profile = None
+        self.reasoning = ReasoningMachine(self.state)
+        self.last_rationale = None
         if enable_trace:
             try:
                 from agent.trace import TraceLogger
@@ -102,16 +119,35 @@ class AgentLoop:
             except Exception as e:
                 self.state.add_fact(f"Triage failed: {e}")
 
-        # Seed category if missing (heuristic only — no LLM required)
-        if not self.state.category:
-            try:
-                from classifier import classify_heuristic
-                cat, scores = classify_heuristic(self.state.challenge_summary)
-                if cat:
-                    self.state.category = cat
-                    self.state.add_fact(f"Heuristic category: {cat} (scores={scores})")
-            except Exception as e:
-                self.state.add_fact(f"Classification seed failed: {e}")
+        # Formal classification (item 13). Runs whether or not a category was
+        # given, because the profile also supplies candidate techniques,
+        # artifact kinds and a tool shortlist that later stages would
+        # otherwise each re-derive. It always returns a category, so the
+        # planner never falls through every category branch.
+        self.profile = None
+        try:
+            from agent.classify_challenge import apply_profile_to_state, profile_for_state
+
+            self.profile = profile_for_state(self.state)
+            apply_profile_to_state(self.state, self.profile)
+            self._emit(
+                "classified",
+                category=self.profile.category,
+                confidence=self.profile.confidence,
+                ambiguous=self.profile.ambiguous,
+                techniques=self.profile.top_techniques[:4],
+            )
+        except Exception as e:
+            self.state.add_fact(f"Formal classification failed: {e}")
+            if not self.state.category:
+                try:
+                    from classifier import classify_heuristic
+                    cat, scores = classify_heuristic(self.state.challenge_summary)
+                    if cat:
+                        self.state.category = cat
+                        self.state.add_fact(f"Heuristic category: {cat} (scores={scores})")
+                except Exception as inner:
+                    self.state.add_fact(f"Classification seed failed: {inner}")
 
         # Skill pack playbook
         try:
@@ -154,6 +190,52 @@ class AgentLoop:
                     "Review prerequisites for: " + ", ".join(weak[:3])
                 )
 
+        # Seed the graph: the description is an observation from the user,
+        # artifacts are nodes, and each candidate technique gets its rubric
+        # attached so the gaps are known before the first tool runs.
+        try:
+            if self.state.challenge_summary:
+                self.graph.add_observation(
+                    label="challenge description",
+                    source="user",
+                    detail=self.state.challenge_summary[:400],
+                    confidence=0.9,
+                )
+            for path in self.state.discovered_artifacts:
+                self.graph.add_artifact(str(path))
+            for h in self.state.hypotheses:
+                self.graph.add_hypothesis(h)
+            for technique in self.state.candidate_techniques:
+                self.graph.attach_technique(str(technique))
+        except Exception as e:
+            self.state.add_fact(f"Evidence graph seeding note: {e}")
+
+        # An injection attempt in the challenge is worth telling the learner
+        # about: it is part of the challenge, and it is also the marker of an
+        # adversarial evaluation case.
+        try:
+            from agent.trust import Trust, detect_injection
+
+            attempts = detect_injection(self.state.challenge_summary, Trust.CHALLENGE)
+            if attempts:
+                self.state.add_fact(
+                    f"Challenge text contains {len(attempts)} instruction-like "
+                    f"passage(s); treated as data, not instructions."
+                )
+                self.state.lessons.append(
+                    "This challenge tried to give the agent instructions. Challenge "
+                    "content is always data — never a directive."
+                )
+                self._emit("injection_detected",
+                           kinds=[a.kind for a in attempts])
+        except Exception:
+            pass
+
+        self.reasoning.transition(
+            Phase.CLASSIFY if not self.state.category else Phase.HYPOTHESIZE,
+            note="bootstrap",
+        )
+
         self._bootstrapped = True
         self._emit(
             "bootstrap_done",
@@ -194,7 +276,30 @@ class AgentLoop:
             return {"stopped": True, "reason": self.state.status, "state": self.state}
 
         self.state.step_count += 1
-        plan = plan_next_action(self.state)
+
+        # PLAN. The gate refuses an action that cannot state what result
+        # would change the agent's mind; recovery then changes the situation
+        # (bans, retired hypotheses, reopened alternatives) and the planner
+        # is asked once more against the new situation.
+        self.reasoning.transition(Phase.PLAN, note=f"step{self.state.step_count}")
+        plan = plan_next_action(self.state, graph=self.graph)
+        if plan is not None:
+            permitted, rationale = self.reasoning.gate(plan, graph=self.graph)
+            self.last_rationale = rationale
+            if not permitted:
+                self._emit("action_refused", step=self.state.step_count,
+                           tool=plan.tool, reason="no disconfirming outcome")
+                self.reasoning.transition(Phase.RECOVER, note="ungated action")
+                apply_recovery(self.state, graph=self.graph)
+                plan = plan_next_action(self.state, graph=self.graph)
+                if plan is not None:
+                    _, self.last_rationale = self.reasoning.gate(plan, graph=self.graph)
+            if self.last_rationale is not None:
+                self._emit("rationale", step=self.state.step_count,
+                           **self.last_rationale.to_dict())
+                if self.trace:
+                    self.trace.log("rationale", **self.last_rationale.to_dict())
+
         if plan is None:
             self.state.status = "stuck"
             self._emit("stuck", step=self.state.step_count)
@@ -214,6 +319,30 @@ class AgentLoop:
         except Exception:
             pass
 
+        # Trust gate (items 45/46). Tool arguments can be shaped by challenge
+        # content — a filename lifted out of an archive, a path echoed from a
+        # description — so they are checked before launch, not after.
+        try:
+            from agent.trust import check_tool_arguments
+
+            # The root is the directory the user pointed the agent at. Naming a
+            # directory is USER-level consent to read it; without that, the
+            # workspace is the only permitted root. Traversal *within* the root
+            # is still refused.
+            allowed_root = self.challenge_path or "."
+            problems = check_tool_arguments(plan.tool, plan.arguments, root=allowed_root)
+            if problems:
+                for problem in problems:
+                    self.state.add_fact(f"Blocked unsafe argument: {problem}")
+                self._emit("action_denied", step=self.state.step_count,
+                           tool=plan.tool, problems=problems)
+                if self.trace:
+                    self.trace.log("action_denied", tool=plan.tool, problems=problems)
+                return {"step": self.state.step_count, "tool": plan.tool,
+                        "success": False, "blocked": True, "state": self.state}
+        except Exception:
+            pass
+
         record = action_to_record(plan, self.state)
         self._emit(
             "action_planned",
@@ -228,7 +357,7 @@ class AgentLoop:
         record.status = ActionStatus.RUNNING.value
         record.started_at = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
         try:
-            success, output, error = execute_action(record)
+            success, output, error = self.executor(record)
         except Exception as exc:
             success, output, error = False, "", f"executor crash: {exc}"
         duration_ms = int((time.time() - t0) * 1000)
@@ -247,7 +376,23 @@ class AgentLoop:
             duration_ms=duration_ms,
         )
 
-        # Observe → evidence → hypothesis update
+        # INTERPRET. Normalize before anything reasons over the result, so a
+        # crashed tool enters the graph as a coverage gap rather than as the
+        # observation that there was nothing to find.
+        self.reasoning.transition(Phase.INTERPRET, note=plan.tool)
+        try:
+            normalized = ToolResult.from_tuple(plan.tool, (success, output, error))
+            artifact = str(plan.arguments.get("path")
+                           or plan.arguments.get("path_or_text") or "")
+            self.graph.add_tool_result(normalized, artifact=artifact)
+            top = self.state.top_hypothesis()
+            if top is not None and getattr(top, "technique", ""):
+                self.graph.attach_technique(top.technique)
+        except Exception as e:
+            self.state.add_fact(f"Graph ingestion note: {e}")
+
+        # Observe → evidence → belief update (agent/belief.py, via hypothesis)
+        self.reasoning.transition(Phase.UPDATE, note="observation")
         observe(
             self.state,
             tool=plan.tool,
@@ -255,6 +400,24 @@ class AgentLoop:
             success=success,
             error=error,
         )
+
+        # DECIDE. Diagnose the record and act on anything serious, so the
+        # next plan is made in a changed situation rather than the same one.
+        self.reasoning.transition(Phase.DECIDE, note="post-observation")
+        try:
+            found = diagnose(self.state, graph=self.graph)
+            if any(d.severity in ("serious", "fatal") for d in found):
+                self.reasoning.transition(Phase.RECOVER, note=found[0].pattern)
+                changes = apply_recovery(self.state, graph=self.graph, diagnoses=found)
+                if changes:
+                    self._emit("recovery", step=self.state.step_count,
+                               patterns=[d.pattern for d in found], actions=changes)
+                    if self.trace:
+                        self.trace.log("recovery",
+                                       diagnoses=[d.to_dict() for d in found],
+                                       actions=changes)
+        except Exception as e:
+            self.state.add_fact(f"Recovery check note: {e}")
 
         self._emit(
             "action_finished",
@@ -296,7 +459,12 @@ class AgentLoop:
                 self.state.solution_summary = (
                     f"Leading hypothesis ({top.confidence:.2f}): {top.statement}"
                 )
-            verdict = verify_solution(self.state, self.state.solution_summary or self.state.flag_candidate)
+            self.reasoning.transition(Phase.VERIFY, note="final")
+            verdict = verify_solution(
+                self.state,
+                self.state.solution_summary or self.state.flag_candidate,
+                graph=self.graph,
+            )
             apply_verification(self.state, verdict)
             self._emit("verification", **verdict)
 
@@ -323,6 +491,10 @@ class AgentLoop:
             except Exception:
                 pass
 
+        self.reasoning.transition(
+            Phase.DONE if self.state.status in ("verified", "solved") else Phase.STUCK,
+            note=self.state.status,
+        )
         self._emit("finished", status=self.state.status, confidence=self.state.overall_confidence)
         return self.state
 
@@ -337,10 +509,32 @@ class AgentLoop:
         ]
         for h in rank_hypotheses(self.state):
             lines.append(f"- [{h.confidence:.2f}] {h.statement}  ({h.technique or '—'})")
+        try:
+            from agent.belief import explain_beliefs
+            lines.append("")
+            lines.append(explain_beliefs(self.state))
+        except Exception:
+            pass
         lines.append("")
         lines.append("### Evidence collected")
         for e in self.state.evidence[-8:]:
             lines.append(f"- [{e.source}] {e.finding or e.content[:100]}")
+        try:
+            if len(self.graph):
+                lines.append("")
+                lines.append("### How the evidence fits together")
+                lines.append("```")
+                lines.append(self.graph.render())
+                lines.append("```")
+        except Exception:
+            pass
+        try:
+            report = recovery_report(self.state, graph=self.graph)
+            if "No stall" not in report:
+                lines.append("")
+                lines.append(report)
+        except Exception:
+            pass
         if self.state.solution_summary:
             lines.append("")
             lines.append("### Current conclusion")

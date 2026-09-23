@@ -1,5 +1,112 @@
 # Changelog
 
+## Phase 4 — Hardening
+
+Items 8, 13, 22, 45, 46, 62, 63. The hardest remaining items, chosen because
+each is a place where a confident wrong answer is worse than no answer.
+
+### New modules
+- `agent/classify_challenge.py` — weighted-signal classification producing a
+  full `ChallengeProfile` (category + confidence + the signals behind it,
+  runner-up, artifact kinds, candidate techniques, tool shortlist). Artifact
+  kinds outrank prose; an evidence floor keeps scattered weak matches from
+  naming a specialised category. **11/20 → 20/20** on the eval set (in-sample).
+- `agent/trust.py` — ordered trust levels (SYSTEM > DEVELOPER > USER > TOOL >
+  CHALLENGE > RETRIEVED > WEB) enforced in `PromptBuilder`: content below USER
+  cannot occupy instruction position, data is fenced with a per-prompt nonce,
+  and injection attempts are recorded rather than silently filtered. Plus the
+  artifact threat model — traversal, symlink escape, decompression bombs,
+  oversized files, unsafe tool arguments.
+- `agent/flag_check.py` — flag grading by provenance, decoy markers, stated
+  format and optional reproduction, returning REPRODUCED / VERIFIED /
+  PLAUSIBLE / FORMAT_ONLY / DECOY / REJECTED. `verify_solution_steps` requires
+  technique support, a verified flag and reproducible steps together.
+- `agent/adversarial.py` + `data/eval/adversarial.json` — 15 cases across 9
+  trap types, scored on trap avoidance and overclaim rate rather than solve
+  rate. **10/15 → 15/15 avoided**, overclaim rate 27% → 0%.
+
+### Changed
+- `agent/sandbox.py` — `SandboxPolicy` with four tiers (inspect / analyse /
+  debug / hostile) separating filesystem, network, process and resource
+  limits. Fails closed on an unresolvable command, a working directory outside
+  the allowed roots, a network tool under a DENY policy, and a null byte in
+  arguments. `network=DENY` unshares the network namespace where the kernel
+  allows it, and says which enforcement you got. An unknown tier gets the
+  tightest policy, not the default.
+- `agent/verifier.py` — the flag early-accept path is gone. Anything
+  flag-shaped used to return `pass` at 0.9 confidence.
+- `agent/observer.py` — grades a flag before adopting it.
+- `agent/loop.py` — formal classification at bootstrap, trust gate on tool
+  arguments before launch, injection attempts surfaced as a lesson.
+- `agent/evidence.py` — contradicting signals for `format-string` and
+  `stack-buffer-overflow` rephrased as patterns.
+- `eval.py` — `--classifier {formal,heuristic}` so the difference stays
+  measurable.
+- `main.py` — new `adversarial` and `trust` subcommands.
+
+### Fixed
+Three defects the adversarial suite found on its first run, and two of my own:
+- The observer adopted the first flag-shaped string it saw, so a planted decoy
+  won every time.
+- `invented_tool_output` scanned `state.lessons`, reading "run checksec first"
+  as a claim that checksec had run.
+- A contradicting signal was a literal sentence, so natural rephrasing slipped
+  past and a refuted hypothesis stayed live at 0.98 confidence.
+- The trust gate rejected the user's own challenge directory (root was
+  hardcoded to the workspace).
+- The argument check rejected shell metacharacters in free-text payloads,
+  where no shell is involved.
+
+### Tests
+- `tests/test_hardening_phase4.py` — 62 tests. Suite total: 530 → 592.
+
+
+## Phase 3 — Evaluation, replay and diagnostics
+
+Items 18, 19, 21, 26, 27, 42, 43, 44, 54, 55, 56, 59, 60, 64, 65.
+
+### New modules
+- `agent/replay.py` — `RunRecord`, `Recorder`, `ReplayExecutor`, `diff_records`.
+  A run is captured completely enough to re-run offline with no tools, no
+  network and no model; `diff_records` reports whether a code change altered
+  the reasoning and whether it regressed.
+- `agent/metrics.py` — efficiency metrics, hallucination detection (invented
+  flags, invented tool output, unsupported techniques, overconfidence), and the
+  12-axis dimension scorecard.
+- `agent/retrieval_eval.py` — Recall@K, Precision@K, MRR, nDCG@K, plus
+  `leakage`, `check_contamination`, `split_by_family` for keeping evaluation
+  answers out of the corpus.
+- `agent/doctor.py` — tiered environment probe (core / model / analysis / dev /
+  gpu) that reports missing tooling as degraded challenge *categories*.
+- `agent/difficulty.py` — difficulty measured from six observable factors
+  instead of taken from a label.
+
+### Changed
+- `agent/writeup.py` rewritten: provenance per claim, what was ruled out and
+  why, honest verification section, unsupported-claim section, cost.
+- `agent/loop.py` — the executor is now injectable, which is what makes both
+  deterministic replay and end-to-end testing possible.
+- `main.py` — new `doctor`, `replay` and `metrics` subcommands.
+- `data/eval/ground_truth.json` — two contaminated cases rewritten.
+
+### Fixed
+- Plateau recovery re-opened the same alternative hypotheses every step:
+  the dedupe compared the raw suggestion against the stored statement, which
+  carries a prefix, so it never matched.
+- The shipped evaluation set was contaminated by its own corpus (`web-jwt` 74%,
+  `pwn-bof` 41% shingle overlap with archive cards they were copied from).
+  Both rewritten independently with labels unchanged. Both now fail
+  classification, so the previous score was partly measuring memorisation.
+
+### Tests
+- `tests/test_reasoning_phase2.py` — 58 tests for the Phase 2 reasoning layer.
+- `tests/test_e2e_agent.py` — 19 end-to-end, replay and regression tests, with
+  `FIXED_CASES` as a permanent record of every bug found so far.
+- `tests/test_eval_infra.py` — 47 tests for the evaluation layer, including one
+  that fails if the shipped evaluation set becomes contaminated again.
+- Suite total: 406 → 530.
+
+
 ## Roadmap completion pass
 
 Closed out the remaining items from the seven-phase roadmap in the README, and

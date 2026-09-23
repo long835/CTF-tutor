@@ -88,7 +88,7 @@ SAFE_TOOLS = {
 }
 
 
-def plan_next_action(state: AgentState) -> Optional[PlannedAction]:
+def _plan_heuristic(state: AgentState) -> Optional[PlannedAction]:
     """
     Deterministic + heuristic planner.
     Prefer tools that can produce evidence for the current top hypothesis.
@@ -298,6 +298,156 @@ def plan_next_action(state: AgentState) -> Optional[PlannedAction]:
         expected_observation="user-supplied file path or tool output",
         priority=0.4,
     )
+
+
+def plan_next_action(state: AgentState, graph: Any = None) -> Optional[PlannedAction]:
+    """
+    Choose the next action, preferring one that can close an evidence gap.
+
+    The heuristic planner below is kept as the proposer, because its
+    category rules encode a lot of useful CTF practice. Two things now sit
+    in front of it:
+
+    *   **Bans.** An action `agent.recovery` has abandoned — a tool that
+        failed twice, an action already tried three times — is never
+        proposed again, which is the mechanism that stops the agent
+        re-running its way through the step budget.
+
+    *   **Gaps.** If the proposal cannot observe any signal the current
+        claim still needs, but a shortlisted tool can, the shortlisted one
+        wins. That is the difference between "this tool suits web
+        challenges" and "this tool can settle the question at hand".
+    """
+    proposal = _plan_heuristic(state)
+
+    try:
+        from agent.recovery import banned_actions
+        banned = banned_actions(state)
+    except Exception:
+        banned = set()
+
+    gaps: List[str] = []
+    if graph is not None:
+        try:
+            gaps = list(graph.missing_signals())
+        except Exception:
+            gaps = []
+
+    if proposal is not None and proposal.tool not in banned:
+        if not gaps:
+            return proposal
+        try:
+            from agent.tool_capabilities import capability
+            cap = capability(proposal.tool)
+            # Tools that produce candidates rather than observations are
+            # left alone: they are legitimately not gap-closers.
+            if cap is None or not cap.produces or any(cap.can_observe(s) for s in gaps):
+                return proposal
+        except Exception:
+            return proposal
+
+    alternative = _plan_from_capabilities(state, graph=graph, banned=banned)
+    if alternative is not None:
+        return alternative
+    if proposal is not None and proposal.tool not in banned:
+        return proposal
+    if proposal is not None:
+        return PlannedAction(
+            tool="ask_user",
+            arguments={"question": (
+                f"I have run out of local actions for this challenge "
+                f"({', '.join(sorted(banned)) or 'no tools left'} already abandoned).\n"
+                f"Could you provide the challenge files or the output of a command "
+                f"you can run locally?"
+            )},
+            reason=f"preferred action {proposal.tool} is abandoned and no alternative applies",
+            expected_observation="user-supplied artifact or tool output",
+            priority=0.4,
+        )
+    return None
+
+
+def _plan_from_capabilities(
+    state: AgentState,
+    graph: Any = None,
+    banned: Optional[Any] = None,
+) -> Optional[PlannedAction]:
+    """Build an action from the capability shortlist, if its arguments can be filled."""
+    try:
+        from agent.tool_capabilities import candidates_for_state
+        shortlist = candidates_for_state(state, graph=graph)
+    except Exception:
+        return None
+    banned = set(banned or ())
+
+    for cand in shortlist:
+        if cand.tool in banned:
+            continue
+        args = _fill_arguments(state, cand.tool)
+        if args is None:
+            continue
+        closes = "; ".join(cand.closes[:2]) or "evidence for the current hypothesis"
+        return PlannedAction(
+            tool=cand.tool,
+            arguments=args,
+            reason=f"closes a missing signal ({closes})",
+            expected_observation=closes,
+            priority=0.87,
+        )
+    return None
+
+
+def _fill_arguments(state: AgentState, tool: str) -> Optional[Dict[str, Any]]:
+    """
+    Arguments for a shortlisted tool, or None when they cannot be supplied.
+
+    Returning None rather than guessing is deliberate: an action invented
+    with a plausible-looking path is worse than no action, because its
+    failure gets recorded as evidence about the challenge.
+    """
+    source = _guess_source_path(state)
+    binary = _guess_binary_path(state)
+    any_path = source or binary
+
+    if tool in ("static_analysis",):
+        target = binary or source
+        if not target:
+            return None
+        return {"path": target, "category_hint": (state.category or "").lower()}
+    if tool in ("web_recon", "forensics_toolkit"):
+        if not any_path:
+            return None
+        return {"path": any_path}
+    if tool in ("crypto_toolkit", "decode_toolkit"):
+        return {"path_or_text": any_path or state.challenge_summary[:400]}
+    if tool == "auto_decode":
+        args: Dict[str, Any] = {"timeout": 2.0}
+        if any_path:
+            args["path"] = any_path
+        else:
+            args["data"] = state.challenge_summary[:400]
+        return args
+    if tool == "xor_crack":
+        if not any_path:
+            return None
+        return {"data": any_path, "max_keysize": 8}
+    if tool == "gdb_inspect":
+        if not binary:
+            return None
+        return {"path": binary}
+    if tool == "retrieve_archive":
+        top = state.top_hypothesis()
+        return {
+            "query": (getattr(top, "statement", "") or state.challenge_summary)[:300],
+            "category": state.category or "",
+            "top_k": 5,
+        }
+    if tool == "verify_candidate":
+        if not (state.flag_candidate or state.solution_summary):
+            return None
+        return {"candidate": state.flag_candidate or state.solution_summary,
+                "constraints": ""}
+    return None
 
 
 def _guess_source_path(state: AgentState) -> str:

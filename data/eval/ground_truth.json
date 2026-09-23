@@ -1,7 +1,7 @@
 [
   {
     "id": "web-jwt",
-    "description": "A login portal issues JWTs signed with RS256. The admin panel trusts the role claim in the token and also accepts alg=none.",
+    "description": "After signing in, the service hands back a bearer token whose payload carries a privilege field. The staff-only endpoint reads that field directly, and the verification routine picks its algorithm from whatever the token header declares.",
     "expected_category": "web",
     "expected_techniques": [
       "jwt-alg-confusion",
@@ -12,7 +12,7 @@
   },
   {
     "id": "pwn-bof",
-    "description": "A binary reads a name into a fixed stack buffer with gets(), no canary, NX enabled. Get a shell with ret2libc.",
+    "description": "A 64-bit executable prompts for a username and copies it into a 128-byte local array without checking the length. Mitigations report as: stack protector off, non-executable stack on, position-independent code off. A matching libc is shipped in the same directory.",
     "expected_category": "pwn",
     "expected_techniques": [
       "stack-buffer-overflow",

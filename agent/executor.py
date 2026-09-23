@@ -107,18 +107,53 @@ def _run_decompose(args: Dict[str, Any]) -> Tuple[bool, str, str]:
 
 
 def _run_retrieve(args: Dict[str, Any]) -> Tuple[bool, str, str]:
+    """
+    Archive retrieval.
+
+    Note the three distinct outcomes below. Previously all three returned
+    `(True, {"matches": []})`, so a broken vector store was indistinguishable
+    from a genuinely empty archive and the agent would lower confidence in a
+    hypothesis it had simply failed to look up. `status` now carries that
+    difference through to the observer.
+    """
     import os
     if os.getenv('CTF_TUTOR_DISABLE_RETRIEVE') in ('1', 'true', 'True'):
-        return True, json.dumps({'matches': [], 'note': 'retrieve disabled (ablation)'}), ''
+        return True, json.dumps({
+            "matches": [],
+            "status": "skipped",
+            "note": "retrieve disabled (ablation)",
+            "searched": False,
+        }), ""
+
     query = args.get("query") or ""
     category = args.get("category") or None
     top_k = int(args.get("top_k") or 5)
     try:
         from agent.hybrid_retrieve import hybrid_search
         matches = hybrid_search(query, category=category, top_k=top_k)
-        return True, json.dumps({"matches": matches}, default=str), ""
     except Exception as e:
-        return True, json.dumps({"matches": [], "note": f"retrieval unavailable: {e}"}), ""
+        # Retrieval is BROKEN. This is not evidence that nothing matches.
+        return False, json.dumps({
+            "matches": [],
+            "status": "unavailable",
+            "note": f"retrieval unavailable: {e}",
+            "searched": False,
+        }), f"retrieval unavailable: {type(e).__name__}: {e}"
+
+    if not matches:
+        # Retrieval WORKED and genuinely found nothing. This is a finding.
+        return True, json.dumps({
+            "matches": [],
+            "status": "empty",
+            "note": "archive searched successfully; no entry matched",
+            "searched": True,
+        }), ""
+
+    return True, json.dumps({
+        "matches": matches,
+        "status": "ok",
+        "searched": True,
+    }, default=str), ""
 
 
 def _run_static(args: Dict[str, Any]) -> Tuple[bool, str, str]:
