@@ -1,0 +1,3 @@
+{"ts": 1790244171.835413, "task": "plan", "provider": "openai_compatible", "model": "gpt-test", "local_units": 0.9199999999999999, "prompt_tokens": 1000, "completion_tokens": 500, "usd_estimate": 0.00045, "note": "unit"}
+{"ts": 1790244800.9305065, "task": "plan", "provider": "openai_compatible", "model": "gpt-test", "local_units": 0.9199999999999999, "prompt_tokens": 1000, "completion_tokens": 500, "usd_estimate": 0.00045, "note": "unit"}
+{"ts": 1790245527.4426284, "task": "plan", "provider": "openai_compatible", "model": "gpt-test", "local_units": 0.9199999999999999, "prompt_tokens": 1000, "completion_tokens": 500, "usd_estimate": 0.00045, "note": "unit"}

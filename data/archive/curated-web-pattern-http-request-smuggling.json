@@ -1,0 +1,27 @@
+{
+  "challenge_name": "Pattern WEB: HTTP Request Smuggling",
+  "category": "web",
+  "techniques": [
+    "http-request-smuggling"
+  ],
+  "difficulty": "hard",
+  "source": "CTF-Tutor curated pattern library",
+  "description": "Front-end and back-end disagree on Content-Length versus chunked Transfer-Encoding.",
+  "explanation": "Craft a desync that makes the front-end end one request where the back-end continues, smuggling a second request into another user's connection.",
+  "solve_steps": [
+    "Probe CL.TE and TE.CL behaviour",
+    "Confirm desync with a timing or poisoned response",
+    "Smuggle a harmless diagnostic request first",
+    "Only then target authenticated endpoints"
+  ],
+  "tools_used": [
+    "burp",
+    "curl"
+  ],
+  "references": [
+    "local:ctf-tutor-curated-patterns"
+  ],
+  "notes": "Educational pattern; lab only.",
+  "version": 1,
+  "updated": "2026-09-24"
+}

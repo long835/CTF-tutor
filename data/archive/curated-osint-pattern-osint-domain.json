@@ -1,0 +1,28 @@
+{
+  "challenge_name": "Pattern OSINT: Certificate Transparency Pivot",
+  "category": "osint",
+  "techniques": [
+    "osint-domain",
+    "certificate-transparency"
+  ],
+  "difficulty": "medium",
+  "source": "CTF-Tutor curated pattern library",
+  "description": "A domain name is given. Related hostnames appear in certificate transparency logs.",
+  "explanation": "CT logs reveal subdomains and historical names that DNS enumeration alone may miss.",
+  "solve_steps": [
+    "Query CT for the registered domain",
+    "Collect related hostnames",
+    "Resolve and classify each host",
+    "Follow only public, non-intrusive next steps"
+  ],
+  "tools_used": [
+    "crt.sh",
+    "dig"
+  ],
+  "references": [
+    "local:ctf-tutor-curated-patterns"
+  ],
+  "notes": "Educational pattern; public sources only.",
+  "version": 1,
+  "updated": "2026-09-24"
+}

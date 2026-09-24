@@ -44,11 +44,24 @@ class TestPlatformsOffline(unittest.TestCase):
         self.assertFalse(r["ok"])
 
 
-class TestWebuiImport(unittest.TestCase):
+class TestHttpApi(unittest.TestCase):
     def test_handler_exists(self):
-        from webui.server import Handler, HTML
-        self.assertIn("CTF-Tutor", HTML)
-        self.assertTrue(hasattr(Handler, "do_POST"))
+        from agent.http_api import TutorHandler, handle
+
+        self.assertTrue(hasattr(TutorHandler, "do_GET"))
+        self.assertTrue(hasattr(TutorHandler, "do_POST"))
+
+        status, payload = handle("GET", "/health", {}, {})
+        self.assertEqual(status, 200)
+        self.assertTrue(payload["ok"])
+        self.assertEqual(payload["service"], "ctf-tutor")
+
+    def test_static_frontend_exists(self):
+        from agent.http_api import handle
+
+        status, payload = handle("GET", "/", {}, {})
+        self.assertEqual(status, 200)
+        self.assertEqual(payload["_static"], "frontend/index.html")
 
 
 if __name__ == "__main__":

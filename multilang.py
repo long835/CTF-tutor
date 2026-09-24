@@ -1,7 +1,7 @@
 """Multi-language local challenge sessions.
 
 A session owns one workspace and a small JSON state record.  Source can be
-compiled/run in Python, Rust, Java, or .NET without sharing process state;
+compiled/run in Python, Rust, Java, .NET, C, C++, or Go without sharing process state;
 metadata, notes, artifacts and language history are shared across switches.
 Execution is deliberately local-only, bounded, and never uses a shell.
 """
@@ -17,7 +17,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Dict, List, Optional
 
-SUPPORTED_LANGUAGES = ("python", "rust", "java", "dotnet")
+SUPPORTED_LANGUAGES = ("python", "rust", "java", "dotnet", "c", "cpp", "go")
 DEFAULT_TIMEOUT = 10
 MAX_OUTPUT = 20_000
 
@@ -178,6 +178,39 @@ def _prepare(language: str, source: str, work: Path, args: List[str]):
         src = proj / "Program.cs"
         src.write_text(source, encoding="utf-8")
         return src, ["dotnet", "run", "--project", str(csproj), "--no-restore", "--", *args]
+
+    if language == "c":
+        cc = shutil.which("gcc") or shutil.which("clang")
+        if not cc:
+            raise RuntimeError("gcc/clang is not installed")
+        src_path = work / "main.c"
+        src_path.write_text(source, encoding="utf-8")
+        binary = work / "main_c"
+        subprocess.run([cc, str(src_path), "-O0", "-o", str(binary)], cwd=str(work),
+                       capture_output=True, text=True, timeout=30, check=True)
+        return src_path, [str(binary), *args]
+
+    if language == "cpp":
+        cxx = shutil.which("g++") or shutil.which("clang++")
+        if not cxx:
+            raise RuntimeError("g++/clang++ is not installed")
+        src_path = work / "main.cpp"
+        src_path.write_text(source, encoding="utf-8")
+        binary = work / "main_cpp"
+        subprocess.run([cxx, str(src_path), "-O0", "-std=c++17", "-o", str(binary)], cwd=str(work),
+                       capture_output=True, text=True, timeout=30, check=True)
+        return src_path, [str(binary), *args]
+
+    if language == "go":
+        if not shutil.which("go"):
+            raise RuntimeError("go is not installed")
+        src_path = work / "main.go"
+        src_path.write_text(source, encoding="utf-8")
+        binary = work / "main_go"
+        subprocess.run(["go", "build", "-o", str(binary), str(src_path)], cwd=str(work),
+                       capture_output=True, text=True, timeout=60, check=True,
+                       env={**os.environ, "GO111MODULE": "off"})
+        return src_path, [str(binary), *args]
 
     raise AssertionError(language)
 

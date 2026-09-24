@@ -1,0 +1,70 @@
+{
+  "name": "experience-samples",
+  "version": 2,
+  "provenance": "synthetic-lab",
+  "items": [
+    {
+      "id": "crypto_xor",
+      "category": "crypto",
+      "techniques": [
+        "xor-single-byte"
+      ],
+      "path": "crypto_xor/",
+      "artifact": "cipher.hex"
+    },
+    {
+      "id": "web_jwt",
+      "category": "web",
+      "techniques": [
+        "jwt-none-bypass"
+      ],
+      "path": "web_jwt/",
+      "artifact": "token.txt"
+    },
+    {
+      "id": "misc_encoding",
+      "category": "misc",
+      "techniques": [
+        "multilayer-encoding"
+      ],
+      "path": "misc_encoding/",
+      "artifact": "blob.txt"
+    },
+    {
+      "id": "pwn_bof",
+      "category": "pwn",
+      "techniques": [
+        "stack-buffer-overflow"
+      ],
+      "path": "pwn_bof/",
+      "artifact": "vuln"
+    },
+    {
+      "id": "forensics_pcap",
+      "category": "forensics",
+      "techniques": [
+        "pcap-http"
+      ],
+      "path": "forensics_pcap/",
+      "artifact": "capture.pcap"
+    },
+    {
+      "id": "web_ssti_lab",
+      "category": "web",
+      "techniques": [
+        "ssti"
+      ],
+      "path": "web_ssti_lab/",
+      "artifact": "server.py"
+    },
+    {
+      "id": "forensics_png",
+      "category": "forensics",
+      "techniques": [
+        "image-metadata"
+      ],
+      "path": "forensics_png/",
+      "artifact": "hidden.png"
+    }
+  ]
+}

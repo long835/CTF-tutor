@@ -133,12 +133,50 @@ def research(
     # Dedup by title, prefer lower tier number
     seen = set()
     out: List[ResearchHit] = []
-    for h in sorted(hits, key=lambda x: (x.tier, -x.retrieved_at)):
+    for h in rank_hits(hits):
         if h.title in seen:
             continue
         seen.add(h.title)
         out.append(h)
     return out[: top_k + 3]
+
+
+# Domain → tier (1 best … 5 unverified). Used when online hits are admitted.
+_DOMAIN_TIERS = {
+    "docs.python.org": 1,
+    "man7.org": 1,
+    "kernel.org": 1,
+    "openssl.org": 1,
+    "developer.mozilla.org": 1,
+    "portswigger.net": 2,
+    "owasp.org": 2,
+    "ctftime.org": 2,
+    "picoctf.org": 2,
+    "github.com": 3,
+    "wikipedia.org": 3,
+    "medium.com": 4,
+    "stackoverflow.com": 3,
+}
+
+
+def rank_source_tier(url: str, default: int = 4) -> int:
+    """Map a URL host to a research trust tier (lower is better)."""
+    try:
+        from urllib.parse import urlparse
+        host = (urlparse(url).hostname or "").lower()
+    except Exception:
+        return default
+    if not host:
+        return default
+    for domain, tier in _DOMAIN_TIERS.items():
+        if host == domain or host.endswith("." + domain):
+            return tier
+    return default
+
+
+def rank_hits(hits: List[ResearchHit]) -> List[ResearchHit]:
+    """Stable sort: tier ascending, then recency."""
+    return sorted(hits, key=lambda h: (h.tier, -h.retrieved_at))
 
 
 def _web_search_safe(query: str, top_k: int = 5) -> List[ResearchHit]:
@@ -163,11 +201,12 @@ def _web_search_safe(query: str, top_k: int = 5) -> List[ResearchHit]:
         snippets = re.findall(r'class="result__snippet"[^>]*>([^<]+)</a>?', text)
         hits = []
         for i, title in enumerate(titles[:top_k]):
+            _url = (urls[i].strip() if i < len(urls) else "")
             hits.append(ResearchHit(
                 title=re.sub(r"\s+", " ", title).strip()[:120],
-                url=(urls[i].strip() if i < len(urls) else ""),
+                url=_url,
                 snippet=(snippets[i].strip()[:240] if i < len(snippets) else ""),
-                tier=4,
+                tier=rank_source_tier(_url, default=4),
                 source="web",
                 retrieved_at=time.time(),
             ))
@@ -183,3 +222,42 @@ def format_citations(hits: List[ResearchHit]) -> str:
     for h in hits:
         lines.append(f"- [tier {h.tier} | {h.source}] {h.title}: {h.snippet[:120]}")
     return "\n".join(lines)
+
+
+
+def research_safe(
+    query: str,
+    *,
+    category: Optional[str] = None,
+    online: Optional[bool] = None,
+    top_k: int = 5,
+) -> List[ResearchHit]:
+    """Hardened wrapper: never raises; always returns local hits on failure."""
+    try:
+        return research(query, category=category, online=online, top_k=top_k)
+    except Exception as e:
+        # Fall back to pure local archive / concepts
+        hits: List[ResearchHit] = []
+        try:
+            from agent.hybrid_retrieve import hybrid_search
+            for m in hybrid_search(query, top_k=top_k) or []:
+                hits.append(ResearchHit(
+                    title=str(m.get("title") or m.get("id") or "local"),
+                    url="",
+                    snippet=str(m.get("snippet") or m.get("text") or "")[:500],
+                    tier=2,
+                    source="local_archive_fallback",
+                    retrieved_at=time.time(),
+                ))
+        except Exception:
+            pass
+        if not hits:
+            hits.append(ResearchHit(
+                title="research unavailable",
+                url="",
+                snippet=f"offline research failed: {e}",
+                tier=5,
+                source="error",
+                retrieved_at=time.time(),
+            ))
+        return hits[:top_k]

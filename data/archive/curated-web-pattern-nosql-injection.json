@@ -1,0 +1,27 @@
+{
+  "challenge_name": "Pattern WEB: NoSQL Operator Injection",
+  "category": "web",
+  "techniques": [
+    "nosql-injection"
+  ],
+  "difficulty": "medium",
+  "source": "CTF-Tutor curated pattern library",
+  "description": "Login JSON is passed into a Mongo-style query. Operators such as $ne alter the filter.",
+  "explanation": "JSON body parameters become query operators. Test boolean operators that make the password clause always true without knowing the secret.",
+  "solve_steps": [
+    "Confirm JSON login body reaches the query",
+    "Try operator payloads in password field",
+    "Observe authentication success differences",
+    "Enumerate other filters the same way"
+  ],
+  "tools_used": [
+    "curl",
+    "browser-devtools"
+  ],
+  "references": [
+    "local:ctf-tutor-curated-patterns"
+  ],
+  "notes": "Educational pattern; lab only.",
+  "version": 1,
+  "updated": "2026-09-24"
+}

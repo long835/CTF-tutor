@@ -1,0 +1,309 @@
+[
+  {
+    "id": "ind-web-smuggle-01",
+    "description": "Users behind the company reverse proxy occasionally receive another person's admin responses. Both Content-Length and chunked transfer are accepted by different hops.",
+    "expected_category": "web",
+    "expected_techniques": [
+      "http-request-smuggling"
+    ],
+    "difficulty": "insane",
+    "source_style": "public-contest-paraphrase"
+  },
+  {
+    "id": "ind-web-mongo-01",
+    "description": "The login API accepts a JSON body. Sending a non-string password field changes the server's query behaviour and returns a valid session for any username.",
+    "expected_category": "web",
+    "expected_techniques": [
+      "nosql-injection"
+    ],
+    "difficulty": "medium",
+    "source_style": "public-contest-paraphrase"
+  },
+  {
+    "id": "ind-web-gql-01",
+    "description": "A single /api endpoint accepts nested queries describing which fields to return. Asking for the schema documentation still works in production.",
+    "expected_category": "web",
+    "expected_techniques": [
+      "graphql-introspection"
+    ],
+    "difficulty": "medium",
+    "source_style": "public-contest-paraphrase"
+  },
+  {
+    "id": "ind-web-cache-01",
+    "description": "A CDN sits in front of the app. After one carefully crafted request, other visitors start seeing pages that include a header value you controlled.",
+    "expected_category": "web",
+    "expected_techniques": [
+      "cache-poisoning"
+    ],
+    "difficulty": "hard",
+    "source_style": "public-contest-paraphrase"
+  },
+  {
+    "id": "ind-web-upload-01",
+    "description": "Profile pictures are stored under a URL path the web server serves. Extension checks only look at the final suffix after the last dot.",
+    "expected_category": "web",
+    "expected_techniques": [
+      "file-upload-chain"
+    ],
+    "difficulty": "hard",
+    "source_style": "public-contest-paraphrase"
+  },
+  {
+    "id": "ind-pwn-tcache-01",
+    "description": "A note-taking service allocates and frees fixed-size chunks. After free, the next allocation of the same size returns a pointer you partially controlled through an earlier overflow into free metadata.",
+    "expected_category": "pwn",
+    "expected_techniques": [
+      "tcache-poisoning",
+      "heap-overflow"
+    ],
+    "difficulty": "insane",
+    "source_style": "public-contest-paraphrase"
+  },
+  {
+    "id": "ind-pwn-seccomp-01",
+    "description": "The binary installs a filter that rejects process creation. File open and read still succeed. Goal is to print the contents of flag.txt.",
+    "expected_category": "pwn",
+    "expected_techniques": [
+      "seccomp-escape"
+    ],
+    "difficulty": "insane",
+    "source_style": "public-contest-paraphrase"
+  },
+  {
+    "id": "ind-crypto-wiener-01",
+    "description": "Only n and e are published. e is almost as large as n. The challenge author mentions the private exponent was chosen unusually small for performance.",
+    "expected_category": "crypto",
+    "expected_techniques": [
+      "rsa-wiener"
+    ],
+    "difficulty": "hard",
+    "source_style": "public-contest-paraphrase"
+  },
+  {
+    "id": "ind-crypto-ecdsa-01",
+    "description": "Two signatures from the same key are provided. The first component of each signature pair is identical. Recover the private key.",
+    "expected_category": "crypto",
+    "expected_techniques": [
+      "ecdsa-nonce-reuse"
+    ],
+    "difficulty": "hard",
+    "source_style": "public-contest-paraphrase"
+  },
+  {
+    "id": "ind-crypto-prng-01",
+    "description": "Password-reset tokens look random but consecutive tokens from the same process are enough to predict the next one when the generator is a common stdlib Mersenne Twister.",
+    "expected_category": "crypto",
+    "expected_techniques": [
+      "prng-prediction"
+    ],
+    "difficulty": "hard",
+    "source_style": "public-contest-paraphrase"
+  },
+  {
+    "id": "ind-crypto-timing-01",
+    "description": "An online checker compares your guess to the secret with a standard string equality that returns at the first differing character. Network latency is stable enough to measure.",
+    "expected_category": "crypto",
+    "expected_techniques": [
+      "timing-side-channel"
+    ],
+    "difficulty": "hard",
+    "source_style": "public-contest-paraphrase"
+  },
+  {
+    "id": "ind-rev-go-01",
+    "description": "The challenge binary was written in Google's language and stripped. Function names are still recoverable from a large metadata table near the end of the file.",
+    "expected_category": "rev",
+    "expected_techniques": [
+      "go-binary-analysis"
+    ],
+    "difficulty": "hard",
+    "source_style": "public-contest-paraphrase"
+  },
+  {
+    "id": "ind-rev-keygen-01",
+    "description": "A registration dialog asks for a name and a serial. The serial is not a fixed string; it is derived from the name through several arithmetic transforms inside the binary.",
+    "expected_category": "rev",
+    "expected_techniques": [
+      "keygen"
+    ],
+    "difficulty": "medium",
+    "source_style": "public-contest-paraphrase"
+  },
+  {
+    "id": "ind-forensics-disk-01",
+    "description": "You receive a raw sector dump of a USB stick. The visible filesystem looks empty, but recovery tools that scan unallocated clusters find a deleted text file.",
+    "expected_category": "forensics",
+    "expected_techniques": [
+      "disk-image-analysis",
+      "file-carving"
+    ],
+    "difficulty": "hard",
+    "source_style": "public-contest-paraphrase"
+  },
+  {
+    "id": "ind-misc-polyglot-01",
+    "description": "The attachment opens as an image in some tools and as a compressed archive in others. The flag is inside the secondary interpretation.",
+    "expected_category": "misc",
+    "expected_techniques": [
+      "file-signature",
+      "archive-analysis"
+    ],
+    "difficulty": "easy",
+    "source_style": "public-contest-paraphrase"
+  },
+  {
+    "id": "ind-blockchain-ac-01",
+    "description": "A Solidity contract exposes a withdraw function marked public. No modifier restricts the caller. Anyone who finds the contract can drain it.",
+    "expected_category": "blockchain",
+    "expected_techniques": [
+      "solidity-access-control",
+      "access-control"
+    ],
+    "difficulty": "medium",
+    "source_style": "public-contest-paraphrase"
+  },
+  {
+    "id": "ind-osint-meta-01",
+    "description": "A press photo is the only clue. The camera still embedded coordinates and the editing software name in the file properties.",
+    "expected_category": "osint",
+    "expected_techniques": [
+      "osint-metadata",
+      "image-metadata"
+    ],
+    "difficulty": "easy",
+    "source_style": "public-contest-paraphrase"
+  },
+  {
+    "id": "ind-pwn-csu-01",
+    "description": "NX is on and useful pop gadgets are scarce. The C runtime still contains a gadget sequence that loads three argument registers from the stack before calling a function pointer.",
+    "expected_category": "pwn",
+    "expected_techniques": [
+      "ret2csu",
+      "rop-chain"
+    ],
+    "difficulty": "hard",
+    "source_style": "public-contest-paraphrase"
+  },
+  {
+    "id": "ind-crypto-ctr-01",
+    "description": "Two messages were encrypted with AES in counter mode. The IV field in both packets is the same 16-byte value. XORing the ciphertexts produces readable structure.",
+    "expected_category": "crypto",
+    "expected_techniques": [
+      "ctr-nonce-reuse"
+    ],
+    "difficulty": "medium",
+    "source_style": "public-contest-paraphrase"
+  },
+  {
+    "id": "ind-web-oauth-01",
+    "description": "Login redirects to an identity provider and back. The return URL parameter is only prefix-checked, so a lookalike domain under your control can receive the authorization code.",
+    "expected_category": "web",
+    "expected_techniques": [
+      "oauth-flow-abuse"
+    ],
+    "difficulty": "hard",
+    "source_style": "public-contest-paraphrase"
+  },
+  {
+    "id": "ind-web-jwt-01",
+    "description": "The admin API only checks a role field inside a browser-issued token. Changing the algorithm header to none makes the server accept a forged role.",
+    "expected_category": "web",
+    "expected_techniques": [
+      "jwt-none-bypass"
+    ],
+    "difficulty": "medium",
+    "source_style": "public-contest-paraphrase"
+  },
+  {
+    "id": "ind-web-ssti-01",
+    "description": "A greeting page echoes your name through a template engine. Entering curly-brace expressions changes the rendered output in ways that look like code evaluation.",
+    "expected_category": "web",
+    "expected_techniques": [
+      "ssti"
+    ],
+    "difficulty": "medium",
+    "source_style": "public-contest-paraphrase"
+  },
+  {
+    "id": "ind-pwn-fmt-01",
+    "description": "The binary prints a user-supplied string with a printf-family call. Feeding percent signs leaks stack values and can write to memory.",
+    "expected_category": "pwn",
+    "expected_techniques": [
+      "format-string"
+    ],
+    "difficulty": "medium",
+    "source_style": "public-contest-paraphrase"
+  },
+  {
+    "id": "ind-pwn-bof-01",
+    "description": "Input is copied into a fixed local buffer with gets. Overlong input crashes at a return address you can control.",
+    "expected_category": "pwn",
+    "expected_techniques": [
+      "stack-buffer-overflow"
+    ],
+    "difficulty": "easy",
+    "source_style": "public-contest-paraphrase"
+  },
+  {
+    "id": "ind-crypto-xor-01",
+    "description": "A long ciphertext was produced by XORing plaintext with a short repeating key. Frequency patterns in the XOR of shifts reveal the key length.",
+    "expected_category": "crypto",
+    "expected_techniques": [
+      "xor-repeating-key"
+    ],
+    "difficulty": "medium",
+    "source_style": "public-contest-paraphrase"
+  },
+  {
+    "id": "ind-crypto-rsa-e3-01",
+    "description": "Textbook RSA with exponent three encrypts a short unpadded message. The ciphertext is smaller than the modulus cubed root would require wrapping.",
+    "expected_category": "crypto",
+    "expected_techniques": [
+      "rsa-small-e"
+    ],
+    "difficulty": "medium",
+    "source_style": "public-contest-paraphrase"
+  },
+  {
+    "id": "ind-forensics-stego-01",
+    "description": "An ordinary-looking PNG is provided. The lowest bit of each color channel carries a hidden bitstream that reconstructs the flag.",
+    "expected_category": "forensics",
+    "expected_techniques": [
+      "steganography"
+    ],
+    "difficulty": "medium",
+    "source_style": "public-contest-paraphrase"
+  },
+  {
+    "id": "ind-forensics-pcap-01",
+    "description": "A packet capture of HTTP traffic contains a file transfer. Reassembling the TCP stream yields a document with the answer.",
+    "expected_category": "forensics",
+    "expected_techniques": [
+      "pcap-carving"
+    ],
+    "difficulty": "medium",
+    "source_style": "public-contest-paraphrase"
+  },
+  {
+    "id": "ind-rev-pack-01",
+    "description": "The sample's entry point jumps to a stub that unpacks the real code into memory. After the stub runs, the import table is rebuilt.",
+    "expected_category": "rev",
+    "expected_techniques": [
+      "packed-binary"
+    ],
+    "difficulty": "medium",
+    "source_style": "public-contest-paraphrase"
+  },
+  {
+    "id": "ind-misc-encode-01",
+    "description": "The challenge text is a long string of letters that looks like base64 but fails to decode until you notice it is hex that was then base64-encoded.",
+    "expected_category": "misc",
+    "expected_techniques": [
+      "multilayer-encoding",
+      "encoding-recognition"
+    ],
+    "difficulty": "easy",
+    "source_style": "public-contest-paraphrase"
+  }
+]

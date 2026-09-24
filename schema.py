@@ -128,6 +128,9 @@ class ArchiveEntry:
     tools_used: List[str] = field(default_factory=list)
     references: List[str] = field(default_factory=list)
     notes: Optional[str] = None
+    # Freshness / schema metadata (written by archive stamping; optional)
+    version: int = 1
+    updated: Optional[str] = None
 
     def __post_init__(self):
         cleaned = []
@@ -186,7 +189,10 @@ class ArchiveEntry:
                 payload.pop(old, None)
 
         known = cls.__dataclass_fields__
-        unknown = sorted(k for k in payload if k not in known)
+        # Metadata keys that are intentional but may lag the dataclass during upgrades
+        # are dropped silently if absent from the schema — never stuffed into notes.
+        meta_ignore = {"provenance", "added_at", "updated_at", "content_hash", "id"}
+        unknown = sorted(k for k in payload if k not in known and k not in meta_ignore)
         cleaned = {k: v for k, v in payload.items() if k in known}
 
         if unknown:

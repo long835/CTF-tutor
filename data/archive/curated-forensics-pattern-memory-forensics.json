@@ -1,0 +1,28 @@
+{
+  "challenge_name": "Pattern FORENSICS: Memory Credential Carve",
+  "category": "forensics",
+  "techniques": [
+    "memory-forensics",
+    "file-carving"
+  ],
+  "difficulty": "medium",
+  "source": "CTF-Tutor curated pattern library",
+  "description": "Memory dump from a workstation may still hold plaintext credentials and recent file fragments.",
+  "explanation": "Strings, process lists, and known structure carving recover secrets that disk encryption already protected at rest.",
+  "solve_steps": [
+    "Identify OS profile for the dump",
+    "List processes and command lines",
+    "Search for credential patterns",
+    "Carve file headers from residual pages"
+  ],
+  "tools_used": [
+    "volatility",
+    "strings"
+  ],
+  "references": [
+    "local:ctf-tutor-curated-patterns"
+  ],
+  "notes": "Educational pattern; no dump attached.",
+  "version": 1,
+  "updated": "2026-09-24"
+}

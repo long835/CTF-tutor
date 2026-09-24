@@ -86,3 +86,36 @@ class ChallengeWorkspace:
         path = self.logs_dir / f"{safe}.log"
         path.write_text(content[:100_000], encoding="utf-8")
         return str(path)
+
+    def import_lab(self, lab_id: str) -> dict:
+        """Attach an experience lab artifact into workspace input/."""
+        from agent.experience_labs import get_lab
+
+        lab = get_lab(lab_id)
+        if not lab:
+            raise ValueError(f"unknown lab: {lab_id}")
+        self.ensure()
+        copied = []
+        if lab.artifact_path and Path(lab.artifact_path).is_file():
+            copied.append(self.import_path(lab.artifact_path))
+        else:
+            lab_dir = Path(lab.path)
+            if lab_dir.is_dir():
+                copied.append(self.import_path(str(lab_dir)))
+        readme = Path(lab.path) / "README.md"
+        if readme.is_file():
+            try:
+                copied.append(self.import_path(str(readme)))
+            except Exception:
+                pass
+        self.append_note(
+            "Experience lab attached: %s (%s)\nFiles: %s"
+            % (lab.id, lab.category, ", ".join(copied))
+        )
+        return {
+            "lab_id": lab.id,
+            "category": lab.category,
+            "techniques": list(lab.techniques),
+            "copied": copied,
+            "workspace": str(self.root),
+        }

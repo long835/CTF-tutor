@@ -1,0 +1,30 @@
+{
+  "challenge_name": "Pattern PWN: Tcache Poisoning",
+  "category": "pwn",
+  "techniques": [
+    "tcache-poisoning",
+    "heap-overflow"
+  ],
+  "difficulty": "hard",
+  "source": "CTF-Tutor curated pattern library",
+  "description": "Heap allocator with tcache. Overflow a chunk to corrupt the next pointer and gain an arbitrary allocation.",
+  "explanation": "Tcache freelist poisoning turns a heap overflow into arbitrary write-what-where after a controlled allocation. Confirm glibc version and tcache counts before assuming the classic attack works.",
+  "solve_steps": [
+    "Identify allocator and glibc version",
+    "Map chunk layout and overflow offset",
+    "Corrupt tcache fd to target address",
+    "Allocate until the poisoned chunk is returned",
+    "Verify write with a non-destructive probe first"
+  ],
+  "tools_used": [
+    "checksec",
+    "pwntools",
+    "gdb"
+  ],
+  "references": [
+    "local:ctf-tutor-curated-patterns"
+  ],
+  "notes": "Educational pattern; no live target.",
+  "version": 1,
+  "updated": "2026-09-24"
+}

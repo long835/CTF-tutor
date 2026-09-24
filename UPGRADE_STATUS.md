@@ -1,5 +1,13 @@
 # Upgrade backlog status
 
+> **2026-09-24 (v0.3.4) — Phase 6.5:**
+>
+> Blind classifier on generated sample: ~55% → ~76%. Multi-category fields.
+> Verification levels 0–5. Technique-only false-positive demotion.
+> Archive P0 + provenance still green.
+>
+> Next: real-challenge corpus, learner memory unify, module splits, CI gate.
+
 Tracking the 75-item consolidated review. Status is per-item and honest:
 "done" means implemented, tested, and wired in — not stubbed.
 

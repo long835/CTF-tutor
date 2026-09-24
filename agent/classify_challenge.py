@@ -63,20 +63,31 @@ SIGNALS: List[Tuple[str, str, float]] = [
     (r"path traversal|directory traversal|\blfi\b", "web", STRONG),
     (r"admin panel|admin route|staff.only endpoint", "web", STRONG),
     (r"bearer token|session cookie|\bset-cookie\b", "web", STRONG),
+    (r"request smuggling|http smuggling|cl[\.\s]?te|te[\.\s]?cl|chunked transfer|content.length|desync|reverse proxy.{0,50}(response|admin|another)", "web", DECISIVE),
+    (r"\bgraphql\b|introspection query|__schema|nested queries|schema documentation", "web", DECISIVE),
+    (r"nosql\s*injection|\bmongo\b.{0,30}\$(?:ne|gt|regex)|non-string password", "web", DECISIVE),
+    (r"\boauth\b|\boidc\b|redirect_uri|authorization code|return URL parameter", "web", STRONG),
+    (r"access-control-allow-origin|cors misconfiguration", "web", STRONG),
+    (r"cache poisoning|x-cache|unkeyed header|web cache|\bcdn\b.{0,80}(crafted|poison|other visitors|other users)", "web", DECISIVE),
+    (r"file upload|multipart/form-data|webshell|upload form|\.php\.png|double extension|final suffix after the last dot", "web", DECISIVE),
     (r"\bflask\b|\bdjango\b|express\.js|\bphp\b|\bnode\b", "web", MODERATE),
     (r"\bhttp\b|\bhttps\b|\burl\b|\bendpoint\b|web app|website", "web", MODERATE),
     (r"log(?:ging)?\s*in|logs? in|login|sign(?:ing)? in|authentication", "web", MODERATE),
     (r"\bapi\b|\brequest\b|\bresponse\b|\bheader\b|\bcookie\b", "web", WEAK),
 
     # --- pwn
-    (r"buffer overflow|stack overflow|heap overflow", "pwn", DECISIVE),
+    (r"buffer overflow|stack overflow|heap overflow|fixed local buffer|overlong input crashes|control(?:s|led)? return address|neighbouring (?:safe )?variable|two heap buffers|smash the stack|\bSIGSEGV\b|overflow the correct buffer", "pwn", DECISIVE),
     (r"\brop\b|ret2libc|ret2win|ret2csu|\bsrop\b", "pwn", DECISIVE),
-    (r"format string|%n\b", "pwn", DECISIVE),
-    (r"use.after.free|double free|\btcache\b|\bfastbin\b", "pwn", DECISIVE),
+    (r"format string|%n\b|printf-family|percent signs leak|printf\s*\(|format specifiers|prints your input with printf|writable GOT", "pwn", DECISIVE),
+    (r"use.after.free|double free|\btcache\b|\bfastbin\b|unsorted.?bin|free metadata|fixed-size chunks", "pwn", DECISIVE),
+    (r"\bseccomp\b|syscall filter|orw\b|open.?read.?write|rejects process creation|filter that rejects (?:exec|process)", "pwn", DECISIVE),
+    (r"write.?what.?where|arbitrary write", "pwn", STRONG),
+    (r"\bFILE\b.*vtable|fsop|house.of.orange|_IO_flush", "pwn", DECISIVE),
     (r"\bshellcode\b|got overwrite|\bplt\b", "pwn", STRONG),
     (r"stack (?:protector|canary)|\bcanary\b", "pwn", STRONG),
     (r"\bgets\(|\bstrcpy\b|\bsprintf\b|unchecked (?:copy|length)", "pwn", STRONG),
     (r"without checking the length|no bounds check", "pwn", STRONG),
+    (r"info.?leak|address leak|libc leak", "pwn", STRONG),
     (r"non.executable stack|\bnx\b|\baslr\b|\bpie\b|position.independent", "pwn", MODERATE),
     (r"\bpwntools\b|\blibc\b|get a shell|spawn a shell", "pwn", MODERATE),
     (r"\bsegfault\b|\bcrash(?:es)?\b|local array|stack frame", "pwn", MODERATE),
@@ -85,42 +96,82 @@ SIGNALS: List[Tuple[str, str, float]] = [
     (r"\brsa\b|\bmodulus\b|public exponent", "crypto", DECISIVE),
     (r"padding oracle|\becb\b|\bcbc\b|\bctr\b mode", "crypto", DECISIVE),
     (r"\bxor\b.{0,20}(?:key|cipher)|single.byte xor|repeating.key", "crypto", DECISIVE),
-    (r"elliptic curve|\becdsa\b|nonce reuse|\blattice\b", "crypto", DECISIVE),
+    (r"elliptic curve|\becdsa\b|nonce reuse|\blattice\b|\blll\b|\bbkz\b|signatures?.{0,40}identical|same (?:r value|first component)", "crypto", DECISIVE),
+    (r"wiener.?attack|franklin.?reiter|hastad|broadcast attack|private exponent.{0,40}small|unusually small.{0,20}(?:d|private)", "crypto", DECISIVE),
     (r"length extension|hash collision", "crypto", DECISIVE),
-    # Classical ciphers are named, unambiguous crypto markers. Their absence
-    # here demoted a Caesar challenge to misc on the evidence floor.
+    (r"\bprng\b|mt19937|mersenne twister|predictable.{0,20}rand|predict the next (?:token|value)", "crypto", DECISIVE),
+    (r"timing (?:attack|side.?channel|difference)|early exit|not constant.?time|measure timing|first differing character|latency is stable", "crypto", DECISIVE),
     (r"caesar|\brot-?13\b|vigen[eè]re|atbash|playfair|rail fence|substitution cipher",
      "crypto", DECISIVE),
     (r"shift cipher|frequency analysis|recover (?:the )?(?:english )?plaintext",
      "crypto", STRONG),
-    (r"\baes\b|\bdes\b|block cipher|stream cipher", "crypto", STRONG),
+    (r"\baes\b|\bdes\b|block cipher|stream cipher|nonce reuse|same 16-byte", "crypto", STRONG),
     (r"\bcipher(?:text)?\b|encrypt(?:ed|ion)?|decrypt", "crypto", MODERATE),
     (r"\bmd5\b|\bsha-?\d+\b|\bhash\b|private key|\bprime\b|\bnonce\b", "crypto", MODERATE),
 
     # --- rev
     (r"reverse engineer|\bcrackme\b|\bkeygen\b", "rev", DECISIVE),
     (r"decompil|disassembl|\bghidra\b|\bida pro\b|\bilspy\b|\bdnspy\b", "rev", DECISIVE),
-    (r"obfuscat|anti.debug|control.flow flattening|\bupx\b|\bpacked\b", "rev", DECISIVE),
-    (r"license (?:key|check)|serial (?:key|number) check", "rev", STRONG),
+    (r"obfuscat|anti.debug|control.flow flattening|\bupx\b|\bpacked\b|unpacks the real code|import table is rebuilt|pack(?:er|ed) stub", "rev", DECISIVE),
+    (r"\bgolang\b|\bgo binary\b|gopclntab|runtime\.main|stripped.{0,40}metadata table|written in Google.s language", "rev", DECISIVE),
+    (r"rust(?:c)? binary|rust_begin_unwind|core::panicking", "rev", DECISIVE),
+    (r"\.net|\bmscoree\b|confuserex|smartassembly|clr header", "rev", DECISIVE),
+    (r"api hashing|getprocaddress.{0,40}hash|ror-?13|hash(?:es)? (?:of )?(?:api|export|function) names", "rev", DECISIVE),
+    (r"opaque predicate|always.?true branch|mixed boolean arithmetic|\bmba\b", "rev", DECISIVE),
+    (r"symbolic execution|\bangr\b|\bklee\b|path constraint", "rev", DECISIVE),
+    (r"license (?:key|check)|serial (?:key|number) check|registration dialog|derived from the name", "rev", STRONG),
     (r"\bassembly\b|\bopcodes?\b|\.net assembly|go binary|rust binary", "rev", MODERATE),
     (r"binary analysis|static analysis|symbol table", "rev", MODERATE),
 
     # --- forensics
-    (r"\bpcap(?:ng)?\b|\bwireshark\b|\btshark\b|network capture", "forensics", DECISIVE),
-    (r"steganograph|\bstego\b|\blsb\b|hidden in (?:the )?image", "forensics", DECISIVE),
+    (r"\bpcap(?:ng)?\b|\bwireshark\b|\btshark\b|network capture|packet capture|TCP stream|reassembl(?:e|ing) the TCP", "forensics", DECISIVE),
+    (r"steganograph|\bstego\b|\blsb\b|hidden in (?:the )?image|lowest bit|color channel.{0,30}hidden|hidden bitstream", "forensics", DECISIVE),
     (r"memory dump|disk image|\bvolatility\b|file carving", "forensics", DECISIVE),
+    (r"\.dd\b|e01|partition table|unallocated (?:space|clusters)|mmls|raw sector dump|disk (?:image|dump)", "forensics", DECISIVE),
     (r"\bexif\b|\bmetadata\b|embedded (?:file|data)|appended data", "forensics", STRONG),
     (r"hidden file|deleted file|recover the file|\bartifacts?\b", "forensics", MODERATE),
     (r"\bpng\b|\bjpe?g\b|\bwav\b|\bzip\b archive|log file", "forensics", WEAK),
+    (r"nested (?:zip|archive)|polyglot file|magic bytes|file signature", "misc", STRONG),
 
     # --- osint
     (r"\bosint\b|open.source intelligence", "osint", DECISIVE),
-    (r"geolocat|reverse image search|\bwhois\b|\bshodan\b|google dork", "osint", DECISIVE),
+    (r"geolocat|reverse image search|\bwhois\b|\bshodan\b|google dork|where this photo was taken|find where.{0,20}taken", "osint", DECISIVE),
+
+    # --- generated-eval / blind paraphrase coverage ---
+    (r"\bELF\b|64-bit ELF|32-bit ELF|stripped (?:64-bit )?executable|single stripped|32-bit binary|win function|gets overflow|control the return address", "pwn", DECISIVE),
+    (r"stripped (?:64-bit )?executable|custom instruction set|dispatch switch|anti[- ]?debug|exits early under a debugger", "rev", DECISIVE),
+    (r"\bAPK\b|android package|smali|dalvik", "mobile", DECISIVE),
+    (r"contract source|solidity|\bERC-?20\b|smart contract|test suite.*contract", "blockchain", DECISIVE),
+    (r"photograph with no caption|identifiable landmarks|geotag", "osint", DECISIVE),
+
+    # --- generated template openers / framing cues ---
+    (r"URL and the application source|docker-compose|Hs256|RS256 tokens|binary blob in a cookie", "web", DECISIVE),
+    (r"You are handed a URL|running service and its source tree|application source", "web", STRONG),
+    (r"archive of recovered files|credential material in RAM|unusually large metadata|recovered files", "forensics", DECISIVE),
+    (r"networked binary|connection string|64-bit ELF and its libc|ELF and its C source", "pwn", DECISIVE),
+    (r"You are handed a domain name|registration metadata|photograph with no caption", "osint", DECISIVE),
+    (r"You are handed an? (?:single )?stripped executable|executable and a sample input|check function comparing", "rev", DECISIVE),
+    (r"two ciphertexts and the public parameters|coprime exponents|Wiener|small public exponent", "crypto", DECISIVE),
+    (r"oracle endpoint and a sample token|E equal to 3|N factors quickly|short plaintext|no padding scheme|Hamming distance minimum|repeating byte patterns", "crypto", DECISIVE),
+    (r"frequency match|readable strings|nested encoding|uniform-looking bytes", "crypto", STRONG),
+
+    (r"timing differences on (?:heavy )?conditions|identical responses but different status", "web", DECISIVE),
+    (r"contract source and a test suite", "blockchain", DECISIVE),
+
+    (r"encoding layers|base64 and hex|nested (?:password-protected )?archives|polyglot|opens as an image|secondary interpretation", "misc", DECISIVE),
+    (r"flag is hidden under|multilayer encoding|layered encoding", "misc", STRONG),
+
+    (r"\blibc\b|checksec|no range check|adjacent (?:variable|allocation)", "pwn", STRONG),
+    (r"decode without verify|verify without allowlist|retry endpoint", "web", STRONG),
+    (r"role from request|client-side only check", "web", MODERATE),
+    (r"role from request|client-side only check", "blockchain", MODERATE),
+    (r"exif|document metadata|gps tag|pdf producer|embedded coordinates|file properties|camera still|location metadata|photo was taken", "osint", DECISIVE),
     (r"social media|public record|find (?:this|the) person|\bhandle\b", "osint", STRONG),
 
     # --- blockchain
     (r"smart contract|\bsolidity\b|\berc-?20\b|\bweb3\b", "blockchain", DECISIVE),
     (r"\breentran|\bethereum\b|\bgas\b limit|\bwallet\b|\bether\b", "blockchain", STRONG),
+    (r"onlyOwner|missing (?:access )?modifier|tx\.origin auth|withdraw function marked public", "blockchain", STRONG),
     (r"on.chain|\btestnet\b|\btransaction\b hash", "blockchain", MODERATE),
 
     # --- mobile
@@ -128,6 +179,7 @@ SIGNALS: List[Tuple[str, str, float]] = [
     (r"\bfrida\b|\bjadx\b|exported activity|shared preferences|\bkeystore\b", "mobile", DECISIVE),
     (r"mobile app|\bmanifest\.xml\b|\bdex\b", "mobile", STRONG),
 ]
+
 
 _COMPILED: List[Tuple[re.Pattern, str, float]] = [
     (re.compile(pattern, re.IGNORECASE), category, weight)
@@ -394,48 +446,82 @@ def classify_challenge(
     top_category, top_score = ranked[0]
     runner_category, runner_score = ranked[1] if len(ranked) > 1 else ("", 0.0)
 
-    # An evidence floor. A handful of weak matches -- "url", "header", "file"
-    # -- is a vocabulary coincidence, not a category, and naming a specialised
-    # category on that basis is worse than naming none: it sends the planner
-    # down a branch with no support. "misc" is the honest answer, and unlike
-    # the old None it is still a category the planner can work with.
-    if 0 < top_score < MODERATE * 1.5 and top_category != "misc":
+    # Technique-only weak votes are often false positives from loose rubrics
+    # (e.g. "idor" matching unrelated text). Zero *all* such categories once,
+    # then re-rank. Description/artifact signals are required for a real call.
+    for cat, sc in list(scores.items()):
+        if cat == "misc" or sc <= 0 or sc >= STRONG:
+            continue
+        cat_signals = [s for s in profile.signals if s.category == cat]
+        if cat_signals and all(getattr(s, "source", "") == "technique" for s in cat_signals):
+            scores[cat] = 0.0
+            profile.notes.append(f"ignored technique-only weak vote for {cat} ({sc:.1f})")
+    ranked = sorted(scores.items(), key=lambda kv: -kv[1])
+    top_category, top_score = ranked[0]
+    runner_category, runner_score = ranked[1] if len(ranked) > 1 else ("", 0.0)
+
+    # Evidence floor:
+    #   < WEAK  → misc (noise)
+    #   weak but real → keep category, low confidence, ambiguous
+    # Multi-label: secondary_categories = other cats within 70% of top score.
+    def _secondaries(ranked_scores, primary: str, top: float) -> list:
+        if top <= 0:
+            return []
+        out = []
+        for cat, sc in ranked_scores:
+            if cat == primary or sc <= 0:
+                continue
+            if sc >= top * 0.70:
+                out.append(cat)
+        return out[:3]
+
+    if 0 < top_score < WEAK and top_category != "misc":
         profile.notes.append(
-            f"only weak signals ({top_score:.1f}), strongest pointing at "
-            f"{top_category} — treating as misc until an artifact says otherwise"
+            f"only noise-level signals ({top_score:.1f}) toward {top_category} — misc"
         )
         profile.category = "misc"
-        profile.confidence = 0.1
+        profile.primary_category = "misc"
+        profile.confidence = 0.05
         profile.runner_up = top_category
         profile.margin = 0.0
         profile.ambiguous = True
+        profile.secondary_categories = []
         return _finish(profile, text)
 
     if top_score <= 0:
-        # Nothing matched at all. "misc" with zero confidence is still a
-        # working category: the planner can triage and re-classify, which it
-        # cannot do with None.
         profile.category = "misc"
+        profile.primary_category = "misc"
         profile.confidence = 0.0
         profile.ambiguous = True
         profile.notes.append("no category signals found — triage the files and re-classify")
     else:
         profile.category = top_category
-        profile.margin = (top_score - runner_score) / top_score
+        profile.primary_category = top_category
+        profile.margin = (top_score - runner_score) / top_score if top_score else 0.0
         profile.runner_up = runner_category
-        # Confidence combines absolute evidence with separation. Plenty of
-        # evidence for two categories is not confidence; it is a chain.
+        profile.secondary_categories = _secondaries(ranked, top_category, top_score)
         volume = min(1.0, top_score / (DECISIVE * 2))
         separation = min(1.0, profile.margin)
         profile.confidence = round(
             min(0.97, max(0.05, 0.05 + 0.3 * volume + 0.65 * separation * volume)), 3
         )
-        profile.ambiguous = profile.margin < 0.35 or profile.confidence < 0.35
+        # Soft band: weak absolute evidence → keep category but lower confidence
+        if top_score < MODERATE * 1.5:
+            profile.confidence = min(profile.confidence, 0.35)
+            profile.ambiguous = True
+            profile.notes.append(
+                f"weak-but-usable signals ({top_score:.1f}) for {top_category}"
+            )
+        profile.ambiguous = profile.ambiguous or profile.margin < 0.35 or profile.confidence < 0.35
         if profile.ambiguous and runner_category:
             profile.notes.append(
                 f"{top_category} and {runner_category} are close "
                 f"({top_score:.1f} vs {runner_score:.1f}) — expect to revise, "
                 f"and consider a chained challenge"
+            )
+        if profile.secondary_categories:
+            profile.notes.append(
+                "secondary: " + ", ".join(profile.secondary_categories)
             )
 
     return _finish(profile, text)

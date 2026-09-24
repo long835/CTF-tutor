@@ -1,0 +1,13 @@
+{
+  "cards": {
+    "jwt-none-bypass": {
+      "technique": "jwt-none-bypass",
+      "easiness": 2.5,
+      "interval_days": 1,
+      "repetitions": 1,
+      "due_at": "2026-09-25T04:25:01.000454+00:00",
+      "last_result": "good",
+      "last_reviewed": "2026-09-24T04:25:01.000440+00:00"
+    }
+  }
+}

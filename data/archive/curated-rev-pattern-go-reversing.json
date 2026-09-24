@@ -1,0 +1,28 @@
+{
+  "challenge_name": "Pattern REV: Go Binary Metadata",
+  "category": "rev",
+  "techniques": [
+    "go-reversing"
+  ],
+  "difficulty": "medium",
+  "source": "CTF-Tutor curated pattern library",
+  "description": "Stripped Go binary still carries pclntab and module data usable for function name recovery.",
+  "explanation": "Go binaries embed rich metadata. Recover names and types before treating it like a stripped C binary.",
+  "solve_steps": [
+    "Confirm Go build artifacts (go.buildid, pclntab)",
+    "Recover function names from pclntab",
+    "Locate main package logic",
+    "Reconstruct the check algorithm"
+  ],
+  "tools_used": [
+    "go tool",
+    "ghidra",
+    "strings"
+  ],
+  "references": [
+    "local:ctf-tutor-curated-patterns"
+  ],
+  "notes": "Educational pattern; no binary attached.",
+  "version": 1,
+  "updated": "2026-09-24"
+}

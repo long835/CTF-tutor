@@ -29,6 +29,7 @@ from __future__ import annotations
 import json
 import os
 from pathlib import Path
+from datetime import date
 from typing import Any, Dict, List, Optional, Set, Tuple
 
 ARCHIVE = Path("data/archive")
@@ -48,6 +49,18 @@ def _slug(text: str) -> str:
         out = out.replace("--", "-")
     return out.strip("-")[:60]
 
+
+
+
+def _stamp(card: Dict[str, Any], library_entry: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+    """Attach version/updated so knowledge_quality can score freshness (item 68)."""
+    if library_entry:
+        card.setdefault("version", library_entry.get("version", 1))
+        card.setdefault("updated", library_entry.get("updated") or date.today().isoformat())
+    else:
+        card.setdefault("version", 1)
+        card.setdefault("updated", date.today().isoformat())
+    return card
 
 def load_library(path: Path = LIBRARY) -> List[Dict[str, Any]]:
     """Read the technique library; an empty list if it is missing."""
@@ -97,7 +110,7 @@ def _concept_cards(library: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
                 "id": f"concept-{_slug(tech)}",
                 "kind": "concept",
                 "source": "library",
-                "provenance": "curated",
+                "provenance": "derived",
                 "name": f"Concept: {tech}",
                 "category": entry.get("category", "misc"),
                 "difficulty": entry.get("difficulty", "medium"),
@@ -121,7 +134,7 @@ def _scenario_cards(library: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
                     "id": f"scenario-{_slug(tech)}-{i}",
                     "kind": "scenario",
                     "source": "library",
-                    "provenance": "curated",
+                    "provenance": "derived",
                     "name": f"{entry.get('category', 'misc').upper()}: {scenario.rstrip('.')}",
                     "category": entry.get("category", "misc"),
                     "difficulty": entry.get("difficulty", "medium"),
@@ -146,7 +159,7 @@ def _triage_cards(library: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
                 "id": f"triage-{_slug(tech)}",
                 "kind": "triage",
                 "source": "library",
-                "provenance": "curated",
+                "provenance": "derived",
                 "name": f"Triage: spotting {tech}",
                 "category": entry.get("category", "misc"),
                 "difficulty": "easy",
@@ -195,7 +208,7 @@ def _discrimination_cards(library: List[Dict[str, Any]]) -> List[Dict[str, Any]]
                         "id": f"discriminate-{_slug(key[0])}-vs-{_slug(key[1])}",
                         "kind": "discrimination",
                         "source": "library",
-                        "provenance": "curated",
+                        "provenance": "derived",
                         "name": f"Telling {key[0]} from {key[1]}",
                         "category": category,
                         "difficulty": "medium",
@@ -234,7 +247,7 @@ def _prerequisite_cards() -> List[Dict[str, Any]]:
                 "id": f"prereq-{_slug(concept)}",
                 "kind": "prerequisite",
                 "source": "skill_graph",
-                "provenance": "curated",
+                "provenance": "derived",
                 "name": f"Foundation: {concept}",
                 "category": "misc",
                 "difficulty": "easy",
@@ -270,7 +283,7 @@ def build_corpus(min_entries: int = 120, include_archive: bool = True) -> Dict[s
         if row["id"] in seen:
             continue
         seen.add(row["id"])
-        uniq.append(row)
+        uniq.append(_stamp(row))
 
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     with open(OUT_FILE, "w", encoding="utf-8") as f:

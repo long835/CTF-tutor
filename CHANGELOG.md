@@ -1,3 +1,36 @@
+## 0.3.2 — multilang runners, cost meters, research tiers, richer UI
+
+- Multilang: C, C++, Go compile-and-run with resource limits.
+- Cost meters + ledger (`main.py cost`, `GET /v1/cost`).
+- Research: domain-based source tier ranking.
+- WebUI: eval, model compare, cost, languages, embeddings.
+
+## 0.3.1 — HTTP API, embeddings, compare, config, telemetry
+
+- Local HTTP API on 127.0.0.1 (`main.py serve`) wrapping core_api.
+- Embedding backend separation (`ollama` | `hash` | `none`).
+- Model comparison harness (`main.py compare`).
+- Central `app_config`, opt-in local telemetry, resource-aware concurrency.
+- research_safe, external provenance, offline ingest policy, DOCS.md.
+- Web UI talks to API; multilang list includes c/cpp/go.
+
+## 0.3.0 — contest dump, vision, cost routing, core API
+
+- `agent/contest_eval_dump.py`: 30 public-contest-style cases; public eval 50/50.
+- `agent/vision.py`: offline PNG LSB / magic hints; optional Ollama vision models.
+- `agent/cost_router.py`: local-first task routing (classify stays heuristic).
+- `agent/core_api.py`: library surface for classify / route / eval / triage.
+- CLI: `main.py vision`, `route`, `dump_eval`.
+
+## 0.2.1 — knowledge depth, blind eval, packaging
+
+- Technique library and evidence rubrics expanded to 97 (taxonomy gap closed).
+- Corpus rebuilt to 857 cards; freshness fields on cards and archive entries.
+- Blind eval sets: independent (30) and public-contest-grounded (20); both 100% on formal classifier.
+- `main.py eval` / `eval.py --independent` / `--public`.
+- Packaging: `pyproject.toml` v0.2.1 with optional `[vector]`, `[ingest]`, `[full]`.
+- Offline PNG LSB stego hint when zsteg/steghide absent.
+
 # Changelog
 
 ## Phase 4 — Hardening

@@ -1,7 +1,11 @@
-requests
-youtube-transcript-api
-chromadb
-python-dotenv
-pytest
+# Core (always useful)
+requests>=2.28
+python-dotenv>=1.0
 
-yt-dlp
+# Optional — vector retrieval / archive ingest
+# chromadb>=0.4
+# youtube-transcript-api>=0.6
+# yt-dlp>=2023.1
+
+# Dev
+pytest>=7.0

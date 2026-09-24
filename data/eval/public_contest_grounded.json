@@ -1,0 +1,608 @@
+[
+  {
+    "id": "pub-pico-bof0",
+    "description": "Smash the stack. Can you overflow the correct buffer? The program reads input with gets and a signal handler prints the flag on crash.",
+    "expected_category": "pwn",
+    "expected_techniques": [
+      "stack-buffer-overflow"
+    ],
+    "difficulty": "easy",
+    "source_style": "public-contest-grounded",
+    "attribution": "style: picoCTF buffer overflow 0 (public practice)"
+  },
+  {
+    "id": "pub-pico-bof1",
+    "description": "Control the return address. Overflow the buffer and return to the flag function in the program. Source uses gets into a small stack buffer.",
+    "expected_category": "pwn",
+    "expected_techniques": [
+      "stack-buffer-overflow"
+    ],
+    "difficulty": "medium",
+    "source_style": "public-contest-grounded",
+    "attribution": "style: picoCTF buffer overflow 1 (public practice)"
+  },
+  {
+    "id": "pub-pico-canary",
+    "description": "Do you think you can bypass the protection and get the flag? A stack canary was added to protect against buffer overflows.",
+    "expected_category": "pwn",
+    "expected_techniques": [
+      "canary-bypass",
+      "stack-buffer-overflow"
+    ],
+    "difficulty": "medium",
+    "source_style": "public-contest-grounded",
+    "attribution": "style: picoCTF buffer overflow 3 / canary challenges"
+  },
+  {
+    "id": "pub-pico-jwt-admin",
+    "description": "Check the admin scratchpad. After login a cookie named jwt appears. Have you heard of JWT? The site blocks the username admin at the form but trusts the token role.",
+    "expected_category": "web",
+    "expected_techniques": [
+      "jwt-none-bypass",
+      "jwt-alg-confusion",
+      "auth-bypass"
+    ],
+    "difficulty": "medium",
+    "source_style": "public-contest-grounded",
+    "attribution": "style: picoCTF JaWT / JAuth family (public writeups)"
+  },
+  {
+    "id": "pub-pico-heap0",
+    "description": "A menu-driven program allocates two heap buffers next to each other. Overflowing the input buffer overwrites a neighbouring safe variable used as a flag gate.",
+    "expected_category": "pwn",
+    "expected_techniques": [
+      "heap-overflow"
+    ],
+    "difficulty": "easy",
+    "source_style": "public-contest-grounded",
+    "attribution": "style: picoCTF heap-0 (public practice)"
+  },
+  {
+    "id": "pub-web-readfile-mac",
+    "description": "This website lets you read files after login. The read endpoint checks a MAC over the filename. Flag is at /etc/flag.txt. Hints mention cheese length and implementing MAC.",
+    "expected_category": "web",
+    "expected_techniques": [
+      "hash-length-extension",
+      "auth-bypass"
+    ],
+    "difficulty": "hard",
+    "source_style": "public-contest-grounded",
+    "attribution": "style: darkCON Web+Crypto public writeup theme"
+  },
+  {
+    "id": "pub-crypto-classical",
+    "description": "The ciphertext looks like English letters with shifted alphabet positions. Frequency analysis should recover the plaintext motto.",
+    "expected_category": "crypto",
+    "expected_techniques": [
+      "classical-caesar",
+      "classical-substitution"
+    ],
+    "difficulty": "easy",
+    "source_style": "public-contest-grounded",
+    "attribution": "style: common beginner crypto contest prompt"
+  },
+  {
+    "id": "pub-forensics-disk",
+    "description": "You are given a USB disk image. Recover a deleted document from unallocated space. Standard forensic imaging formats apply.",
+    "expected_category": "forensics",
+    "expected_techniques": [
+      "disk-image-analysis",
+      "file-carving"
+    ],
+    "difficulty": "medium",
+    "source_style": "public-contest-grounded",
+    "attribution": "style: common forensics contest prompt"
+  },
+  {
+    "id": "pub-rev-crackme",
+    "description": "Reverse engineer this crackme. Enter the correct serial for your name to print the flag. The check is entirely local in the binary.",
+    "expected_category": "rev",
+    "expected_techniques": [
+      "keygen",
+      "algorithm-recovery"
+    ],
+    "difficulty": "medium",
+    "source_style": "public-contest-grounded",
+    "attribution": "style: common keygen/crackme contest prompt"
+  },
+  {
+    "id": "pub-misc-nested-zip",
+    "description": "Try start. Nested password-protected archives lead through a chain of files; one archive comment channel encodes bits of the final password.",
+    "expected_category": "misc",
+    "expected_techniques": [
+      "nested-archive",
+      "archive-analysis"
+    ],
+    "difficulty": "medium",
+    "source_style": "public-contest-grounded",
+    "attribution": "style: SSCTF Chain Rule theme (public writeup)"
+  },
+  {
+    "id": "pub-web-ssti-greet",
+    "description": "A page greets you by name using a server-side template. Special template syntax in the name field evaluates expressions on the server.",
+    "expected_category": "web",
+    "expected_techniques": [
+      "ssti"
+    ],
+    "difficulty": "medium",
+    "source_style": "public-contest-grounded",
+    "attribution": "style: common SSTI contest prompt"
+  },
+  {
+    "id": "pub-crypto-rsa-small",
+    "description": "RSA encryption with a very small public exponent and no padding. The message is short enough that modular exponentiation does not wrap.",
+    "expected_category": "crypto",
+    "expected_techniques": [
+      "rsa-small-e"
+    ],
+    "difficulty": "medium",
+    "source_style": "public-contest-grounded",
+    "attribution": "style: common RSA textbook-attack contest prompt"
+  },
+  {
+    "id": "pub-forensics-pcap",
+    "description": "Investigate this packet capture. Extract the file that was transferred over HTTP and open it for the flag.",
+    "expected_category": "forensics",
+    "expected_techniques": [
+      "pcap-carving"
+    ],
+    "difficulty": "medium",
+    "source_style": "public-contest-grounded",
+    "attribution": "style: common pcap forensics contest prompt"
+  },
+  {
+    "id": "pub-pwn-fmt",
+    "description": "The program prints your input with printf. Using format specifiers you can leak stack addresses and write arbitrary values.",
+    "expected_category": "pwn",
+    "expected_techniques": [
+      "format-string"
+    ],
+    "difficulty": "medium",
+    "source_style": "public-contest-grounded",
+    "attribution": "style: common format-string contest prompt"
+  },
+  {
+    "id": "pub-osint-image",
+    "description": "Find where this photo was taken. The image may still contain location metadata from the camera.",
+    "expected_category": "osint",
+    "expected_techniques": [
+      "osint-geolocation",
+      "osint-metadata",
+      "image-metadata"
+    ],
+    "difficulty": "easy",
+    "source_style": "public-contest-grounded",
+    "attribution": "style: common OSINT geolocation contest prompt"
+  },
+  {
+    "id": "pub-web-sqli-login",
+    "description": "A login form builds SQL with string concatenation. Entering a quote changes the error message. Can you log in as admin without the password?",
+    "expected_category": "web",
+    "expected_techniques": [
+      "sql-injection"
+    ],
+    "difficulty": "easy",
+    "source_style": "public-contest-grounded",
+    "attribution": "style: common SQLi login contest prompt"
+  },
+  {
+    "id": "pub-crypto-xor-single",
+    "description": "The flag was XOR-encrypted with a single repeated byte. Ciphertext is provided as hex. Recover the key and plaintext.",
+    "expected_category": "crypto",
+    "expected_techniques": [
+      "xor-single-byte"
+    ],
+    "difficulty": "easy",
+    "source_style": "public-contest-grounded",
+    "attribution": "style: common single-byte XOR contest prompt"
+  },
+  {
+    "id": "pub-rev-strings",
+    "description": "The binary checks a password against an obfuscated string built at runtime. Recover the expected password by reversing the transform.",
+    "expected_category": "rev",
+    "expected_techniques": [
+      "string-decryption",
+      "algorithm-recovery"
+    ],
+    "difficulty": "easy",
+    "source_style": "public-contest-grounded",
+    "attribution": "style: common string-decrypt crackme prompt"
+  },
+  {
+    "id": "pub-forensics-exif",
+    "description": "Someone forgot to strip metadata from this JPEG. The photographer and camera model are still embedded in the file.",
+    "expected_category": "forensics",
+    "expected_techniques": [
+      "image-metadata"
+    ],
+    "difficulty": "easy",
+    "source_style": "public-contest-grounded",
+    "attribution": "style: common EXIF forensics contest prompt"
+  },
+  {
+    "id": "pub-pwn-ret2win",
+    "description": "NX is enabled so shellcode will not run on the stack. There is a win function already in the binary. Overflow the buffer and return to it.",
+    "expected_category": "pwn",
+    "expected_techniques": [
+      "stack-buffer-overflow",
+      "ret2libc"
+    ],
+    "difficulty": "medium",
+    "source_style": "public-contest-grounded",
+    "attribution": "style: common ret2win contest prompt"
+  },
+  {
+    "id": "dump-pwn-gets-crash",
+    "description": "Smash the stack. Can you overflow the correct buffer? Input is read with gets; a SIGSEGV handler may print the flag.",
+    "expected_category": "pwn",
+    "expected_techniques": [
+      "stack-buffer-overflow"
+    ],
+    "difficulty": "easy",
+    "source_style": "public-contest-grounded",
+    "attribution": "picoCTF-style buffer overflow 0 theme"
+  },
+  {
+    "id": "dump-pwn-ret2win",
+    "description": "Control the return address. Overflow a small stack buffer and redirect execution to a win function already present in the binary.",
+    "expected_category": "pwn",
+    "expected_techniques": [
+      "stack-buffer-overflow"
+    ],
+    "difficulty": "medium",
+    "source_style": "public-contest-grounded",
+    "attribution": "picoCTF-style buffer overflow 1 theme"
+  },
+  {
+    "id": "dump-pwn-canary",
+    "description": "A stack canary protects against buffer overflows. Leak or brute the canary, then overwrite the return address.",
+    "expected_category": "pwn",
+    "expected_techniques": [
+      "canary-bypass",
+      "stack-buffer-overflow"
+    ],
+    "difficulty": "medium",
+    "source_style": "public-contest-grounded",
+    "attribution": "picoCTF-style canary / buffer overflow 3 theme"
+  },
+  {
+    "id": "dump-pwn-heap-adj",
+    "description": "Two heap chunks sit next to each other. Overflowing the first overwrites a neighbouring safe variable used as a gate.",
+    "expected_category": "pwn",
+    "expected_techniques": [
+      "heap-overflow"
+    ],
+    "difficulty": "easy",
+    "source_style": "public-contest-grounded",
+    "attribution": "picoCTF-style heap-0 theme"
+  },
+  {
+    "id": "dump-pwn-fmt-got",
+    "description": "The program prints user input with printf. Using format specifiers, leak addresses and overwrite a GOT entry.",
+    "expected_category": "pwn",
+    "expected_techniques": [
+      "format-string"
+    ],
+    "difficulty": "medium",
+    "source_style": "public-contest-grounded",
+    "attribution": "common format-string contest theme"
+  },
+  {
+    "id": "dump-pwn-nx-ret2libc",
+    "description": "NX is enabled so stack shellcode will not run. Divert control flow into libc to obtain a shell.",
+    "expected_category": "pwn",
+    "expected_techniques": [
+      "ret2libc",
+      "stack-buffer-overflow"
+    ],
+    "difficulty": "hard",
+    "source_style": "public-contest-grounded",
+    "attribution": "common ret2libc contest theme"
+  },
+  {
+    "id": "dump-pwn-rop-chain",
+    "description": "Build a ROP chain from gadgets in the binary to call system with /bin/sh. ASLR is off for this instance.",
+    "expected_category": "pwn",
+    "expected_techniques": [
+      "rop-chain"
+    ],
+    "difficulty": "hard",
+    "source_style": "public-contest-grounded",
+    "attribution": "common ROP contest theme"
+  },
+  {
+    "id": "dump-web-jwt-none",
+    "description": "After login a cookie named jwt appears. The site blocks username admin at the form but trusts the token role field.",
+    "expected_category": "web",
+    "expected_techniques": [
+      "jwt-none-bypass",
+      "auth-bypass"
+    ],
+    "difficulty": "medium",
+    "source_style": "public-contest-grounded",
+    "attribution": "picoCTF JaWT / JAuth family theme"
+  },
+  {
+    "id": "dump-web-sqli-login",
+    "description": "The login form concatenates username into SQL. A single quote changes the error. Log in as admin without the password.",
+    "expected_category": "web",
+    "expected_techniques": [
+      "sql-injection"
+    ],
+    "difficulty": "easy",
+    "source_style": "public-contest-grounded",
+    "attribution": "common SQLi login theme"
+  },
+  {
+    "id": "dump-web-ssti",
+    "description": "A greeting page renders your name through a server-side template engine. Template expressions in the name field are evaluated.",
+    "expected_category": "web",
+    "expected_techniques": [
+      "ssti"
+    ],
+    "difficulty": "medium",
+    "source_style": "public-contest-grounded",
+    "attribution": "common SSTI contest theme"
+  },
+  {
+    "id": "dump-web-lfi",
+    "description": "A page loads files via a path query parameter. Directory traversal may reach /etc/passwd or the application source.",
+    "expected_category": "web",
+    "expected_techniques": [
+      "path-traversal",
+      "lfi"
+    ],
+    "difficulty": "medium",
+    "source_style": "public-contest-grounded",
+    "attribution": "common LFI / path traversal theme"
+  },
+  {
+    "id": "dump-web-xss-cookie",
+    "description": "A search box reflects input without encoding. Steal an admin session cookie via a crafted payload the bot will visit.",
+    "expected_category": "web",
+    "expected_techniques": [
+      "xss-reflected",
+      "xss-stored"
+    ],
+    "difficulty": "medium",
+    "source_style": "public-contest-grounded",
+    "attribution": "common XSS contest theme"
+  },
+  {
+    "id": "dump-web-smuggle",
+    "description": "Front-end and back-end disagree on Content-Length versus Transfer-Encoding. A crafted request can desync and smuggle a second request.",
+    "expected_category": "web",
+    "expected_techniques": [
+      "http-request-smuggling"
+    ],
+    "difficulty": "hard",
+    "source_style": "public-contest-grounded",
+    "attribution": "common request-smuggling theme"
+  },
+  {
+    "id": "dump-crypto-caesar",
+    "description": "The ciphertext looks like English with shifted alphabet positions. Frequency analysis should recover the motto.",
+    "expected_category": "crypto",
+    "expected_techniques": [
+      "classical-caesar"
+    ],
+    "difficulty": "easy",
+    "source_style": "public-contest-grounded",
+    "attribution": "common classical crypto theme"
+  },
+  {
+    "id": "dump-crypto-xor-single",
+    "description": "The flag was XOR-encrypted with one repeated byte. Ciphertext is hex. Recover the key and plaintext.",
+    "expected_category": "crypto",
+    "expected_techniques": [
+      "xor-single-byte"
+    ],
+    "difficulty": "easy",
+    "source_style": "public-contest-grounded",
+    "attribution": "common single-byte XOR theme"
+  },
+  {
+    "id": "dump-crypto-xor-repeating",
+    "description": "A long ciphertext was produced by XORing plaintext with a short repeating key. Kasiski-style analysis reveals the key length.",
+    "expected_category": "crypto",
+    "expected_techniques": [
+      "xor-repeating-key"
+    ],
+    "difficulty": "medium",
+    "source_style": "public-contest-grounded",
+    "attribution": "common repeating-XOR theme"
+  },
+  {
+    "id": "dump-crypto-rsa-e3",
+    "description": "Textbook RSA with public exponent three and no padding. The message is short enough that cubing does not wrap the modulus.",
+    "expected_category": "crypto",
+    "expected_techniques": [
+      "rsa-small-e"
+    ],
+    "difficulty": "medium",
+    "source_style": "public-contest-grounded",
+    "attribution": "common RSA small-e theme"
+  },
+  {
+    "id": "dump-crypto-rsa-common-mod",
+    "description": "The same message was encrypted under two RSA public keys that share a modulus. Recover the plaintext without factoring.",
+    "expected_category": "crypto",
+    "expected_techniques": [
+      "rsa-common-modulus"
+    ],
+    "difficulty": "hard",
+    "source_style": "public-contest-grounded",
+    "attribution": "common RSA common-modulus theme"
+  },
+  {
+    "id": "dump-crypto-ecdsa-nonce",
+    "description": "Two ECDSA signatures were produced with the same ephemeral nonce. Recover the private key from the pair of signatures.",
+    "expected_category": "crypto",
+    "expected_techniques": [
+      "ecdsa-nonce-reuse"
+    ],
+    "difficulty": "hard",
+    "source_style": "public-contest-grounded",
+    "attribution": "common ECDSA nonce-reuse theme"
+  },
+  {
+    "id": "dump-forensics-pcap",
+    "description": "Investigate this packet capture. Extract the file transferred over HTTP and open it for the flag.",
+    "expected_category": "forensics",
+    "expected_techniques": [
+      "pcap-carving"
+    ],
+    "difficulty": "medium",
+    "source_style": "public-contest-grounded",
+    "attribution": "common pcap forensics theme"
+  },
+  {
+    "id": "dump-forensics-disk",
+    "description": "You are given a USB disk image. Recover a deleted document from unallocated space.",
+    "expected_category": "forensics",
+    "expected_techniques": [
+      "disk-image-analysis",
+      "file-carving"
+    ],
+    "difficulty": "medium",
+    "source_style": "public-contest-grounded",
+    "attribution": "common disk-image forensics theme"
+  },
+  {
+    "id": "dump-forensics-lsb",
+    "description": "An ordinary-looking PNG hides a bitstream in the lowest bit of each colour channel.",
+    "expected_category": "forensics",
+    "expected_techniques": [
+      "steganography"
+    ],
+    "difficulty": "medium",
+    "source_style": "public-contest-grounded",
+    "attribution": "common LSB stego theme"
+  },
+  {
+    "id": "dump-forensics-exif",
+    "description": "Someone forgot to strip metadata from this JPEG. Photographer and camera model remain embedded.",
+    "expected_category": "forensics",
+    "expected_techniques": [
+      "image-metadata"
+    ],
+    "difficulty": "easy",
+    "source_style": "public-contest-grounded",
+    "attribution": "common EXIF forensics theme"
+  },
+  {
+    "id": "dump-rev-crackme",
+    "description": "Reverse engineer this crackme. Enter the correct serial for your name to print the flag. The check is local in the binary.",
+    "expected_category": "rev",
+    "expected_techniques": [
+      "keygen",
+      "algorithm-recovery"
+    ],
+    "difficulty": "medium",
+    "source_style": "public-contest-grounded",
+    "attribution": "common keygen/crackme theme"
+  },
+  {
+    "id": "dump-rev-packed",
+    "description": "The sample's entry point jumps to a stub that unpacks the real code into memory and rebuilds the import table.",
+    "expected_category": "rev",
+    "expected_techniques": [
+      "packed-binary"
+    ],
+    "difficulty": "medium",
+    "source_style": "public-contest-grounded",
+    "attribution": "common packer/unpack theme"
+  },
+  {
+    "id": "dump-rev-go",
+    "description": "A stripped binary written in Google's language. Recover function names from the remaining metadata tables.",
+    "expected_category": "rev",
+    "expected_techniques": [
+      "go-reversing"
+    ],
+    "difficulty": "medium",
+    "source_style": "public-contest-grounded",
+    "attribution": "common Go reverse-engineering theme"
+  },
+  {
+    "id": "dump-misc-nested-zip",
+    "description": "Try start. Nested password-protected archives form a chain; one archive comment channel encodes bits of the final password.",
+    "expected_category": "misc",
+    "expected_techniques": [
+      "nested-archive"
+    ],
+    "difficulty": "medium",
+    "source_style": "public-contest-grounded",
+    "attribution": "SSCTF-style nested archive theme"
+  },
+  {
+    "id": "dump-misc-encoding",
+    "description": "The challenge text looks like base64 but fails until you notice it is hex that was then base64-encoded.",
+    "expected_category": "misc",
+    "expected_techniques": [
+      "multilayer-encoding",
+      "encoding-recognition"
+    ],
+    "difficulty": "easy",
+    "source_style": "public-contest-grounded",
+    "attribution": "common multilayer encoding theme"
+  },
+  {
+    "id": "dump-osint-photo",
+    "description": "Find where this photo was taken. The image may still contain location metadata from the camera.",
+    "expected_category": "osint",
+    "expected_techniques": [
+      "osint-geolocation",
+      "image-metadata"
+    ],
+    "difficulty": "easy",
+    "source_style": "public-contest-grounded",
+    "attribution": "common OSINT geolocation theme"
+  },
+  {
+    "id": "dump-blockchain-reentrancy",
+    "description": "A Solidity contract pays out before updating balances. Call the withdraw function recursively to drain the contract.",
+    "expected_category": "blockchain",
+    "expected_techniques": [
+      "reentrancy"
+    ],
+    "difficulty": "medium",
+    "source_style": "public-contest-grounded",
+    "attribution": "common reentrancy theme"
+  },
+  {
+    "id": "pub-exp-jwt-rs256",
+    "description": "Login returns a JWT. The server accepts HS256 and also accepts tokens signed with the published RS256 public key as an HMAC secret.",
+    "expected_category": "web",
+    "expected_techniques": [
+      "jwt-alg-confusion"
+    ],
+    "difficulty": "hard",
+    "source_style": "public-contest-grounded",
+    "attribution": "classic JWT alg confusion theme"
+  },
+  {
+    "id": "pub-exp-rop-libc",
+    "description": "Remote 64-bit service with NX enabled. Leak a libc address via a format string, then ROP to system. ASLR is on.",
+    "expected_category": "pwn",
+    "expected_techniques": [
+      "format-string",
+      "ret2libc",
+      "rop-chain"
+    ],
+    "difficulty": "hard",
+    "source_style": "public-contest-grounded",
+    "attribution": "classic format-string to ROP theme"
+  },
+  {
+    "id": "pub-exp-padding-oracle",
+    "description": "An API decrypts client cookies and returns a distinct error when PKCS7 padding is invalid. Craft ciphertexts to recover plaintext byte by byte.",
+    "expected_category": "crypto",
+    "expected_techniques": [
+      "padding-oracle"
+    ],
+    "difficulty": "hard",
+    "source_style": "public-contest-grounded",
+    "attribution": "classic padding-oracle theme"
+  }
+]

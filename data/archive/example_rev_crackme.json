@@ -1,7 +1,11 @@
 {
   "challenge_name": "RevCTF2024 - LicenseCheck",
   "category": "rev",
-  "techniques": ["static-analysis", "algorithm-recovery", "keygen"],
+  "techniques": [
+    "static-analysis",
+    "algorithm-recovery",
+    "keygen"
+  ],
   "difficulty": "easy",
   "source": "ExampleCTF 2024",
   "description": "A statically-linked Linux binary asks for a license key on stdin and prints 'Access granted' or 'Access denied'. No obvious anti-debug tricks.",
@@ -14,7 +18,15 @@
     "Invert the transform algebraically (XOR is its own inverse, so this is usually the easiest case) to compute a valid key from the target buffer",
     "Verify by running the binary with the computed key"
   ],
-  "tools_used": ["ghidra", "file", "checksec"],
-  "references": ["https://ctf101.org/reverse-engineering/what-is-reverse-engineering/"],
-  "notes": "Always check whether the 'crypto' is actually just XOR/rotate/add before reaching for a real crypto library -- most rev crackmes use something invertible by hand."
+  "tools_used": [
+    "ghidra",
+    "file",
+    "checksec"
+  ],
+  "references": [
+    "https://ctf101.org/reverse-engineering/what-is-reverse-engineering/"
+  ],
+  "notes": "Always check whether the 'crypto' is actually just XOR/rotate/add before reaching for a real crypto library -- most rev crackmes use something invertible by hand.",
+  "version": 1,
+  "updated": "2026-09-23"
 }

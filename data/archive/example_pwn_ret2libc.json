@@ -1,7 +1,11 @@
 {
   "challenge_name": "PwnCTF2024 - ClassicStack",
   "category": "pwn",
-  "techniques": ["stack-buffer-overflow", "ret2libc", "aslr-bypass"],
+  "techniques": [
+    "stack-buffer-overflow",
+    "ret2libc",
+    "aslr-bypass"
+  ],
   "difficulty": "medium",
   "source": "ExampleCTF 2024",
   "description": "A statically-linked-looking x86_64 binary reads a name into a fixed-size stack buffer with gets(), no canary, NX enabled, no PIE. libc version is provided alongside the binary.",
@@ -14,7 +18,15 @@
     "Build the payload: padding to the saved return address, then pop-rdi gadget, '/bin/sh' address, system() address",
     "Send the payload and catch the shell"
   ],
-  "tools_used": ["pwntools", "gdb", "ropper"],
-  "references": ["https://ctf-wiki.org/pwn/linux/stackoverflow/x64/ret2libc/"],
-  "notes": "Double check the libc version matches exactly -- offsets for system()/\"/bin/sh\" differ between libc builds and a mismatch just crashes the target."
+  "tools_used": [
+    "pwntools",
+    "gdb",
+    "ropper"
+  ],
+  "references": [
+    "https://ctf-wiki.org/pwn/linux/stackoverflow/x64/ret2libc/"
+  ],
+  "notes": "Double check the libc version matches exactly -- offsets for system()/\"/bin/sh\" differ between libc builds and a mismatch just crashes the target.",
+  "version": 1,
+  "updated": "2026-09-23"
 }

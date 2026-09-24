@@ -1,7 +1,11 @@
 {
   "challenge_name": "WebCTF2024 - LoginBypass",
   "category": "web",
-  "techniques": ["sql-injection", "auth-bypass", "boolean-blind-sqli"],
+  "techniques": [
+    "sql-injection",
+    "auth-bypass",
+    "boolean-blind-sqli"
+  ],
   "difficulty": "easy",
   "source": "ExampleCTF 2024",
   "description": "A login form builds a SQL query by directly concatenating the username and password fields into a WHERE clause, with no parameterization.",
@@ -12,7 +16,14 @@
     "If that doesn't return an admin session specifically, add an ORDER BY / row-targeting condition, e.g. `' OR username='admin' --`",
     "Confirm the resulting session belongs to the intended account"
   ],
-  "tools_used": ["burpsuite", "sqlmap"],
-  "references": ["https://portswigger.net/web-security/sql-injection"],
-  "notes": "If quotes are filtered, check whether the query uses numeric context (no quotes needed) or try encoding tricks before assuming the field is actually safe."
+  "tools_used": [
+    "burpsuite",
+    "sqlmap"
+  ],
+  "references": [
+    "https://portswigger.net/web-security/sql-injection"
+  ],
+  "notes": "If quotes are filtered, check whether the query uses numeric context (no quotes needed) or try encoding tricks before assuming the field is actually safe.",
+  "version": 1,
+  "updated": "2026-09-23"
 }

@@ -80,12 +80,27 @@ def run(path: Path = DEFAULT_DATA, decompose: bool = False, model: str = "",
     return 0
 
 
+INDEPENDENT_DATA = ROOT / "data" / "eval" / "independent_public_style.json"
+PUBLIC_DATA = ROOT / "data" / "eval" / "public_contest_grounded.json"
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--data", type=Path, default=DEFAULT_DATA)
+    parser.add_argument(
+        "--independent",
+        action="store_true",
+        help="use data/eval/independent_public_style.json (paraphrase-style blind cases)",
+    )
+    parser.add_argument(
+        "--public",
+        action="store_true",
+        help="use data/eval/public_contest_grounded.json (public-contest-style prompts)",
+    )
     parser.add_argument("--decompose", action="store_true", help="also evaluate technique tags using local Ollama")
     parser.add_argument("--model", default="", help="Ollama model for --decompose")
     parser.add_argument("--classifier", default="formal", choices=["formal", "heuristic"],
                         help="formal (agent/classify_challenge.py) or the legacy heuristic")
     args = parser.parse_args()
-    raise SystemExit(run(args.data, args.decompose, args.model, args.classifier))
+    data = PUBLIC_DATA if args.public else INDEPENDENT_DATA if args.independent else args.data
+    raise SystemExit(run(data, args.decompose, args.model, args.classifier))

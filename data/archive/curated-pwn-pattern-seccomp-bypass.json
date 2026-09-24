@@ -1,0 +1,29 @@
+{
+  "challenge_name": "Pattern PWN: Seccomp Restricted Shell",
+  "category": "pwn",
+  "techniques": [
+    "seccomp-bypass",
+    "rop-chain"
+  ],
+  "difficulty": "hard",
+  "source": "CTF-Tutor curated pattern library",
+  "description": "Binary installs a seccomp filter before reading input. Only a subset of syscalls remain allowed.",
+  "explanation": "Dump the BPF filter, list allowed syscalls, then build a ROP chain that stays inside the filter (often open/read/write or specific numbers only).",
+  "solve_steps": [
+    "Extract seccomp rules (seccomp-tools or equivalent)",
+    "List allowed syscalls",
+    "Plan ROP within those constraints",
+    "Test each primitive offline before the full chain"
+  ],
+  "tools_used": [
+    "seccomp-tools",
+    "ropper",
+    "pwntools"
+  ],
+  "references": [
+    "local:ctf-tutor-curated-patterns"
+  ],
+  "notes": "Educational pattern; no live target.",
+  "version": 1,
+  "updated": "2026-09-24"
+}

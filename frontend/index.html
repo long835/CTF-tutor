@@ -2,28 +2,144 @@
 <html lang="en">
 <head>
   <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <title>CTF-Tutor</title>
   <style>
-    body { font-family: ui-sans-serif, system-ui; margin: 2rem; background: #0b1220; color: #e7ecf3; }
-    h1 { color: #7dd3fc; }
-    code { background: #1e293b; padding: 0.15rem 0.4rem; border-radius: 4px; }
-    .card { background: #111827; border: 1px solid #1f2937; border-radius: 12px; padding: 1.25rem; margin: 1rem 0; }
-    a { color: #93c5fd; }
+    :root {
+      --bg:#0b1220; --card:#111827; --border:#1f2937; --text:#e7ecf3;
+      --accent:#7dd3fc; --muted:#94a3b8; --ok:#34d399; --warn:#fbbf24;
+    }
+    * { box-sizing: border-box; }
+    body { font-family: ui-sans-serif, system-ui, sans-serif; margin:0; background:var(--bg); color:var(--text); }
+    main { max-width: 960px; margin:0 auto; padding:1.5rem 1rem 3rem; }
+    h1 { color:var(--accent); margin:0 0 .25rem; font-size:1.6rem; }
+    h2 { font-size:1rem; margin:0 0 .75rem; color:var(--accent); }
+    .muted { color:var(--muted); font-size:.9rem; }
+    .grid { display:grid; gap:1rem; grid-template-columns:1fr; }
+    @media (min-width: 800px) { .grid-2 { grid-template-columns:1fr 1fr; } }
+    .card { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:1rem 1.15rem; }
+    textarea, input, select {
+      width:100%; background:#0f172a; color:var(--text); border:1px solid var(--border);
+      border-radius:8px; padding:.55rem .65rem; margin-top:.35rem;
+    }
+    textarea { min-height:110px; resize:vertical; }
+    button {
+      background:#0369a1; color:#fff; border:0; border-radius:8px;
+      padding:.5rem .9rem; cursor:pointer; margin:.35rem .35rem 0 0; font-size:.9rem;
+    }
+    button.secondary { background:#334155; }
+    button:hover { filter:brightness(1.08); }
+    pre {
+      background:#0f172a; padding:.75rem; border-radius:8px; overflow:auto;
+      font-size:.8rem; max-height:420px; margin:.5rem 0 0;
+    }
+    .pill {
+      display:inline-block; padding:.15rem .5rem; border-radius:999px;
+      background:#0f172a; border:1px solid var(--border); font-size:.75rem; margin-right:.35rem;
+    }
+    .pill.ok { border-color:var(--ok); color:var(--ok); }
+    .status { font-size:.85rem; margin-top:.4rem; }
+    label { font-size:.8rem; color:var(--muted); }
+    .tabs { display:flex; gap:.35rem; flex-wrap:wrap; margin:.5rem 0; }
   </style>
 </head>
 <body>
+<main>
   <h1>CTF-Tutor</h1>
-  <p>Local-first CTF agent. This is a static dashboard stub — run the CLI for the full agent.</p>
+  <p class="muted">Local-first CTF learning assistant — classify, triage, route, inspect cost.</p>
+
   <div class="card">
-    <h2>Quick start</h2>
-    <pre>python main.py agent "JWT accepts alg=none"
-python main.py fetch --search "ctf web"
-python main.py experiment --benchmark
-python -m agent.eval_agent</pre>
+    <label>API base URL</label>
+    <input id="base" value="http://127.0.0.1:8765"/>
+    <div class="tabs">
+      <button type="button" id="btnHealth">Health</button>
+      <button type="button" class="secondary" id="btnCfg">Config</button>
+      <button type="button" class="secondary" id="btnKnow">Knowledge</button>
+      <button type="button" class="secondary" id="btnCost">Cost</button>
+      <button type="button" class="secondary" id="btnLang">Languages</button>
+      <button type="button" class="secondary" id="btnEmbed">Embeddings</button>
+    </div>
+    <div class="status" id="status"><span class="pill">idle</span></div>
   </div>
+
+  <div class="grid grid-2">
+    <div class="card">
+      <h2>Challenge</h2>
+      <label>Description</label>
+      <textarea id="desc" placeholder="e.g. JWT cookie accepts alg=none and role claim is trusted…"></textarea>
+      <label>Artifacts (comma-separated paths, optional)</label>
+      <input id="artifacts" placeholder="/path/to/vuln.png"/>
+      <div>
+        <button type="button" id="btnClass">Classify</button>
+        <button type="button" id="btnTriage">Triage</button>
+        <button type="button" class="secondary" id="btnRoute">Route plan</button>
+      </div>
+    </div>
+    <div class="card">
+      <h2>Eval set</h2>
+      <label>Which set</label>
+      <select id="evalSet">
+        <option value="public">public</option>
+        <option value="independent">independent</option>
+        <option value="ground_truth">ground_truth</option>
+      </select>
+      <div>
+        <button type="button" id="btnEval">Run eval</button>
+        <button type="button" class="secondary" id="btnCompare">Compare models</button>
+      </div>
+      <p class="muted" style="margin-top:.75rem">Requires <code>python main.py serve</code>.</p>
+    </div>
+  </div>
+
   <div class="card">
-    <h2>Architecture</h2>
-    <p>See <code>ARCHITECTURE.md</code> for the agent loop, safety model, and tool permissions.</p>
+    <h2>Result</h2>
+    <pre id="out">Ready. Start the API with: python main.py serve</pre>
   </div>
+</main>
+<script>
+const out = document.getElementById('out');
+const status = document.getElementById('status');
+const baseEl = document.getElementById('base');
+function base(){ return baseEl.value.replace(/\/$/, ''); }
+function setStatus(text, ok){
+  status.innerHTML = '<span class="pill '+(ok?'ok':'')+'">'+text+'</span>';
+}
+async function call(method, path, body){
+  setStatus('loading…', false);
+  try {
+    const opts = { method, headers: { 'Content-Type': 'application/json' } };
+    if (body !== undefined) opts.body = JSON.stringify(body);
+    const r = await fetch(base() + path, opts);
+    const j = await r.json();
+    out.textContent = JSON.stringify(j, null, 2);
+    setStatus(r.status + ' ' + path, r.ok);
+  } catch (e) {
+    out.textContent = String(e);
+    setStatus('error — is serve running?', false);
+  }
+}
+function artifacts(){
+  const raw = document.getElementById('artifacts').value.trim();
+  if (!raw) return [];
+  return raw.split(',').map(s => s.trim()).filter(Boolean);
+}
+document.getElementById('btnHealth').onclick = () => call('GET', '/health');
+document.getElementById('btnCfg').onclick = () => call('GET', '/v1/config');
+document.getElementById('btnKnow').onclick = () => call('GET', '/v1/knowledge/health');
+document.getElementById('btnCost').onclick = () => call('GET', '/v1/cost');
+document.getElementById('btnLang').onclick = () => call('GET', '/v1/languages');
+document.getElementById('btnEmbed').onclick = () => call('GET', '/v1/embeddings/info');
+document.getElementById('btnClass').onclick = () => call('POST', '/v1/classify', {
+  description: document.getElementById('desc').value, artifacts: artifacts()
+});
+document.getElementById('btnTriage').onclick = () => call('POST', '/v1/triage', {
+  description: document.getElementById('desc').value, artifacts: artifacts()
+});
+document.getElementById('btnRoute').onclick = () => call('POST', '/v1/route', { task: 'plan' });
+document.getElementById('btnEval').onclick = () => call('POST', '/v1/eval', {
+  set: document.getElementById('evalSet').value
+});
+document.getElementById('btnCompare').onclick = () => call('GET', '/v1/models/compare?tasks=classify,plan,vision');
+</script>
 </body>
 </html>

@@ -267,7 +267,7 @@ def score_card(card: Dict[str, Any], card_id: str = "") -> QualityScore:
         out.notes.append("no source or reference: where this came from is unrecoverable")
 
     # -- freshness ---------------------------------------------------------
-    age = _days_since(card.get("updated_at") or card.get("date") or card.get("retrieved_at"))
+    age = _days_since(card.get("updated_at") or card.get("updated") or card.get("date") or card.get("retrieved_at"))
     if age is None and not card.get("version"):
         # Unmeasurable, not bad. Scoring it zero dragged every card in the
         # shipped corpus down by a tenth for a property none of them records,

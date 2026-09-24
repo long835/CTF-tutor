@@ -1,0 +1,27 @@
+{
+  "challenge_name": "Pattern CRYPTO: Padding Oracle",
+  "category": "crypto",
+  "techniques": [
+    "padding-oracle"
+  ],
+  "difficulty": "hard",
+  "source": "CTF-Tutor curated pattern library",
+  "description": "Server decrypts a cookie and returns a distinct error when PKCS7 padding is invalid.",
+  "explanation": "Use the padding validity bit to decrypt ciphertext one byte at a time without the key.",
+  "solve_steps": [
+    "Confirm distinct padding vs MAC/auth errors",
+    "Attack the last block first",
+    "Walk backward across blocks",
+    "Validate recovered plaintext structure"
+  ],
+  "tools_used": [
+    "python",
+    "curl"
+  ],
+  "references": [
+    "local:ctf-tutor-curated-patterns"
+  ],
+  "notes": "Educational pattern; lab only.",
+  "version": 1,
+  "updated": "2026-09-24"
+}

@@ -1,18 +1,24 @@
 {
   "schema": 1,
-  "updated_at": "2026-09-18T03:58:12.850086+00:00",
+  "updated_at": "2026-09-24T10:24:05.539616+00:00",
   "records": {
     "curated-blockchain-pattern-blockchain-integer-accounting": {
       "entry_id": "curated-blockchain-pattern-blockchain-integer-accounting",
       "source_type": "curated",
       "source_url": "local:ctf-tutor-curated-patterns",
       "added_at": "2026-09-16T11:02:48.355387+00:00",
-      "updated_at": "2026-09-16T11:02:48.355401+00:00",
+      "updated_at": "2026-09-24T03:41:41.999739+00:00",
       "added_by": "unknown",
       "license": "unspecified",
-      "version": 1,
-      "content_hash": "242dc94e3c43bc80",
-      "history": [],
+      "version": 2,
+      "content_hash": "5b482ea296d88007",
+      "history": [
+        {
+          "version": "1",
+          "content_hash": "242dc94e3c43bc80",
+          "replaced_at": "2026-09-24T03:41:41.999710+00:00"
+        }
+      ],
       "verified": false,
       "notes": ""
     },
@@ -21,12 +27,18 @@
       "source_type": "curated",
       "source_url": "local:ctf-tutor-curated-patterns",
       "added_at": "2026-09-16T11:02:48.355435+00:00",
-      "updated_at": "2026-09-16T11:02:48.355437+00:00",
+      "updated_at": "2026-09-24T03:41:41.999787+00:00",
       "added_by": "unknown",
       "license": "unspecified",
-      "version": 1,
-      "content_hash": "e05da2084b67dd82",
-      "history": [],
+      "version": 2,
+      "content_hash": "4b029a37df457585",
+      "history": [
+        {
+          "version": "1",
+          "content_hash": "e05da2084b67dd82",
+          "replaced_at": "2026-09-24T03:41:41.999784+00:00"
+        }
+      ],
       "verified": false,
       "notes": ""
     },
@@ -35,16 +47,21 @@
       "source_type": "curated",
       "source_url": "local:ctf-tutor-curated-patterns",
       "added_at": "2026-09-16T11:02:48.355457+00:00",
-      "updated_at": "2026-09-16T11:17:41.269291+00:00",
+      "updated_at": "2026-09-24T03:41:41.999831+00:00",
       "added_by": "unknown",
       "license": "unspecified",
-      "version": 2,
-      "content_hash": "dc49f25bf1ca1e7f",
+      "version": 3,
+      "content_hash": "0bdd23becf88fa3e",
       "history": [
         {
           "version": "1",
           "content_hash": "88963aeda54ca38c",
           "replaced_at": "2026-09-16T11:17:41.269273+00:00"
+        },
+        {
+          "version": "2",
+          "content_hash": "dc49f25bf1ca1e7f",
+          "replaced_at": "2026-09-24T03:41:41.999827+00:00"
         }
       ],
       "verified": false,
@@ -55,16 +72,21 @@
       "source_type": "curated",
       "source_url": "local:ctf-tutor-curated-patterns",
       "added_at": "2026-09-16T11:02:48.355472+00:00",
-      "updated_at": "2026-09-16T11:17:41.269319+00:00",
+      "updated_at": "2026-09-24T03:41:41.999867+00:00",
       "added_by": "unknown",
       "license": "unspecified",
-      "version": 2,
-      "content_hash": "8dd1fd3a92c1779b",
+      "version": 3,
+      "content_hash": "21d97c53365262b8",
       "history": [
         {
           "version": "1",
           "content_hash": "ee69adaf5ba44ca2",
           "replaced_at": "2026-09-16T11:17:41.269316+00:00"
+        },
+        {
+          "version": "2",
+          "content_hash": "8dd1fd3a92c1779b",
+          "replaced_at": "2026-09-24T03:41:41.999864+00:00"
         }
       ],
       "verified": false,
@@ -75,12 +97,18 @@
       "source_type": "curated",
       "source_url": "local:ctf-tutor-curated-patterns",
       "added_at": "2026-09-16T11:02:48.355493+00:00",
-      "updated_at": "2026-09-16T11:02:48.355495+00:00",
+      "updated_at": "2026-09-24T03:41:41.999901+00:00",
       "added_by": "unknown",
       "license": "unspecified",
-      "version": 1,
-      "content_hash": "1707c77f52e051dd",
-      "history": [],
+      "version": 2,
+      "content_hash": "06e6bbbe9f35aa93",
+      "history": [
+        {
+          "version": "1",
+          "content_hash": "1707c77f52e051dd",
+          "replaced_at": "2026-09-24T03:41:41.999897+00:00"
+        }
+      ],
       "verified": false,
       "notes": ""
     },
@@ -89,12 +117,18 @@
       "source_type": "curated",
       "source_url": "local:ctf-tutor-curated-patterns",
       "added_at": "2026-09-16T11:02:48.355511+00:00",
-      "updated_at": "2026-09-16T11:02:48.355513+00:00",
+      "updated_at": "2026-09-24T03:41:41.999922+00:00",
       "added_by": "unknown",
       "license": "unspecified",
-      "version": 1,
-      "content_hash": "273b483235812527",
-      "history": [],
+      "version": 2,
+      "content_hash": "8e5ff816035aec8c",
+      "history": [
+        {
+          "version": "1",
+          "content_hash": "273b483235812527",
+          "replaced_at": "2026-09-24T03:41:41.999920+00:00"
+        }
+      ],
       "verified": false,
       "notes": ""
     },
@@ -103,12 +137,18 @@
       "source_type": "curated",
       "source_url": "local:ctf-tutor-curated-patterns",
       "added_at": "2026-09-16T11:02:48.355528+00:00",
-      "updated_at": "2026-09-16T11:02:48.355530+00:00",
+      "updated_at": "2026-09-24T03:41:41.999942+00:00",
       "added_by": "unknown",
       "license": "unspecified",
-      "version": 1,
-      "content_hash": "bc6b8352780fab0b",
-      "history": [],
+      "version": 2,
+      "content_hash": "116cf097b0b11612",
+      "history": [
+        {
+          "version": "1",
+          "content_hash": "bc6b8352780fab0b",
+          "replaced_at": "2026-09-24T03:41:41.999939+00:00"
+        }
+      ],
       "verified": false,
       "notes": ""
     },
@@ -117,12 +157,18 @@
       "source_type": "curated",
       "source_url": "local:ctf-tutor-curated-patterns",
       "added_at": "2026-09-16T11:02:48.355545+00:00",
-      "updated_at": "2026-09-16T11:02:48.355546+00:00",
+      "updated_at": "2026-09-24T03:41:41.999962+00:00",
       "added_by": "unknown",
       "license": "unspecified",
-      "version": 1,
-      "content_hash": "f4cfe3776e185111",
-      "history": [],
+      "version": 2,
+      "content_hash": "c343519e457ed47e",
+      "history": [
+        {
+          "version": "1",
+          "content_hash": "f4cfe3776e185111",
+          "replaced_at": "2026-09-24T03:41:41.999960+00:00"
+        }
+      ],
       "verified": false,
       "notes": ""
     },
@@ -131,18 +177,51 @@
       "source_type": "curated",
       "source_url": "local:ctf-tutor-curated-patterns",
       "added_at": "2026-09-16T11:02:48.355559+00:00",
-      "updated_at": "2026-09-16T11:17:41.269396+00:00",
+      "updated_at": "2026-09-24T03:41:41.999984+00:00",
       "added_by": "unknown",
       "license": "unspecified",
-      "version": 2,
-      "content_hash": "3123345cc79b9ec0",
+      "version": 3,
+      "content_hash": "717f3700b695928f",
       "history": [
         {
           "version": "1",
           "content_hash": "271eb9c670c30551",
           "replaced_at": "2026-09-16T11:17:41.269393+00:00"
+        },
+        {
+          "version": "2",
+          "content_hash": "3123345cc79b9ec0",
+          "replaced_at": "2026-09-24T03:41:41.999982+00:00"
         }
       ],
+      "verified": false,
+      "notes": ""
+    },
+    "curated-crypto-pattern-ecdsa-nonce-reuse": {
+      "entry_id": "curated-crypto-pattern-ecdsa-nonce-reuse",
+      "source_type": "curated",
+      "source_url": "local:ctf-tutor-curated-patterns",
+      "added_at": "2026-09-24T04:02:32.713713+00:00",
+      "updated_at": "2026-09-24T04:02:32.713728+00:00",
+      "added_by": "unknown",
+      "license": "unspecified",
+      "version": 1,
+      "content_hash": "0783f02d42f5bc16",
+      "history": [],
+      "verified": false,
+      "notes": ""
+    },
+    "curated-crypto-pattern-padding-oracle": {
+      "entry_id": "curated-crypto-pattern-padding-oracle",
+      "source_type": "curated",
+      "source_url": "local:ctf-tutor-curated-patterns",
+      "added_at": "2026-09-24T04:02:32.713750+00:00",
+      "updated_at": "2026-09-24T04:02:32.713752+00:00",
+      "added_by": "unknown",
+      "license": "unspecified",
+      "version": 1,
+      "content_hash": "5449f529d182d850",
+      "history": [],
       "verified": false,
       "notes": ""
     },
@@ -151,16 +230,21 @@
       "source_type": "curated",
       "source_url": "local:ctf-tutor-curated-patterns",
       "added_at": "2026-09-16T11:02:48.355581+00:00",
-      "updated_at": "2026-09-16T11:17:41.269416+00:00",
+      "updated_at": "2026-09-24T03:41:42.000004+00:00",
       "added_by": "unknown",
       "license": "unspecified",
-      "version": 2,
-      "content_hash": "620727ce83c00482",
+      "version": 3,
+      "content_hash": "688197bf01fa8849",
       "history": [
         {
           "version": "1",
           "content_hash": "acc82c8d02392a54",
           "replaced_at": "2026-09-16T11:17:41.269414+00:00"
+        },
+        {
+          "version": "2",
+          "content_hash": "620727ce83c00482",
+          "replaced_at": "2026-09-24T03:41:42.000002+00:00"
         }
       ],
       "verified": false,
@@ -171,12 +255,18 @@
       "source_type": "curated",
       "source_url": "local:ctf-tutor-curated-patterns",
       "added_at": "2026-09-16T11:02:48.355598+00:00",
-      "updated_at": "2026-09-16T11:02:48.355600+00:00",
+      "updated_at": "2026-09-24T03:41:42.000021+00:00",
       "added_by": "unknown",
       "license": "unspecified",
-      "version": 1,
-      "content_hash": "4b7386e5992e2e7b",
-      "history": [],
+      "version": 2,
+      "content_hash": "485fd5dbfb922427",
+      "history": [
+        {
+          "version": "1",
+          "content_hash": "4b7386e5992e2e7b",
+          "replaced_at": "2026-09-24T03:41:42.000019+00:00"
+        }
+      ],
       "verified": false,
       "notes": ""
     },
@@ -185,12 +275,18 @@
       "source_type": "curated",
       "source_url": "local:ctf-tutor-curated-patterns",
       "added_at": "2026-09-16T11:02:48.355616+00:00",
-      "updated_at": "2026-09-16T11:02:48.355617+00:00",
+      "updated_at": "2026-09-24T03:41:42.000037+00:00",
       "added_by": "unknown",
       "license": "unspecified",
-      "version": 1,
-      "content_hash": "9df1e750cc6863ab",
-      "history": [],
+      "version": 2,
+      "content_hash": "09c1fcd2b70d42c1",
+      "history": [
+        {
+          "version": "1",
+          "content_hash": "9df1e750cc6863ab",
+          "replaced_at": "2026-09-24T03:41:42.000035+00:00"
+        }
+      ],
       "verified": false,
       "notes": ""
     },
@@ -199,16 +295,21 @@
       "source_type": "curated",
       "source_url": "local:ctf-tutor-curated-patterns",
       "added_at": "2026-09-16T11:02:48.355628+00:00",
-      "updated_at": "2026-09-16T11:17:41.269461+00:00",
+      "updated_at": "2026-09-24T03:41:42.000056+00:00",
       "added_by": "unknown",
       "license": "unspecified",
-      "version": 2,
-      "content_hash": "c6ff5fb644a22fe2",
+      "version": 3,
+      "content_hash": "eff33bcb6f9603fd",
       "history": [
         {
           "version": "1",
           "content_hash": "1a41f349f524c57e",
           "replaced_at": "2026-09-16T11:17:41.269459+00:00"
+        },
+        {
+          "version": "2",
+          "content_hash": "c6ff5fb644a22fe2",
+          "replaced_at": "2026-09-24T03:41:42.000054+00:00"
         }
       ],
       "verified": false,
@@ -219,12 +320,18 @@
       "source_type": "curated",
       "source_url": "local:ctf-tutor-curated-patterns",
       "added_at": "2026-09-16T11:02:48.355644+00:00",
-      "updated_at": "2026-09-16T11:02:48.355646+00:00",
+      "updated_at": "2026-09-24T03:41:42.000072+00:00",
       "added_by": "unknown",
       "license": "unspecified",
-      "version": 1,
-      "content_hash": "ac5fad34ee55f283",
-      "history": [],
+      "version": 2,
+      "content_hash": "3e3756e5f928bc7d",
+      "history": [
+        {
+          "version": "1",
+          "content_hash": "ac5fad34ee55f283",
+          "replaced_at": "2026-09-24T03:41:42.000070+00:00"
+        }
+      ],
       "verified": false,
       "notes": ""
     },
@@ -233,11 +340,31 @@
       "source_type": "curated",
       "source_url": "local:ctf-tutor-curated-patterns",
       "added_at": "2026-09-16T11:02:48.355660+00:00",
-      "updated_at": "2026-09-16T11:02:48.355661+00:00",
+      "updated_at": "2026-09-24T03:41:42.000089+00:00",
+      "added_by": "unknown",
+      "license": "unspecified",
+      "version": 2,
+      "content_hash": "8af2f50158743aaa",
+      "history": [
+        {
+          "version": "1",
+          "content_hash": "0730f7e755bf5010",
+          "replaced_at": "2026-09-24T03:41:42.000086+00:00"
+        }
+      ],
+      "verified": false,
+      "notes": ""
+    },
+    "curated-forensics-pattern-memory-forensics": {
+      "entry_id": "curated-forensics-pattern-memory-forensics",
+      "source_type": "curated",
+      "source_url": "local:ctf-tutor-curated-patterns",
+      "added_at": "2026-09-24T04:02:32.713848+00:00",
+      "updated_at": "2026-09-24T04:02:32.713850+00:00",
       "added_by": "unknown",
       "license": "unspecified",
       "version": 1,
-      "content_hash": "0730f7e755bf5010",
+      "content_hash": "7ca47fabc07e2c31",
       "history": [],
       "verified": false,
       "notes": ""
@@ -247,12 +374,18 @@
       "source_type": "curated",
       "source_url": "local:ctf-tutor-curated-patterns",
       "added_at": "2026-09-16T11:02:48.355675+00:00",
-      "updated_at": "2026-09-16T11:02:48.355677+00:00",
+      "updated_at": "2026-09-24T03:41:42.000107+00:00",
       "added_by": "unknown",
       "license": "unspecified",
-      "version": 1,
-      "content_hash": "cb24f0771843214b",
-      "history": [],
+      "version": 2,
+      "content_hash": "20a1588e6f8aa0c9",
+      "history": [
+        {
+          "version": "1",
+          "content_hash": "cb24f0771843214b",
+          "replaced_at": "2026-09-24T03:41:42.000105+00:00"
+        }
+      ],
       "verified": false,
       "notes": ""
     },
@@ -261,16 +394,21 @@
       "source_type": "curated",
       "source_url": "local:ctf-tutor-curated-patterns",
       "added_at": "2026-09-16T11:02:48.355687+00:00",
-      "updated_at": "2026-09-16T11:17:41.269516+00:00",
+      "updated_at": "2026-09-24T03:41:42.000126+00:00",
       "added_by": "unknown",
       "license": "unspecified",
-      "version": 2,
-      "content_hash": "a76d4321f067a67a",
+      "version": 3,
+      "content_hash": "0adcd3af16994a5b",
       "history": [
         {
           "version": "1",
           "content_hash": "5a2b2bd99305728b",
           "replaced_at": "2026-09-16T11:17:41.269514+00:00"
+        },
+        {
+          "version": "2",
+          "content_hash": "a76d4321f067a67a",
+          "replaced_at": "2026-09-24T03:41:42.000124+00:00"
         }
       ],
       "verified": false,
@@ -281,12 +419,18 @@
       "source_type": "curated",
       "source_url": "local:ctf-tutor-curated-patterns",
       "added_at": "2026-09-16T11:02:48.355704+00:00",
-      "updated_at": "2026-09-16T11:02:48.355705+00:00",
+      "updated_at": "2026-09-24T03:41:42.000143+00:00",
       "added_by": "unknown",
       "license": "unspecified",
-      "version": 1,
-      "content_hash": "b9d5bd1f9b452c84",
-      "history": [],
+      "version": 2,
+      "content_hash": "52079f5ee015c052",
+      "history": [
+        {
+          "version": "1",
+          "content_hash": "b9d5bd1f9b452c84",
+          "replaced_at": "2026-09-24T03:41:42.000141+00:00"
+        }
+      ],
       "verified": false,
       "notes": ""
     },
@@ -295,16 +439,21 @@
       "source_type": "curated",
       "source_url": "local:ctf-tutor-curated-patterns",
       "added_at": "2026-09-16T11:02:48.355715+00:00",
-      "updated_at": "2026-09-16T11:17:41.269546+00:00",
+      "updated_at": "2026-09-24T03:41:42.000161+00:00",
       "added_by": "unknown",
       "license": "unspecified",
-      "version": 2,
-      "content_hash": "d23a3f4906ab674b",
+      "version": 3,
+      "content_hash": "6230998ede4a8f64",
       "history": [
         {
           "version": "1",
           "content_hash": "ca849c20f9bbabfa",
           "replaced_at": "2026-09-16T11:17:41.269544+00:00"
+        },
+        {
+          "version": "2",
+          "content_hash": "d23a3f4906ab674b",
+          "replaced_at": "2026-09-24T03:41:42.000159+00:00"
         }
       ],
       "verified": false,
@@ -315,12 +464,18 @@
       "source_type": "curated",
       "source_url": "local:ctf-tutor-curated-patterns",
       "added_at": "2026-09-16T11:02:48.355731+00:00",
-      "updated_at": "2026-09-16T11:02:48.355732+00:00",
+      "updated_at": "2026-09-24T03:41:42.000176+00:00",
       "added_by": "unknown",
       "license": "unspecified",
-      "version": 1,
-      "content_hash": "f14c8809857c8f05",
-      "history": [],
+      "version": 2,
+      "content_hash": "b653478d05b5d8fd",
+      "history": [
+        {
+          "version": "1",
+          "content_hash": "f14c8809857c8f05",
+          "replaced_at": "2026-09-24T03:41:42.000174+00:00"
+        }
+      ],
       "verified": false,
       "notes": ""
     },
@@ -329,11 +484,31 @@
       "source_type": "curated",
       "source_url": "local:ctf-tutor-curated-patterns",
       "added_at": "2026-09-16T11:02:48.355747+00:00",
-      "updated_at": "2026-09-16T11:02:48.355748+00:00",
+      "updated_at": "2026-09-24T03:41:42.000194+00:00",
+      "added_by": "unknown",
+      "license": "unspecified",
+      "version": 2,
+      "content_hash": "0c8d40bd72ff9740",
+      "history": [
+        {
+          "version": "1",
+          "content_hash": "b3e21dcbe372b417",
+          "replaced_at": "2026-09-24T03:41:42.000192+00:00"
+        }
+      ],
+      "verified": false,
+      "notes": ""
+    },
+    "curated-osint-pattern-osint-domain": {
+      "entry_id": "curated-osint-pattern-osint-domain",
+      "source_type": "curated",
+      "source_url": "local:ctf-tutor-curated-patterns",
+      "added_at": "2026-09-24T04:02:32.713983+00:00",
+      "updated_at": "2026-09-24T04:02:32.713985+00:00",
       "added_by": "unknown",
       "license": "unspecified",
       "version": 1,
-      "content_hash": "b3e21dcbe372b417",
+      "content_hash": "e4d4f2ac0092606d",
       "history": [],
       "verified": false,
       "notes": ""
@@ -343,12 +518,18 @@
       "source_type": "curated",
       "source_url": "local:ctf-tutor-curated-patterns",
       "added_at": "2026-09-16T11:02:48.355762+00:00",
-      "updated_at": "2026-09-16T11:02:48.355764+00:00",
+      "updated_at": "2026-09-24T03:41:42.000210+00:00",
       "added_by": "unknown",
       "license": "unspecified",
-      "version": 1,
-      "content_hash": "0fe611e6a63b6041",
-      "history": [],
+      "version": 2,
+      "content_hash": "b7d572a4083d0394",
+      "history": [
+        {
+          "version": "1",
+          "content_hash": "0fe611e6a63b6041",
+          "replaced_at": "2026-09-24T03:41:42.000208+00:00"
+        }
+      ],
       "verified": false,
       "notes": ""
     },
@@ -357,12 +538,18 @@
       "source_type": "curated",
       "source_url": "local:ctf-tutor-curated-patterns",
       "added_at": "2026-09-16T11:02:48.355778+00:00",
-      "updated_at": "2026-09-16T11:02:48.355779+00:00",
+      "updated_at": "2026-09-24T03:41:42.000227+00:00",
       "added_by": "unknown",
       "license": "unspecified",
-      "version": 1,
-      "content_hash": "b98575845f9c5ec2",
-      "history": [],
+      "version": 2,
+      "content_hash": "a3fc29475c5463e0",
+      "history": [
+        {
+          "version": "1",
+          "content_hash": "b98575845f9c5ec2",
+          "replaced_at": "2026-09-24T03:41:42.000225+00:00"
+        }
+      ],
       "verified": false,
       "notes": ""
     },
@@ -371,12 +558,18 @@
       "source_type": "curated",
       "source_url": "local:ctf-tutor-curated-patterns",
       "added_at": "2026-09-16T11:02:48.355793+00:00",
-      "updated_at": "2026-09-16T11:02:48.355795+00:00",
+      "updated_at": "2026-09-24T03:41:42.000243+00:00",
       "added_by": "unknown",
       "license": "unspecified",
-      "version": 1,
-      "content_hash": "0f424a422c9739d9",
-      "history": [],
+      "version": 2,
+      "content_hash": "dface204d5bccb35",
+      "history": [
+        {
+          "version": "1",
+          "content_hash": "0f424a422c9739d9",
+          "replaced_at": "2026-09-24T03:41:42.000242+00:00"
+        }
+      ],
       "verified": false,
       "notes": ""
     },
@@ -385,12 +578,18 @@
       "source_type": "curated",
       "source_url": "local:ctf-tutor-curated-patterns",
       "added_at": "2026-09-16T11:02:48.355809+00:00",
-      "updated_at": "2026-09-16T11:02:48.355810+00:00",
+      "updated_at": "2026-09-24T03:41:42.000260+00:00",
       "added_by": "unknown",
       "license": "unspecified",
-      "version": 1,
-      "content_hash": "1abe9eac26972713",
-      "history": [],
+      "version": 2,
+      "content_hash": "ab7a7d19b8de9e55",
+      "history": [
+        {
+          "version": "1",
+          "content_hash": "1abe9eac26972713",
+          "replaced_at": "2026-09-24T03:41:42.000259+00:00"
+        }
+      ],
       "verified": false,
       "notes": ""
     },
@@ -399,12 +598,18 @@
       "source_type": "curated",
       "source_url": "local:ctf-tutor-curated-patterns",
       "added_at": "2026-09-16T11:02:48.355825+00:00",
-      "updated_at": "2026-09-16T11:02:48.355826+00:00",
+      "updated_at": "2026-09-24T03:41:42.000277+00:00",
       "added_by": "unknown",
       "license": "unspecified",
-      "version": 1,
-      "content_hash": "26549b3cf5e09bde",
-      "history": [],
+      "version": 2,
+      "content_hash": "84fcdc9909e5947d",
+      "history": [
+        {
+          "version": "1",
+          "content_hash": "26549b3cf5e09bde",
+          "replaced_at": "2026-09-24T03:41:42.000275+00:00"
+        }
+      ],
       "verified": false,
       "notes": ""
     },
@@ -413,12 +618,18 @@
       "source_type": "curated",
       "source_url": "local:ctf-tutor-curated-patterns",
       "added_at": "2026-09-16T11:02:48.355842+00:00",
-      "updated_at": "2026-09-16T11:02:48.355843+00:00",
+      "updated_at": "2026-09-24T03:41:42.000297+00:00",
       "added_by": "unknown",
       "license": "unspecified",
-      "version": 1,
-      "content_hash": "3255797551b2a585",
-      "history": [],
+      "version": 2,
+      "content_hash": "27de0d8163b4301d",
+      "history": [
+        {
+          "version": "1",
+          "content_hash": "3255797551b2a585",
+          "replaced_at": "2026-09-24T03:41:42.000295+00:00"
+        }
+      ],
       "verified": false,
       "notes": ""
     },
@@ -427,18 +638,51 @@
       "source_type": "curated",
       "source_url": "local:ctf-tutor-curated-patterns",
       "added_at": "2026-09-16T11:02:48.355854+00:00",
-      "updated_at": "2026-09-16T11:17:41.269660+00:00",
+      "updated_at": "2026-09-24T03:41:42.000317+00:00",
       "added_by": "unknown",
       "license": "unspecified",
-      "version": 2,
-      "content_hash": "5acda6112f12d264",
+      "version": 3,
+      "content_hash": "6f2e07461f772298",
       "history": [
         {
           "version": "1",
           "content_hash": "3e87e32e1dfb4c3f",
           "replaced_at": "2026-09-16T11:17:41.269658+00:00"
+        },
+        {
+          "version": "2",
+          "content_hash": "5acda6112f12d264",
+          "replaced_at": "2026-09-24T03:41:42.000316+00:00"
         }
       ],
+      "verified": false,
+      "notes": ""
+    },
+    "curated-pwn-pattern-seccomp-bypass": {
+      "entry_id": "curated-pwn-pattern-seccomp-bypass",
+      "source_type": "curated",
+      "source_url": "local:ctf-tutor-curated-patterns",
+      "added_at": "2026-09-24T04:02:32.714086+00:00",
+      "updated_at": "2026-09-24T04:02:32.714088+00:00",
+      "added_by": "unknown",
+      "license": "unspecified",
+      "version": 1,
+      "content_hash": "bf206b86138691f7",
+      "history": [],
+      "verified": false,
+      "notes": ""
+    },
+    "curated-pwn-pattern-tcache-poisoning": {
+      "entry_id": "curated-pwn-pattern-tcache-poisoning",
+      "source_type": "curated",
+      "source_url": "local:ctf-tutor-curated-patterns",
+      "added_at": "2026-09-24T04:02:32.714106+00:00",
+      "updated_at": "2026-09-24T04:02:32.714108+00:00",
+      "added_by": "unknown",
+      "license": "unspecified",
+      "version": 1,
+      "content_hash": "ed5714b5e130b3c1",
+      "history": [],
       "verified": false,
       "notes": ""
     },
@@ -447,18 +691,37 @@
       "source_type": "curated",
       "source_url": "local:ctf-tutor-curated-patterns",
       "added_at": "2026-09-16T11:02:48.355865+00:00",
-      "updated_at": "2026-09-16T11:17:41.269678+00:00",
+      "updated_at": "2026-09-24T03:41:42.000335+00:00",
       "added_by": "unknown",
       "license": "unspecified",
-      "version": 2,
-      "content_hash": "6f8b7867f8afe794",
+      "version": 3,
+      "content_hash": "d4f409bd05dc08bd",
       "history": [
         {
           "version": "1",
           "content_hash": "c8f6053e12d25882",
           "replaced_at": "2026-09-16T11:17:41.269676+00:00"
+        },
+        {
+          "version": "2",
+          "content_hash": "6f8b7867f8afe794",
+          "replaced_at": "2026-09-24T03:41:42.000333+00:00"
         }
       ],
+      "verified": false,
+      "notes": ""
+    },
+    "curated-rev-pattern-go-reversing": {
+      "entry_id": "curated-rev-pattern-go-reversing",
+      "source_type": "curated",
+      "source_url": "local:ctf-tutor-curated-patterns",
+      "added_at": "2026-09-24T04:02:32.714137+00:00",
+      "updated_at": "2026-09-24T04:02:32.714139+00:00",
+      "added_by": "unknown",
+      "license": "unspecified",
+      "version": 1,
+      "content_hash": "a07ce41230a47622",
+      "history": [],
       "verified": false,
       "notes": ""
     },
@@ -467,12 +730,18 @@
       "source_type": "curated",
       "source_url": "local:ctf-tutor-curated-patterns",
       "added_at": "2026-09-16T11:02:48.355881+00:00",
-      "updated_at": "2026-09-16T11:02:48.355882+00:00",
+      "updated_at": "2026-09-24T03:41:42.000352+00:00",
       "added_by": "unknown",
       "license": "unspecified",
-      "version": 1,
-      "content_hash": "bfe2ebbc62954cdd",
-      "history": [],
+      "version": 2,
+      "content_hash": "7969a93296813037",
+      "history": [
+        {
+          "version": "1",
+          "content_hash": "bfe2ebbc62954cdd",
+          "replaced_at": "2026-09-24T03:41:42.000350+00:00"
+        }
+      ],
       "verified": false,
       "notes": ""
     },
@@ -481,12 +750,18 @@
       "source_type": "curated",
       "source_url": "local:ctf-tutor-curated-patterns",
       "added_at": "2026-09-16T11:02:48.355897+00:00",
-      "updated_at": "2026-09-16T11:02:48.355898+00:00",
+      "updated_at": "2026-09-24T03:41:42.000369+00:00",
       "added_by": "unknown",
       "license": "unspecified",
-      "version": 1,
-      "content_hash": "5f65c4fc903b3932",
-      "history": [],
+      "version": 2,
+      "content_hash": "860b624849a5a8c6",
+      "history": [
+        {
+          "version": "1",
+          "content_hash": "5f65c4fc903b3932",
+          "replaced_at": "2026-09-24T03:41:42.000367+00:00"
+        }
+      ],
       "verified": false,
       "notes": ""
     },
@@ -495,11 +770,59 @@
       "source_type": "curated",
       "source_url": "local:ctf-tutor-curated-patterns",
       "added_at": "2026-09-16T11:02:48.355911+00:00",
-      "updated_at": "2026-09-16T11:02:48.355913+00:00",
+      "updated_at": "2026-09-24T03:41:42.000385+00:00",
+      "added_by": "unknown",
+      "license": "unspecified",
+      "version": 2,
+      "content_hash": "11eb7e8d728777c3",
+      "history": [
+        {
+          "version": "1",
+          "content_hash": "5d1a872b5fe9b426",
+          "replaced_at": "2026-09-24T03:41:42.000384+00:00"
+        }
+      ],
+      "verified": false,
+      "notes": ""
+    },
+    "curated-web-pattern-graphql-introspection": {
+      "entry_id": "curated-web-pattern-graphql-introspection",
+      "source_type": "curated",
+      "source_url": "local:ctf-tutor-curated-patterns",
+      "added_at": "2026-09-24T04:02:32.714190+00:00",
+      "updated_at": "2026-09-24T04:02:32.714191+00:00",
       "added_by": "unknown",
       "license": "unspecified",
       "version": 1,
-      "content_hash": "5d1a872b5fe9b426",
+      "content_hash": "04863ff7cc779ea5",
+      "history": [],
+      "verified": false,
+      "notes": ""
+    },
+    "curated-web-pattern-http-request-smuggling": {
+      "entry_id": "curated-web-pattern-http-request-smuggling",
+      "source_type": "curated",
+      "source_url": "local:ctf-tutor-curated-patterns",
+      "added_at": "2026-09-24T04:02:32.714206+00:00",
+      "updated_at": "2026-09-24T04:02:32.714207+00:00",
+      "added_by": "unknown",
+      "license": "unspecified",
+      "version": 1,
+      "content_hash": "fe803eebb87b0b5f",
+      "history": [],
+      "verified": false,
+      "notes": ""
+    },
+    "curated-web-pattern-nosql-injection": {
+      "entry_id": "curated-web-pattern-nosql-injection",
+      "source_type": "curated",
+      "source_url": "local:ctf-tutor-curated-patterns",
+      "added_at": "2026-09-24T04:02:32.714222+00:00",
+      "updated_at": "2026-09-24T04:02:32.714224+00:00",
+      "added_by": "unknown",
+      "license": "unspecified",
+      "version": 1,
+      "content_hash": "e7924d19a54120c1",
       "history": [],
       "verified": false,
       "notes": ""
@@ -509,16 +832,21 @@
       "source_type": "curated",
       "source_url": "local:ctf-tutor-curated-patterns",
       "added_at": "2026-09-16T11:02:48.355923+00:00",
-      "updated_at": "2026-09-16T11:17:41.269732+00:00",
+      "updated_at": "2026-09-24T03:41:42.000403+00:00",
       "added_by": "unknown",
       "license": "unspecified",
-      "version": 2,
-      "content_hash": "89ab733fdb907ef1",
+      "version": 3,
+      "content_hash": "c9e6bb59a33eb2fd",
       "history": [
         {
           "version": "1",
           "content_hash": "25696951ade6e6ee",
           "replaced_at": "2026-09-16T11:17:41.269730+00:00"
+        },
+        {
+          "version": "2",
+          "content_hash": "89ab733fdb907ef1",
+          "replaced_at": "2026-09-24T03:41:42.000401+00:00"
         }
       ],
       "verified": false,
@@ -529,16 +857,21 @@
       "source_type": "curated",
       "source_url": "local:ctf-tutor-curated-patterns",
       "added_at": "2026-09-16T11:02:48.355934+00:00",
-      "updated_at": "2026-09-16T11:17:41.269749+00:00",
+      "updated_at": "2026-09-24T03:41:42.000420+00:00",
       "added_by": "unknown",
       "license": "unspecified",
-      "version": 2,
-      "content_hash": "e86fa4581b295bc0",
+      "version": 3,
+      "content_hash": "e98a88ec3e2a3f00",
       "history": [
         {
           "version": "1",
           "content_hash": "bdd31563749a7645",
           "replaced_at": "2026-09-16T11:17:41.269747+00:00"
+        },
+        {
+          "version": "2",
+          "content_hash": "e86fa4581b295bc0",
+          "replaced_at": "2026-09-24T03:41:42.000418+00:00"
         }
       ],
       "verified": false,
@@ -549,12 +882,18 @@
       "source_type": "curated",
       "source_url": "local:ctf-tutor-curated-patterns",
       "added_at": "2026-09-16T11:02:48.355949+00:00",
-      "updated_at": "2026-09-16T11:02:48.355950+00:00",
+      "updated_at": "2026-09-24T03:41:42.000435+00:00",
       "added_by": "unknown",
       "license": "unspecified",
-      "version": 1,
-      "content_hash": "0cc58ecb97373d18",
-      "history": [],
+      "version": 2,
+      "content_hash": "1c6215e1f8cd94ff",
+      "history": [
+        {
+          "version": "1",
+          "content_hash": "0cc58ecb97373d18",
+          "replaced_at": "2026-09-24T03:41:42.000434+00:00"
+        }
+      ],
       "verified": false,
       "notes": ""
     },
@@ -563,12 +902,18 @@
       "source_type": "curated",
       "source_url": "local:ctf-tutor-curated-patterns",
       "added_at": "2026-09-16T11:02:48.355964+00:00",
-      "updated_at": "2026-09-16T11:02:48.355966+00:00",
+      "updated_at": "2026-09-24T03:41:42.000459+00:00",
       "added_by": "unknown",
       "license": "unspecified",
-      "version": 1,
-      "content_hash": "17c8d187c2fb25e6",
-      "history": [],
+      "version": 2,
+      "content_hash": "9c5bec2af3ca33a8",
+      "history": [
+        {
+          "version": "1",
+          "content_hash": "17c8d187c2fb25e6",
+          "replaced_at": "2026-09-24T03:41:42.000457+00:00"
+        }
+      ],
       "verified": false,
       "notes": ""
     },
@@ -577,12 +922,18 @@
       "source_type": "curated",
       "source_url": "local:ctf-tutor-curated-patterns",
       "added_at": "2026-09-16T11:02:48.355979+00:00",
-      "updated_at": "2026-09-16T11:02:48.355981+00:00",
+      "updated_at": "2026-09-24T03:41:42.000475+00:00",
       "added_by": "unknown",
       "license": "unspecified",
-      "version": 1,
-      "content_hash": "0a974fd9759fd426",
-      "history": [],
+      "version": 2,
+      "content_hash": "b9609193320a348b",
+      "history": [
+        {
+          "version": "1",
+          "content_hash": "0a974fd9759fd426",
+          "replaced_at": "2026-09-24T03:41:42.000473+00:00"
+        }
+      ],
       "verified": false,
       "notes": ""
     },
@@ -591,12 +942,18 @@
       "source_type": "curated",
       "source_url": "local:ctf-tutor-curated-patterns",
       "added_at": "2026-09-16T11:02:48.355994+00:00",
-      "updated_at": "2026-09-16T11:02:48.355996+00:00",
+      "updated_at": "2026-09-24T03:41:42.000491+00:00",
       "added_by": "unknown",
       "license": "unspecified",
-      "version": 1,
-      "content_hash": "e5525a5874a18f32",
-      "history": [],
+      "version": 2,
+      "content_hash": "63dd3f1b5ca1201c",
+      "history": [
+        {
+          "version": "1",
+          "content_hash": "e5525a5874a18f32",
+          "replaced_at": "2026-09-24T03:41:42.000490+00:00"
+        }
+      ],
       "verified": false,
       "notes": ""
     },
@@ -605,16 +962,21 @@
       "source_type": "curated",
       "source_url": "local:ctf-tutor-curated-patterns",
       "added_at": "2026-09-16T11:02:48.356006+00:00",
-      "updated_at": "2026-09-16T11:17:41.269813+00:00",
+      "updated_at": "2026-09-24T03:41:42.000556+00:00",
       "added_by": "unknown",
       "license": "unspecified",
-      "version": 2,
-      "content_hash": "402705180312688d",
+      "version": 3,
+      "content_hash": "deb87bcd1d92a863",
       "history": [
         {
           "version": "1",
           "content_hash": "297b0280e29b2c9c",
           "replaced_at": "2026-09-16T11:17:41.269811+00:00"
+        },
+        {
+          "version": "2",
+          "content_hash": "402705180312688d",
+          "replaced_at": "2026-09-24T03:41:42.000551+00:00"
         }
       ],
       "verified": false,
@@ -625,16 +987,21 @@
       "source_type": "curated",
       "source_url": "local:ctf-tutor-curated-patterns",
       "added_at": "2026-09-16T11:02:48.356018+00:00",
-      "updated_at": "2026-09-16T11:17:41.269829+00:00",
+      "updated_at": "2026-09-24T03:41:42.000589+00:00",
       "added_by": "unknown",
       "license": "unspecified",
-      "version": 2,
-      "content_hash": "3430991a9ef2e285",
+      "version": 3,
+      "content_hash": "edd5c3ca76f86dbe",
       "history": [
         {
           "version": "1",
           "content_hash": "3a7c2cba49427720",
           "replaced_at": "2026-09-16T11:17:41.269828+00:00"
+        },
+        {
+          "version": "2",
+          "content_hash": "3430991a9ef2e285",
+          "replaced_at": "2026-09-24T03:41:42.000586+00:00"
         }
       ],
       "verified": false,
@@ -645,12 +1012,18 @@
       "source_type": "curated",
       "source_url": "https://ctf-wiki.org/pwn/linux/mem-corruption/formatstring/fmt-basic/",
       "added_at": "2026-09-16T11:02:48.356048+00:00",
-      "updated_at": "2026-09-16T11:02:48.356049+00:00",
+      "updated_at": "2026-09-24T03:41:42.000632+00:00",
       "added_by": "unknown",
       "license": "unspecified",
-      "version": 1,
-      "content_hash": "cabf26f1529ca586",
-      "history": [],
+      "version": 2,
+      "content_hash": "63356d3904f27d48",
+      "history": [
+        {
+          "version": "1",
+          "content_hash": "cabf26f1529ca586",
+          "replaced_at": "2026-09-24T03:41:42.000629+00:00"
+        }
+      ],
       "verified": false,
       "notes": ""
     },
@@ -659,12 +1032,18 @@
       "source_type": "curated",
       "source_url": "https://ctf-wiki.org/pwn/linux/stackoverflow/x64/ret2libc/",
       "added_at": "2026-09-16T11:02:48.356103+00:00",
-      "updated_at": "2026-09-16T11:02:48.356106+00:00",
+      "updated_at": "2026-09-24T03:41:42.000668+00:00",
       "added_by": "unknown",
       "license": "unspecified",
-      "version": 1,
-      "content_hash": "5bd1a6d871085487",
-      "history": [],
+      "version": 2,
+      "content_hash": "d79c398da4069b4a",
+      "history": [
+        {
+          "version": "1",
+          "content_hash": "5bd1a6d871085487",
+          "replaced_at": "2026-09-24T03:41:42.000666+00:00"
+        }
+      ],
       "verified": false,
       "notes": ""
     },
@@ -673,12 +1052,18 @@
       "source_type": "curated",
       "source_url": "https://ctf101.org/reverse-engineering/what-is-reverse-engineering/",
       "added_at": "2026-09-16T11:02:48.356135+00:00",
-      "updated_at": "2026-09-16T11:02:48.356136+00:00",
+      "updated_at": "2026-09-24T03:41:42.000702+00:00",
       "added_by": "unknown",
       "license": "unspecified",
-      "version": 1,
-      "content_hash": "6a9ea1ed386500f0",
-      "history": [],
+      "version": 2,
+      "content_hash": "062ac418d6d48b62",
+      "history": [
+        {
+          "version": "1",
+          "content_hash": "6a9ea1ed386500f0",
+          "replaced_at": "2026-09-24T03:41:42.000700+00:00"
+        }
+      ],
       "verified": false,
       "notes": ""
     },
@@ -687,12 +1072,18 @@
       "source_type": "curated",
       "source_url": "https://ctf-wiki.org/crypto/jwt/",
       "added_at": "2026-09-16T11:02:48.356157+00:00",
-      "updated_at": "2026-09-16T11:02:48.356159+00:00",
+      "updated_at": "2026-09-24T03:41:42.000730+00:00",
       "added_by": "unknown",
       "license": "unspecified",
-      "version": 1,
-      "content_hash": "3e8282f24cadddd0",
-      "history": [],
+      "version": 2,
+      "content_hash": "4527c02e14525f05",
+      "history": [
+        {
+          "version": "1",
+          "content_hash": "3e8282f24cadddd0",
+          "replaced_at": "2026-09-24T03:41:42.000728+00:00"
+        }
+      ],
       "verified": false,
       "notes": ""
     },
@@ -701,12 +1092,18 @@
       "source_type": "curated",
       "source_url": "https://portswigger.net/web-security/sql-injection",
       "added_at": "2026-09-16T11:02:48.356184+00:00",
-      "updated_at": "2026-09-16T11:02:48.356185+00:00",
+      "updated_at": "2026-09-24T03:41:42.000767+00:00",
       "added_by": "unknown",
       "license": "unspecified",
-      "version": 1,
-      "content_hash": "c383f0dafc8899e9",
-      "history": [],
+      "version": 2,
+      "content_hash": "9cd6c1f80b99df1c",
+      "history": [
+        {
+          "version": "1",
+          "content_hash": "c383f0dafc8899e9",
+          "replaced_at": "2026-09-24T03:41:42.000764+00:00"
+        }
+      ],
       "verified": false,
       "notes": ""
     }

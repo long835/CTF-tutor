@@ -1,0 +1,28 @@
+{
+  "challenge_name": "Pattern WEB: GraphQL Authorization Gap",
+  "category": "web",
+  "techniques": [
+    "graphql-introspection",
+    "auth-bypass"
+  ],
+  "difficulty": "medium",
+  "source": "CTF-Tutor curated pattern library",
+  "description": "GraphQL endpoint allows introspection and resolves fields without checking the caller's role.",
+  "explanation": "Map the schema, then query privileged fields the UI never exposes. Authorization must be enforced per field, not only at the HTTP layer.",
+  "solve_steps": [
+    "Try introspection query",
+    "Enumerate types and fields",
+    "Request sensitive fields as a low-privilege user",
+    "Confirm the UI never exposes the same data"
+  ],
+  "tools_used": [
+    "curl",
+    "browser-devtools"
+  ],
+  "references": [
+    "local:ctf-tutor-curated-patterns"
+  ],
+  "notes": "Educational pattern; lab only.",
+  "version": 1,
+  "updated": "2026-09-24"
+}

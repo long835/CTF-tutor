@@ -668,13 +668,6 @@ def cmd_platform(argv) -> int:
     return 0
 
 
-def cmd_webui(argv) -> int:
-    """Start MVP web UI (http://127.0.0.1:8765)."""
-    from webui.server import main as web_main
-    web_main()
-    return 0
-
-
 def cmd_curriculum(argv) -> int:
     """Build a personalised study plan from your recorded history."""
     import argparse, json
@@ -983,6 +976,207 @@ def cmd_adversarial(argv) -> int:
     return 0 if report.avoided == len(report.results) else 1
 
 
+
+def cmd_eval(argv) -> int:
+    """Run offline classification eval against ground-truth / blind sets."""
+    import argparse
+    from pathlib import Path as P
+
+    p = argparse.ArgumentParser(
+        prog="main.py eval",
+        description="Offline classification accuracy on local eval sets (no network).",
+    )
+    p.add_argument(
+        "--data",
+        default=None,
+        help="path to a JSON eval array (default: data/eval/ground_truth.json)",
+    )
+    p.add_argument(
+        "--independent",
+        action="store_true",
+        help="paraphrase-style blind set (data/eval/independent_public_style.json)",
+    )
+    p.add_argument(
+        "--public",
+        action="store_true",
+        help="public-contest-grounded set (data/eval/public_contest_grounded.json)",
+    )
+    p.add_argument(
+        "--classifier",
+        default="formal",
+        choices=["formal", "heuristic"],
+        help="formal agent classifier or legacy heuristic",
+    )
+    p.add_argument(
+        "--decompose",
+        action="store_true",
+        help="also score technique tags (uses Ollama if configured)",
+    )
+    p.add_argument("--model", default="", help="Ollama model for --decompose")
+    args = p.parse_args(argv)
+
+    root = P(__file__).resolve().parent
+    if args.public:
+        data = root / "data" / "eval" / "public_contest_grounded.json"
+    elif args.independent:
+        data = root / "data" / "eval" / "independent_public_style.json"
+    elif args.data:
+        data = P(args.data)
+    else:
+        data = root / "data" / "eval" / "ground_truth.json"
+
+    import eval as eval_mod
+    return eval_mod.run(data, args.decompose, args.model, args.classifier)
+
+
+
+def cmd_vision(argv) -> int:
+    """Observe image artifacts (forensic hints + optional Ollama vision model)."""
+    import argparse
+    p = argparse.ArgumentParser(prog="main.py vision", description="Multimodal image observation (item 32).")
+    p.add_argument("path", help="image file or directory")
+    p.add_argument("--model", default=None, help="Ollama vision model (default: OLLAMA_VISION_MODEL or llava)")
+    p.add_argument("--no-model", action="store_true", help="forensic hints only, no LLM")
+    p.add_argument("--limit", type=int, default=5)
+    args = p.parse_args(argv)
+    from agent.vision import observe_path
+    rows = observe_path(args.path, use_model=not args.no_model, model=args.model, limit=args.limit)
+    if not rows:
+        print("no images found")
+        return 1
+    for obs in rows:
+        print(obs.as_tutor_text())
+        print()
+    return 0
+
+
+def cmd_route(argv) -> int:
+    """Show cost-aware routing decisions for task kinds (item 49)."""
+    import argparse
+    p = argparse.ArgumentParser(prog="main.py route", description="Cost-aware model routing.")
+    p.add_argument(
+        "tasks",
+        nargs="*",
+        default=["classify", "plan", "teach", "vision", "embed"],
+        help="task kinds",
+    )
+    p.add_argument("--model", default=None)
+    args = p.parse_args(argv)
+    from agent.cost_router import route_task
+    from agent.model_profile import get_profile
+    profile = get_profile(args.model) if args.model else None
+    for t in args.tasks:
+        d = route_task(t, profile=profile)
+        print(f"{d.task:12} use_llm={d.use_llm}  {d.provider}/{d.model}  cost≈{d.estimated_cost:.2f}  ({d.reason})")
+    return 0
+
+
+def cmd_dump_eval(argv) -> int:
+    """Write / merge / score the public contest-text eval dump."""
+    import argparse
+    p = argparse.ArgumentParser(prog="main.py dump_eval", description="Public contest-text eval dump.")
+    p.add_argument("--write", action="store_true")
+    p.add_argument("--merge-eval", action="store_true")
+    p.add_argument("--score", action="store_true")
+    args = p.parse_args(argv)
+    from agent.contest_eval_dump import main as dump_main
+    flags = []
+    if args.write:
+        flags.append("--write")
+    if args.merge_eval:
+        flags.append("--merge-eval")
+    if args.score:
+        flags.append("--score")
+    return dump_main(flags or None)
+
+
+def cmd_serve(argv) -> int:
+    """Run local HTTP API wrapping core_api (item 39)."""
+    import argparse
+    p = argparse.ArgumentParser(prog="main.py serve", description="Local HTTP API (127.0.0.1 by default).")
+    p.add_argument("--host", default=None)
+    p.add_argument("--port", type=int, default=None)
+    args = p.parse_args(argv)
+    from agent.app_config import get_config
+    cfg = get_config()
+    host = args.host or cfg.api_host
+    port = args.port or cfg.api_port
+    from agent.http_api import serve
+    serve(host, port)
+    return 0
+
+
+def cmd_compare(argv) -> int:
+    """Model comparison harness (item 58)."""
+    import argparse
+    import json
+    p = argparse.ArgumentParser(prog="main.py compare", description="Compare model profiles and routing.")
+    p.add_argument("--models", default="", help="comma-separated model names")
+    p.add_argument("--tasks", default="classify,plan,teach,vision,embed")
+    p.add_argument("--live", action="store_true", help="list Ollama tags if reachable")
+    args = p.parse_args(argv)
+    from agent.model_compare import compare_models, live_ollama_tags
+    models = [m.strip() for m in args.models.split(",") if m.strip()] or None
+    tasks = [t.strip() for t in args.tasks.split(",") if t.strip()]
+    report = compare_models(models=models, tasks=tasks)
+    print(json.dumps(report, indent=2))
+    if args.live:
+        tags = live_ollama_tags()
+        print("ollama tags:", tags or "(unreachable)")
+    return 0
+
+
+
+def cmd_cost(argv) -> int:
+    """Show local/frontier cost ledger summary."""
+    import argparse
+    import json
+    p = argparse.ArgumentParser(prog="main.py cost", description="Cost meter summary (local units + USD estimates).")
+    p.add_argument("--record", default=None, help="record a sample task name")
+    p.add_argument("--provider", default="ollama")
+    p.add_argument("--model", default="")
+    p.add_argument("--prompt-tokens", type=int, default=0)
+    p.add_argument("--completion-tokens", type=int, default=0)
+    args = p.parse_args(argv)
+    from agent.cost_meters import ledger_summary, record_usage
+    if args.record:
+        ev = record_usage(
+            args.record,
+            provider=args.provider,
+            model=args.model,
+            prompt_tokens=args.prompt_tokens,
+            completion_tokens=args.completion_tokens,
+        )
+        print(json.dumps(ev.to_dict(), indent=2))
+    print(json.dumps(ledger_summary(), indent=2))
+    return 0
+
+
+def cmd_status(argv) -> int:
+    """Print live project status (version, corpus, eval, model) — anti-doc-drift."""
+    import argparse
+    import json
+    p = argparse.ArgumentParser(prog="main.py status")
+    p.add_argument("--json", action="store_true")
+    args = p.parse_args(argv)
+    from agent.project_status import project_status, format_status
+    s = project_status()
+    if args.json:
+        print(json.dumps(s, indent=2))
+    else:
+        print(format_status(s))
+    return 0
+
+
+def cmd_gate(argv) -> int:
+    """Run release/integration gate checks."""
+    import runpy
+    from pathlib import Path
+    gate = Path(__file__).resolve().parent / "scripts" / "release_gate.py"
+    # Execute as __main__
+    import subprocess, sys
+    return subprocess.call([sys.executable, str(gate)], cwd=str(Path(__file__).resolve().parent))
+
 def cmd_trust(argv) -> int:
     """Show the trust policy and scan text for injection attempts (items 45/46)."""
     p = argparse.ArgumentParser(
@@ -1213,12 +1407,25 @@ def cmd_dataset(argv) -> int:
 
 SUBCOMMAND_NAMES = [
     "run", "search", "list", "history", "chat", "generate", "session", "agent",
-    "fetch", "experiment", "corpus", "platform", "webui",
+    "fetch", "experiment", "corpus", "platform",
     "curriculum", "graph", "audit", "dashboard", "plugins",
     "knowledge", "learner", "dataset",
-    "doctor", "replay", "metrics", "adversarial", "trust",
+    "doctor", "replay", "metrics", "adversarial", "eval", "vision", "route", "dump_eval", "serve", "compare", "cost", "status", "gate", "review", "outcome", "labs", "trust",
 ]
 
+
+
+
+# Prefer extracted CLI modules when present (Phase 6.5 split).
+try:
+    from cli.quality import cmd_status as cmd_status  # noqa: F811
+    from cli.quality import cmd_gate as cmd_gate  # noqa: F811
+    from cli.quality import cmd_eval as cmd_eval  # noqa: F811
+    from cli.quality import cmd_review as cmd_review  # noqa: F811
+    from cli.quality import cmd_outcome as cmd_outcome  # noqa: F811
+    from cli.quality import cmd_labs as cmd_labs  # noqa: F811
+except ImportError:
+    pass
 
 def main(argv=None) -> int:
     argv = list(sys.argv[1:]) if argv is None else list(argv)
@@ -1259,6 +1466,18 @@ def main(argv=None) -> int:
         print("  replay      record a run, or replay a saved one against current code")
         print("  metrics     efficiency, hallucination and per-axis scores for a run")
         print("  adversarial run the trap suite: can the agent avoid wrong answers?")
+        print("  eval        offline classification accuracy (ground-truth / --independent / --public)")
+        print("  vision      observe image artifacts (forensics + optional vision model)")
+        print("  route       cost-aware model routing for task kinds")
+        print("  dump_eval   write/merge/score public contest-text eval dump")
+        print("  serve       local HTTP API wrapping core_api (127.0.0.1)")
+        print("  compare     model profile + routing comparison harness")
+        print("  cost        local/frontier cost ledger summary")
+        print("  status      live project stats (anti-doc-drift)")
+        print("  gate        release/integration checks")
+        print("  review      spaced-repetition due list / record")
+        print("  outcome     learning-outcome benchmark (pre/post/transfer)")
+        print("  labs        list/classify experience labs")
         print("  dataset     build/measure the generated evaluation set (easy vs blind split)")
         print("  trust       trust policy, and scan a file for injection attempts")
         print()

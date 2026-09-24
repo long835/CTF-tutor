@@ -415,7 +415,7 @@ def audit_archive(archive_dir: str = ARCHIVE_DIR, path: str = PROVENANCE_PATH) -
 
         for entry_id, payload in entries.items():
             try:
-                errors = validate_entry(ArchiveEntry(**payload))
+                errors = validate_entry(ArchiveEntry.from_dict(payload))
             except TypeError as exc:
                 errors = [f"could not load entry: {exc}"]
             if errors:

@@ -30,6 +30,11 @@ from typing import Dict, List, Optional
 
 from schema import ArchiveEntry
 from llm_client import call_ollama_embed, DEFAULT_EMBED_MODEL
+try:
+    from agent.embeddings import ChromaCompatibleEmbeddingFunction, get_embedding_backend
+    _HAS_EMBED_SEP = True
+except Exception:
+    _HAS_EMBED_SEP = False
 
 
 COLLECTION_NAME = "ctf_archive"
@@ -70,7 +75,7 @@ def _entry_to_metadata(entry: ArchiveEntry) -> dict:
 def _entry_from_metadata(metadata: dict) -> ArchiveEntry:
     """Inverse of _entry_to_metadata."""
     data = {field: json.loads(value) for field, value in metadata.items()}
-    return ArchiveEntry(**data)
+    return ArchiveEntry.from_dict(data)
 
 
 def _default_id(entry: ArchiveEntry) -> str:
@@ -125,7 +130,10 @@ class Retriever:
         client = chromadb.PersistentClient(path=persist_dir or DEFAULT_PERSIST_DIR)
         return client.get_or_create_collection(
             name=COLLECTION_NAME,
-            embedding_function=OllamaEmbeddingFunction(model=embedding_model),
+            embedding_function=(
+                ChromaCompatibleEmbeddingFunction(get_embedding_backend())
+                if _HAS_EMBED_SEP else OllamaEmbeddingFunction(model=embedding_model)
+            ),
         )
 
     def index_entry(self, entry: ArchiveEntry, doc_id: Optional[str] = None) -> str:

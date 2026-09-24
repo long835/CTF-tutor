@@ -83,6 +83,7 @@ CATEGORY_OF: Dict[str, str] = {
     "integer-overflow": "pwn",
     "arbitrary-write": "pwn",
     "seccomp-escape": "pwn",
+    "seccomp-bypass": "pwn",
     "info-leak": "pwn",
     # rev
     "packed-binary": "rev",
@@ -95,6 +96,7 @@ CATEGORY_OF: Dict[str, str] = {
     "api-hashing": "rev",
     "dotnet-deobfuscation": "rev",
     "go-binary-analysis": "rev",
+    "go-reversing": "rev",
     "rust-binary-analysis": "rev",
     "keygen": "rev",
     "algorithm-recovery": "rev",
@@ -130,6 +132,8 @@ CATEGORY_OF: Dict[str, str] = {
     "osint-geolocation": "osint",
     "osint-username": "osint",
     "osint-domain-dns": "osint",
+    "osint-domain": "osint",
+    "certificate-transparency": "osint",
     "osint-metadata": "osint",
     # blockchain / mobile
     "reentrancy": "blockchain",

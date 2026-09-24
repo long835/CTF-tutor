@@ -53,7 +53,7 @@ a JSONL trace you can read back.
 agent falls back to heuristics and keeps going.
 
 **Knowledge it can actually search.** 45 curated archive entries plus a
-560-card study corpus covering 118 techniques, across pwn, reverse engineering,
+857-card study corpus (45 curated archive + 812 derived) covering 97 library techniques, across pwn, reverse engineering,
 web, crypto, forensics, OSINT, misc, blockchain, and mobile. Hybrid retrieval
 (lexical BM25 always, vectors when available) with a reranking stage that
 diversifies results so you get three different ideas rather than three
@@ -337,7 +337,7 @@ CTF-tutor/
 │   ├── teaching.py           #   Socratic prompts + hint levels
 │   ├── memory.py             #   learner mastery stats
 │   ├── provenance.py         #   sources, versions, contradictions
-│   ├── corpus_builder.py     #   builds the 560-card corpus
+│   ├── corpus_builder.py     #   builds the study corpus
 │   ├── dashboard.py          #   HTML reports + trace viewer
 │   ├── plugins.py            #   third-party toolkit loading
 │   ├── providers.py          #   Ollama / OpenAI-compatible + failover
@@ -348,7 +348,7 @@ CTF-tutor/
 ├── tools/                    # passive analysis toolkits
 ├── data/
 │   ├── archive/              #   45 curated entries
-│   ├── corpus/               #   560 generated study cards
+│   ├── corpus/               #   857 study cards (curated + derived)
 │   ├── technique_library.json#   61 techniques, 251 scenarios
 │   ├── technique_vocab.json  #   canonical technique tags
 │   ├── eval/ground_truth.json#   20 evaluation cases

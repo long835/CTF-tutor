@@ -1,7 +1,11 @@
 {
   "challenge_name": "PwnCTF2024 - PrintfLeak",
   "category": "pwn",
-  "techniques": ["format-string", "info-leak", "arbitrary-write"],
+  "techniques": [
+    "format-string",
+    "info-leak",
+    "arbitrary-write"
+  ],
   "difficulty": "medium",
   "source": "ExampleCTF 2024",
   "description": "A binary passes user-controlled input directly as the format argument to printf() instead of using a fixed format string with the input as a data argument, e.g. printf(user_input) instead of printf(\"%s\", user_input).",
@@ -14,7 +18,14 @@
     "Build a %n-based write primitive (often via pwntools' fmtstr_payload) to overwrite the target with a chosen value",
     "Trigger the overwritten code path (e.g. call the GOT-hijacked function) to get control"
   ],
-  "tools_used": ["pwntools", "gdb"],
-  "references": ["https://ctf-wiki.org/pwn/linux/mem-corruption/formatstring/fmt-basic/"],
-  "notes": "Format string bugs are often faster to exploit than a stack overflow once the offset is found -- check for one before assuming you need ROP."
+  "tools_used": [
+    "pwntools",
+    "gdb"
+  ],
+  "references": [
+    "https://ctf-wiki.org/pwn/linux/mem-corruption/formatstring/fmt-basic/"
+  ],
+  "notes": "Format string bugs are often faster to exploit than a stack overflow once the offset is found -- check for one before assuming you need ROP.",
+  "version": 1,
+  "updated": "2026-09-23"
 }

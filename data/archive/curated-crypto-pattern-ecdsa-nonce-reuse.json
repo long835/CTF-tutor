@@ -1,0 +1,27 @@
+{
+  "challenge_name": "Pattern CRYPTO: ECDSA Nonce Reuse",
+  "category": "crypto",
+  "techniques": [
+    "ecdsa-nonce-reuse"
+  ],
+  "difficulty": "hard",
+  "source": "CTF-Tutor curated pattern library",
+  "description": "Two ECDSA signatures share the same ephemeral nonce k.",
+  "explanation": "With repeated k, private key recovery is algebraic from the two (r,s) pairs and the message hashes. Confirm identical r values first.",
+  "solve_steps": [
+    "Collect two signatures and messages",
+    "Check that r values match",
+    "Recover k then the private key",
+    "Verify by signing a test message"
+  ],
+  "tools_used": [
+    "python",
+    "sage-or-numpy"
+  ],
+  "references": [
+    "local:ctf-tutor-curated-patterns"
+  ],
+  "notes": "Educational pattern; no live keys stored.",
+  "version": 1,
+  "updated": "2026-09-24"
+}

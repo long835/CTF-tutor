@@ -7,7 +7,9 @@
     "concept": "the one idea a learner should walk away with",
     "signals": "observable clues that point at this technique",
     "first_checks": "safe local things to look at before reaching for tools",
-    "scenarios": "distinct framings of the same underlying pattern"
+    "scenarios": "distinct framings of the same underlying pattern",
+    "version": "monotonic int; bump on material edit",
+    "updated": "ISO date of last material edit"
   },
   "techniques": [
     {
@@ -15,861 +17,2209 @@
       "category": "web",
       "difficulty": "easy",
       "concept": "User input reaches a SQL query as code rather than as data.",
-      "signals": ["error text leaking SQL syntax", "response changes on a quote character", "string concatenation visible in source"],
-      "first_checks": ["read the query construction in source", "compare responses for a true vs false condition"],
+      "signals": [
+        "error text leaking SQL syntax",
+        "response changes on a quote character",
+        "string concatenation visible in source"
+      ],
+      "first_checks": [
+        "read the query construction in source",
+        "compare responses for a true vs false condition"
+      ],
       "scenarios": [
         "Login form concatenates the username directly into a WHERE clause.",
         "Product filter builds an ORDER BY clause from a query parameter.",
         "Legacy admin search endpoint interpolates a LIKE pattern without escaping.",
         "REST API passes a JSON field into a raw query for a report export.",
         "Password-reset lookup trusts an email parameter inside a subquery."
-      ]
+      ],
+      "version": 1,
+      "updated": "2026-09-23"
     },
     {
       "technique": "sqli-union",
       "category": "web",
       "difficulty": "medium",
       "concept": "An injectable SELECT can be extended to read from other tables once column count and types line up.",
-      "signals": ["injection point inside a SELECT that renders rows", "column-count errors on mismatched queries"],
-      "first_checks": ["count the columns the page renders", "identify which rendered column accepts text"],
+      "signals": [
+        "injection point inside a SELECT that renders rows",
+        "column-count errors on mismatched queries"
+      ],
+      "first_checks": [
+        "count the columns the page renders",
+        "identify which rendered column accepts text"
+      ],
       "scenarios": [
         "Search results page reflects rows directly from a single SELECT.",
         "CSV export endpoint renders arbitrary columns it is handed.",
         "Paginated listing exposes the underlying query through a sort parameter.",
         "Public API returns rows as JSON, making column types easy to probe."
-      ]
+      ],
+      "version": 1,
+      "updated": "2026-09-23"
     },
     {
       "technique": "sqli-blind-boolean",
       "category": "web",
       "difficulty": "hard",
       "concept": "Even with no output, a difference in behaviour is a single bit of data per request.",
-      "signals": ["identical responses but different status/length", "timing differences on heavy conditions"],
-      "first_checks": ["find any observable difference between true and false", "measure baseline response time"],
+      "signals": [
+        "identical responses but different status/length",
+        "timing differences on heavy conditions"
+      ],
+      "first_checks": [
+        "find any observable difference between true and false",
+        "measure baseline response time"
+      ],
       "scenarios": [
         "Login returns the same generic message but different HTTP status.",
         "Coupon-check endpoint returns valid/invalid with no error detail.",
         "Availability API answers only yes or no for a given identifier.",
         "Rate-limited endpoint leaks state through response timing alone."
-      ]
+      ],
+      "version": 1,
+      "updated": "2026-09-23"
     },
     {
       "technique": "ssti",
       "category": "web",
       "difficulty": "medium",
       "concept": "Input concatenated into a template is evaluated as template syntax, not printed as text.",
-      "signals": ["arithmetic in braces gets evaluated", "template engine name in stack traces"],
-      "first_checks": ["test whether a trivial expression renders as its result", "identify the engine from error output"],
+      "signals": [
+        "arithmetic in braces gets evaluated",
+        "template engine name in stack traces"
+      ],
+      "first_checks": [
+        "test whether a trivial expression renders as its result",
+        "identify the engine from error output"
+      ],
       "scenarios": [
         "Greeting page builds the template string from a display name.",
         "Email templating service renders a user-supplied subject line.",
         "Error page interpolates the requested path into the template source.",
         "Report generator lets users define their own header format.",
         "Notification system renders admin-configured message templates."
-      ]
+      ],
+      "version": 1,
+      "updated": "2026-09-23"
     },
     {
       "technique": "path-traversal",
       "category": "web",
       "difficulty": "easy",
       "concept": "Joining user input onto a base path lets the input walk back out of it.",
-      "signals": ["filename or path in a parameter", "content-disposition downloads", "naive prefix checks"],
-      "first_checks": ["find where the path is joined", "check whether normalisation happens before or after validation"],
+      "signals": [
+        "filename or path in a parameter",
+        "content-disposition downloads",
+        "naive prefix checks"
+      ],
+      "first_checks": [
+        "find where the path is joined",
+        "check whether normalisation happens before or after validation"
+      ],
       "scenarios": [
         "Download handler joins a filename parameter onto an uploads directory.",
         "Static asset route serves files by a user-controlled relative path.",
         "Language selector loads a translation file named by a cookie value.",
         "Log viewer opens files under a directory chosen by a query string.",
         "Archive extractor writes entries using paths taken from the archive."
-      ]
+      ],
+      "version": 1,
+      "updated": "2026-09-23"
     },
     {
       "technique": "jwt-none-bypass",
       "category": "web",
       "difficulty": "medium",
       "concept": "If the token says which algorithm to verify with, the token controls verification.",
-      "signals": ["alg field honoured from the header", "verification library called without an allowlist"],
-      "first_checks": ["decode the header and payload", "find where the library is told which algorithm to accept"],
+      "signals": [
+        "alg field honoured from the header",
+        "verification library called without an allowlist"
+      ],
+      "first_checks": [
+        "decode the header and payload",
+        "find where the library is told which algorithm to accept"
+      ],
       "scenarios": [
         "API accepts a token whose header declares no signature algorithm.",
         "Session middleware verifies with whatever algorithm the header names.",
         "Microservice trusts an internal token without re-checking the algorithm.",
         "Mobile backend falls back to unverified decode when verification errors."
-      ]
+      ],
+      "version": 1,
+      "updated": "2026-09-23"
     },
     {
       "technique": "jwt-alg-confusion",
       "category": "web",
       "difficulty": "hard",
       "concept": "A public key is public; using it as a symmetric secret collapses the trust model.",
-      "signals": ["RS256 tokens plus a reachable public key", "one verify call handling both key types"],
-      "first_checks": ["locate the public key", "check whether the verifier distinguishes asymmetric from symmetric"],
+      "signals": [
+        "RS256 tokens plus a reachable public key",
+        "one verify call handling both key types"
+      ],
+      "first_checks": [
+        "locate the public key",
+        "check whether the verifier distinguishes asymmetric from symmetric"
+      ],
       "scenarios": [
         "Service publishes its RSA public key at a well-known JWKS endpoint.",
         "Certificate embedded in the client bundle is also the verification key.",
         "Token verifier passes the key through a single generic verify helper.",
         "Key rotation endpoint exposes historical public keys."
-      ]
+      ],
+      "version": 1,
+      "updated": "2026-09-23"
     },
     {
       "technique": "auth-bypass",
       "category": "web",
       "difficulty": "medium",
       "concept": "Authentication that can be satisfied by data the user controls is not authentication.",
-      "signals": ["role stored client-side", "trust in a header set by the client", "predictable session tokens"],
-      "first_checks": ["list everything the client sends that the server trusts", "look for the authorization check, not just the login"],
+      "signals": [
+        "role stored client-side",
+        "trust in a header set by the client",
+        "predictable session tokens"
+      ],
+      "first_checks": [
+        "list everything the client sends that the server trusts",
+        "look for the authorization check, not just the login"
+      ],
       "scenarios": [
         "Admin panel checks a role claim the client can set.",
         "Internal endpoints trust an X-Forwarded-For style header for origin.",
         "Session id is derived from a timestamp and a username.",
         "Debug parameter left in production skips the auth middleware."
-      ]
+      ],
+      "version": 1,
+      "updated": "2026-09-23"
     },
     {
       "technique": "idor",
       "category": "web",
       "difficulty": "medium",
       "concept": "Knowing an identifier is not the same as being allowed to use it.",
-      "signals": ["sequential ids in URLs", "object fetched before ownership is checked"],
-      "first_checks": ["map which identifiers appear in requests", "check whether ownership is verified after lookup"],
+      "signals": [
+        "sequential ids in URLs",
+        "object fetched before ownership is checked"
+      ],
+      "first_checks": [
+        "map which identifiers appear in requests",
+        "check whether ownership is verified after lookup"
+      ],
       "scenarios": [
         "Profile API fetches by a sequential numeric user id.",
         "Invoice download accepts any document id from any account.",
         "Support ticket thread is keyed only by an incrementing number.",
         "File-sharing link uses a short predictable identifier."
-      ]
+      ],
+      "version": 1,
+      "updated": "2026-09-23"
     },
     {
       "technique": "xss-reflected",
       "category": "web",
       "difficulty": "medium",
       "concept": "Output encoding is context-dependent; HTML-escaping does not protect a JavaScript context.",
-      "signals": ["input echoed into the page", "escaping applied for the wrong context"],
-      "first_checks": ["find where the input lands in the response", "identify the context: HTML body, attribute, or script"],
+      "signals": [
+        "input echoed into the page",
+        "escaping applied for the wrong context"
+      ],
+      "first_checks": [
+        "find where the input lands in the response",
+        "identify the context: HTML body, attribute, or script"
+      ],
       "scenarios": [
         "Search page echoes the query term back into the results heading.",
         "Error message renders an unescaped parameter inside an attribute.",
         "Analytics snippet inlines a campaign parameter into a script block.",
         "Redirect notice prints the destination URL into the page body."
-      ]
+      ],
+      "version": 1,
+      "updated": "2026-09-23"
     },
     {
       "technique": "ssrf",
       "category": "web",
       "difficulty": "hard",
       "concept": "A server fetching a URL for you is a request that carries the server's trust, not yours.",
-      "signals": ["server-side fetch of a user URL", "allowlist done on the string not the resolved address"],
-      "first_checks": ["identify what the server can reach that you cannot", "check whether validation survives redirects"],
+      "signals": [
+        "server-side fetch of a user URL",
+        "allowlist done on the string not the resolved address"
+      ],
+      "first_checks": [
+        "identify what the server can reach that you cannot",
+        "check whether validation survives redirects"
+      ],
       "scenarios": [
         "Link preview feature fetches whatever URL a user submits.",
         "Webhook tester performs an outbound request to a configured endpoint.",
         "PDF renderer loads remote images referenced in user HTML.",
         "Image proxy resizes pictures fetched from arbitrary addresses."
-      ]
+      ],
+      "version": 1,
+      "updated": "2026-09-23"
     },
     {
       "technique": "xxe",
       "category": "web",
       "difficulty": "hard",
       "concept": "XML parsers that resolve external entities turn a document into a file-read primitive.",
-      "signals": ["XML upload or SOAP endpoint", "parser configured with defaults"],
-      "first_checks": ["identify the parser and its entity settings", "check whether a DOCTYPE is accepted at all"],
+      "signals": [
+        "XML upload or SOAP endpoint",
+        "parser configured with defaults"
+      ],
+      "first_checks": [
+        "identify the parser and its entity settings",
+        "check whether a DOCTYPE is accepted at all"
+      ],
       "scenarios": [
         "Document import endpoint accepts XML from users.",
         "SVG upload is parsed before it is rendered.",
         "SAML assertion consumer parses attacker-influenced XML.",
         "Legacy SOAP API left entity resolution enabled."
-      ]
+      ],
+      "version": 1,
+      "updated": "2026-09-23"
     },
     {
       "technique": "deserialization-rce",
       "category": "web",
       "difficulty": "insane",
       "concept": "Deserializing untrusted bytes can construct objects, and constructing objects runs code.",
-      "signals": ["serialized blobs in cookies or parameters", "language-specific magic bytes"],
-      "first_checks": ["identify the serialization format from its header bytes", "find where the blob is deserialized"],
+      "signals": [
+        "serialized blobs in cookies or parameters",
+        "language-specific magic bytes"
+      ],
+      "first_checks": [
+        "identify the serialization format from its header bytes",
+        "find where the blob is deserialized"
+      ],
       "scenarios": [
         "Session cookie carries a serialized object rather than an id.",
         "Cache layer stores serialized objects keyed by user input.",
         "Message queue consumer deserializes payloads from an open topic.",
         "Remember-me token is a signed but attacker-influenced object graph."
-      ]
+      ],
+      "version": 1,
+      "updated": "2026-09-23"
     },
     {
       "technique": "race-condition",
       "category": "web",
       "difficulty": "hard",
       "concept": "A check and the action it guards are two events; anything can happen in between.",
-      "signals": ["balance or quota checked then modified", "no transaction or lock around the pair"],
-      "first_checks": ["find the check and the write", "ask what a second request between them would see"],
+      "signals": [
+        "balance or quota checked then modified",
+        "no transaction or lock around the pair"
+      ],
+      "first_checks": [
+        "find the check and the write",
+        "ask what a second request between them would see"
+      ],
       "scenarios": [
         "Gift-card redemption checks the balance before decrementing it.",
         "One-per-user signup bonus verifies then inserts without a constraint.",
         "File upload validates a name before writing it to disk.",
         "Vote endpoint counts existing votes before recording a new one."
-      ]
+      ],
+      "version": 1,
+      "updated": "2026-09-23"
     },
     {
       "technique": "prototype-pollution",
       "category": "web",
       "difficulty": "hard",
       "concept": "Recursive merges over untrusted keys can reach shared object internals.",
-      "signals": ["deep merge or clone helpers", "config built from user JSON"],
-      "first_checks": ["find recursive merge functions", "check whether special keys are filtered"],
+      "signals": [
+        "deep merge or clone helpers",
+        "config built from user JSON"
+      ],
+      "first_checks": [
+        "find recursive merge functions",
+        "check whether special keys are filtered"
+      ],
       "scenarios": [
         "Settings endpoint deep-merges submitted JSON into defaults.",
         "Query-string parser builds nested objects from bracket notation.",
         "Plugin loader clones user configuration into a shared object.",
         "Template context is merged from multiple untrusted sources."
-      ]
+      ],
+      "version": 1,
+      "updated": "2026-09-23"
     },
     {
       "technique": "stack-buffer-overflow",
       "category": "pwn",
       "difficulty": "easy",
       "concept": "Writing past a fixed buffer overwrites the stack state that tells the CPU where to return.",
-      "signals": ["unbounded copy functions", "fixed-size local buffer", "no bounds check on a length"],
-      "first_checks": ["check protections with checksec", "find the input path and the buffer size"],
+      "signals": [
+        "unbounded copy functions",
+        "fixed-size local buffer",
+        "no bounds check on a length"
+      ],
+      "first_checks": [
+        "check protections with checksec",
+        "find the input path and the buffer size"
+      ],
       "scenarios": [
         "Menu-driven program reads a name into a small fixed buffer.",
         "Parser copies a length-prefixed field without validating the length.",
         "Legacy service reads a line into a stack array with no limit.",
         "Config loader copies an environment variable into a local buffer.",
         "Network handler reuses a stack buffer across differently sized messages."
-      ]
+      ],
+      "version": 1,
+      "updated": "2026-09-23"
     },
     {
       "technique": "ret2libc",
       "category": "pwn",
       "difficulty": "hard",
       "concept": "When you cannot run your own code, run code that is already there.",
-      "signals": ["NX enabled", "dynamically linked", "an address leak available"],
-      "first_checks": ["confirm NX and PIE state", "identify what leaks an address"],
+      "signals": [
+        "NX enabled",
+        "dynamically linked",
+        "an address leak available"
+      ],
+      "first_checks": [
+        "confirm NX and PIE state",
+        "identify what leaks an address"
+      ],
       "scenarios": [
         "Overflow exists but the stack is non-executable and libc is dynamic.",
         "A format-string bug leaks a libc pointer before the overflow.",
         "Binary prints a function pointer during normal operation.",
         "Partial overwrite is possible because only the low bytes vary."
-      ]
+      ],
+      "version": 1,
+      "updated": "2026-09-23"
     },
     {
       "technique": "rop-chain",
       "category": "pwn",
       "difficulty": "insane",
       "concept": "Short instruction sequences ending in a return can be strung together into a program.",
-      "signals": ["NX and ASLR both on", "no convenient single function to call"],
-      "first_checks": ["inventory available gadgets", "work out the minimum chain that changes memory permissions"],
+      "signals": [
+        "NX and ASLR both on",
+        "no convenient single function to call"
+      ],
+      "first_checks": [
+        "inventory available gadgets",
+        "work out the minimum chain that changes memory permissions"
+      ],
       "scenarios": [
         "Statically linked binary offers gadgets but no useful imported call.",
         "Overflow is large enough for a chain but the binary is stripped.",
         "Only a short write primitive exists, so the chain must be staged.",
         "Sandbox restricts syscalls, narrowing which chain is viable."
-      ]
+      ],
+      "version": 1,
+      "updated": "2026-09-23"
     },
     {
       "technique": "format-string",
       "category": "pwn",
       "difficulty": "medium",
       "concept": "A format string taken from input is an interpreter for reading and writing memory.",
-      "signals": ["user data passed as the format argument", "unexpected output containing stack values"],
-      "first_checks": ["find printf-family calls with a non-literal format", "observe what leaks from a benign specifier"],
+      "signals": [
+        "user data passed as the format argument",
+        "unexpected output containing stack values"
+      ],
+      "first_checks": [
+        "find printf-family calls with a non-literal format",
+        "observe what leaks from a benign specifier"
+      ],
       "scenarios": [
         "Logging helper passes the user message straight to printf.",
         "Error handler formats an attacker-influenced string for display.",
         "Debug build prints a banner assembled from an environment variable.",
         "Echo service formats input before writing it back."
-      ]
+      ],
+      "version": 1,
+      "updated": "2026-09-23"
     },
     {
       "technique": "canary-bypass",
       "category": "pwn",
       "difficulty": "hard",
       "concept": "A canary only helps if the attacker cannot learn it or can avoid crossing it.",
-      "signals": ["stack protector present", "a separate leak primitive", "overwrite that skips the canary"],
-      "first_checks": ["confirm the canary is present", "look for a leak that runs before the overflow"],
+      "signals": [
+        "stack protector present",
+        "a separate leak primitive",
+        "overwrite that skips the canary"
+      ],
+      "first_checks": [
+        "confirm the canary is present",
+        "look for a leak that runs before the overflow"
+      ],
       "scenarios": [
         "A read primitive discloses stack contents before the write happens.",
         "Child processes inherit the same canary across forks.",
         "An index bug writes past the canary without touching it.",
         "Byte-at-a-time output lets the value be recovered incrementally."
-      ]
+      ],
+      "version": 1,
+      "updated": "2026-09-23"
     },
     {
       "technique": "aslr-bypass",
       "category": "pwn",
       "difficulty": "hard",
       "concept": "Randomised layout stops guessing, not leaking; one real address often reveals the rest.",
-      "signals": ["PIE enabled", "some pointer printed or reflected", "partial overwrite possible"],
-      "first_checks": ["identify any address the program reveals", "check which bytes of an address stay constant"],
+      "signals": [
+        "PIE enabled",
+        "some pointer printed or reflected",
+        "partial overwrite possible"
+      ],
+      "first_checks": [
+        "identify any address the program reveals",
+        "check which bytes of an address stay constant"
+      ],
       "scenarios": [
         "Program prints a heap pointer in a diagnostic message.",
         "Only the low twelve bits are fixed, enabling a partial overwrite.",
         "An uninitialised read discloses a leftover stack address.",
         "Repeated connections reuse the same layout in a forking server."
-      ]
+      ],
+      "version": 1,
+      "updated": "2026-09-23"
     },
     {
       "technique": "heap-overflow",
       "category": "pwn",
       "difficulty": "insane",
       "concept": "Allocator metadata lives next to your data, so overflowing data corrupts bookkeeping.",
-      "signals": ["custom allocator or note-style menu", "size and copy length come from different places"],
-      "first_checks": ["map the allocation lifecycle", "compare the requested size against the copied size"],
+      "signals": [
+        "custom allocator or note-style menu",
+        "size and copy length come from different places"
+      ],
+      "first_checks": [
+        "map the allocation lifecycle",
+        "compare the requested size against the copied size"
+      ],
       "scenarios": [
         "Note manager copies content using a length from the previous record.",
         "Struct with an inline buffer is resized without reallocating.",
         "Off-by-one null byte overwrites the neighbouring size field.",
         "Custom pool allocator keeps free-list pointers inside user data."
-      ]
+      ],
+      "version": 1,
+      "updated": "2026-09-23"
     },
     {
       "technique": "use-after-free",
       "category": "pwn",
       "difficulty": "insane",
       "concept": "Freeing memory without clearing the pointer leaves a handle to someone else's data.",
-      "signals": ["delete option that does not null the pointer", "objects with function pointers"],
-      "first_checks": ["track which pointers survive a free", "look for an allocation that can land in the freed slot"],
+      "signals": [
+        "delete option that does not null the pointer",
+        "objects with function pointers"
+      ],
+      "first_checks": [
+        "track which pointers survive a free",
+        "look for an allocation that can land in the freed slot"
+      ],
       "scenarios": [
         "Menu program deletes an entry but keeps the reference.",
         "Object with a virtual table is freed while still registered in a list.",
         "Cached connection struct is reused after close.",
         "Double free corrupts the free list before reallocation."
-      ]
+      ],
+      "version": 1,
+      "updated": "2026-09-23"
     },
     {
       "technique": "integer-overflow",
       "category": "pwn",
       "difficulty": "medium",
       "concept": "Arithmetic on sizes wraps, so a validated length can still produce a tiny allocation.",
-      "signals": ["size computed by multiplication or addition", "signed/unsigned comparison"],
-      "first_checks": ["find the arithmetic before the allocation", "test the boundary values of the type"],
+      "signals": [
+        "size computed by multiplication or addition",
+        "signed/unsigned comparison"
+      ],
+      "first_checks": [
+        "find the arithmetic before the allocation",
+        "test the boundary values of the type"
+      ],
       "scenarios": [
         "Array allocation multiplies count by element size without a check.",
         "Signed length is compared against a maximum then used as unsigned.",
         "Offset plus length wraps, passing a range check it should fail.",
         "Sixteen-bit counter truncates a larger user-supplied count."
-      ]
+      ],
+      "version": 1,
+      "updated": "2026-09-23"
     },
     {
       "technique": "off-by-one",
       "category": "pwn",
       "difficulty": "medium",
       "concept": "A single byte past the end is enough when that byte is structurally important.",
-      "signals": ["loop bound using <= instead of <", "length that forgets the terminator"],
-      "first_checks": ["read the loop bounds carefully", "check who writes the string terminator"],
+      "signals": [
+        "loop bound using <= instead of <",
+        "length that forgets the terminator"
+      ],
+      "first_checks": [
+        "read the loop bounds carefully",
+        "check who writes the string terminator"
+      ],
       "scenarios": [
         "Copy loop runs one iteration too many on the buffer length.",
         "Null terminator is written just past the allocated size.",
         "Index validation permits the length value itself.",
         "Fixed-size record parser assumes a trailing separator exists."
-      ]
+      ],
+      "version": 1,
+      "updated": "2026-09-23"
     },
     {
       "technique": "xor-single-byte",
       "category": "crypto",
       "difficulty": "easy",
       "concept": "A one-byte key has 256 possibilities, so scoring plausible plaintext beats cleverness.",
-      "signals": ["uniform-looking bytes of modest length", "repeating byte patterns matching spaces"],
-      "first_checks": ["score every candidate key against English frequency", "look for the most common byte"],
+      "signals": [
+        "uniform-looking bytes of modest length",
+        "repeating byte patterns matching spaces"
+      ],
+      "first_checks": [
+        "score every candidate key against English frequency",
+        "look for the most common byte"
+      ],
       "scenarios": [
         "A short ciphertext file with no header and no structure.",
         "Hex-encoded blob embedded in a script's constant.",
         "Obfuscated configuration value in a binary's data section.",
         "Encoded string stored inside a QR payload."
-      ]
+      ],
+      "version": 1,
+      "updated": "2026-09-23"
     },
     {
       "technique": "xor-repeating-key",
       "category": "crypto",
       "difficulty": "medium",
       "concept": "Key reuse turns one hard problem into many easy single-byte problems.",
-      "signals": ["repeating structure at a fixed stride", "ciphertext much longer than any plausible key"],
-      "first_checks": ["estimate key length from repeated distances", "split into columns and solve each independently"],
+      "signals": [
+        "repeating structure at a fixed stride",
+        "ciphertext much longer than any plausible key"
+      ],
+      "first_checks": [
+        "estimate key length from repeated distances",
+        "split into columns and solve each independently"
+      ],
       "scenarios": [
         "Long text encrypted with a short word as the key.",
         "Log file obfuscated with a fixed repeating key.",
         "Firmware strings masked with a cycling key byte pattern.",
         "Two messages encrypted under the same key stream."
-      ]
+      ],
+      "version": 1,
+      "updated": "2026-09-23"
     },
     {
       "technique": "rsa-small-e",
       "category": "crypto",
       "difficulty": "medium",
       "concept": "Without padding, a small exponent on a small message never wraps the modulus.",
-      "signals": ["e equal to 3", "no padding scheme mentioned", "short plaintext"],
-      "first_checks": ["check the size of e", "compare the ciphertext magnitude against the modulus"],
+      "signals": [
+        "e equal to 3",
+        "no padding scheme mentioned",
+        "short plaintext"
+      ],
+      "first_checks": [
+        "check the size of e",
+        "compare the ciphertext magnitude against the modulus"
+      ],
       "scenarios": [
         "Exponent three is used with a short unpadded message.",
         "The same message is sent to several recipients with small e.",
         "Textbook RSA is used to encrypt a numeric code.",
         "Signature verification omits padding checks entirely."
-      ]
+      ],
+      "version": 1,
+      "updated": "2026-09-23"
     },
     {
       "technique": "rsa-common-modulus",
       "category": "crypto",
       "difficulty": "hard",
       "concept": "Two coprime exponents over one modulus let you combine ciphertexts without the key.",
-      "signals": ["same n appears twice", "two different public exponents"],
-      "first_checks": ["compare moduli across the provided keys", "check whether the exponents are coprime"],
+      "signals": [
+        "same n appears twice",
+        "two different public exponents"
+      ],
+      "first_checks": [
+        "compare moduli across the provided keys",
+        "check whether the exponents are coprime"
+      ],
       "scenarios": [
         "One message is encrypted twice under different exponents.",
         "A key server reuses the modulus across two user accounts.",
         "Migration kept the old exponent alongside a new one.",
         "Backup key shares the modulus of the production key."
-      ]
+      ],
+      "version": 1,
+      "updated": "2026-09-23"
     },
     {
       "technique": "rsa-factorisation",
       "category": "crypto",
       "difficulty": "medium",
       "concept": "RSA's security rests entirely on factoring being hard for that particular modulus.",
-      "signals": ["small modulus", "primes suspiciously close together", "modulus appears in a public database"],
-      "first_checks": ["check the bit length", "test whether the primes are near the square root"],
+      "signals": [
+        "small modulus",
+        "primes suspiciously close together",
+        "modulus appears in a public database"
+      ],
+      "first_checks": [
+        "check the bit length",
+        "test whether the primes are near the square root"
+      ],
       "scenarios": [
         "The modulus is small enough to factor directly.",
         "The two primes were generated adjacently and sit close together.",
         "Two keys share a prime factor, revealing both.",
         "A weak random source produced a repeated prime."
-      ]
+      ],
+      "version": 1,
+      "updated": "2026-09-23"
     },
     {
       "technique": "padding-oracle",
       "category": "crypto",
       "difficulty": "insane",
       "concept": "Any observable difference between 'bad padding' and 'bad content' leaks the plaintext.",
-      "signals": ["CBC mode", "distinguishable error responses", "decryption endpoint accepting ciphertext"],
-      "first_checks": ["confirm the mode of operation", "check whether the two failure modes are distinguishable"],
+      "signals": [
+        "CBC mode",
+        "distinguishable error responses",
+        "decryption endpoint accepting ciphertext"
+      ],
+      "first_checks": [
+        "confirm the mode of operation",
+        "check whether the two failure modes are distinguishable"
+      ],
       "scenarios": [
         "Decryption API returns different messages for padding and MAC errors.",
         "Timing differs measurably between the two failure paths.",
         "Cookie decryption raises a distinguishable exception.",
         "Error pages differ only in status code between the two cases."
-      ]
+      ],
+      "version": 1,
+      "updated": "2026-09-23"
     },
     {
       "technique": "ecb-byte-at-a-time",
       "category": "crypto",
       "difficulty": "hard",
       "concept": "ECB encrypts identical blocks identically, so alignment turns encryption into a lookup table.",
-      "signals": ["repeated ciphertext blocks", "attacker-controlled prefix", "no IV"],
-      "first_checks": ["look for repeated 16-byte blocks", "check whether you control data before the secret"],
+      "signals": [
+        "repeated ciphertext blocks",
+        "attacker-controlled prefix",
+        "no IV"
+      ],
+      "first_checks": [
+        "look for repeated 16-byte blocks",
+        "check whether you control data before the secret"
+      ],
       "scenarios": [
         "Profile cookie encrypts attacker data followed by a secret.",
         "Encrypted upload preserves duplicate blocks from a known image.",
         "Token format places user input immediately before a fixed suffix.",
         "Bulk encryption of records reveals duplicate rows."
-      ]
+      ],
+      "version": 1,
+      "updated": "2026-09-23"
     },
     {
       "technique": "hash-length-extension",
       "category": "crypto",
       "difficulty": "hard",
       "concept": "Merkle-Damgard hashes can be continued from a digest, so secret-prefix MACs are forgeable.",
-      "signals": ["MAC built as hash(secret + message)", "digest and message both visible"],
-      "first_checks": ["determine how the MAC is constructed", "identify the hash family"],
+      "signals": [
+        "MAC built as hash(secret + message)",
+        "digest and message both visible"
+      ],
+      "first_checks": [
+        "determine how the MAC is constructed",
+        "identify the hash family"
+      ],
       "scenarios": [
         "API signs requests with a hash of a secret prepended to parameters.",
         "Download link integrity uses a secret-prefix digest.",
         "Session data is authenticated by concatenation rather than HMAC.",
         "Legacy signing scheme predates the move to HMAC."
-      ]
+      ],
+      "version": 1,
+      "updated": "2026-09-23"
     },
     {
       "technique": "classical-substitution",
       "category": "crypto",
       "difficulty": "easy",
       "concept": "Substitution preserves letter frequency and word shape, which is exactly what breaks it.",
-      "signals": ["preserved word lengths and punctuation", "letter distribution matching natural language"],
-      "first_checks": ["run a frequency count", "look for single-letter and common short words"],
+      "signals": [
+        "preserved word lengths and punctuation",
+        "letter distribution matching natural language"
+      ],
+      "first_checks": [
+        "run a frequency count",
+        "look for single-letter and common short words"
+      ],
       "scenarios": [
         "A paragraph of English with letters consistently swapped.",
         "A puzzle keeps spacing, making word patterns visible.",
         "A keyword-derived alphabet with repeated structure.",
         "Numbers left in the clear alongside substituted letters."
-      ]
+      ],
+      "version": 1,
+      "updated": "2026-09-23"
     },
     {
       "technique": "classical-caesar",
       "category": "crypto",
       "difficulty": "easy",
       "concept": "With only 25 shifts, exhaustive search is the correct first move.",
-      "signals": ["letter-only ciphertext", "shifted but recognisable word shapes"],
-      "first_checks": ["print all 25 shifts", "check for a flag prefix in each"],
+      "signals": [
+        "letter-only ciphertext",
+        "shifted but recognisable word shapes"
+      ],
+      "first_checks": [
+        "print all 25 shifts",
+        "check for a flag prefix in each"
+      ],
       "scenarios": [
         "A short message shifted by a fixed amount.",
         "ROT13 applied twice to different halves of the text.",
         "A shift applied only to letters, leaving digits untouched.",
         "Nested shift inside a base64 layer."
-      ]
+      ],
+      "version": 1,
+      "updated": "2026-09-23"
     },
     {
       "technique": "encoding-recognition",
       "category": "crypto",
       "difficulty": "easy",
       "concept": "Identify the encoding from its alphabet and padding before trying to decode anything.",
-      "signals": ["restricted character set", "length a multiple of four", "trailing padding characters"],
-      "first_checks": ["inspect the alphabet in use", "check the length modulus"],
+      "signals": [
+        "restricted character set",
+        "length a multiple of four",
+        "trailing padding characters"
+      ],
+      "first_checks": [
+        "inspect the alphabet in use",
+        "check the length modulus"
+      ],
       "scenarios": [
         "A string using only base64's alphabet with trailing padding.",
         "Uppercase base32 text that looks like nonsense words.",
         "Percent-encoded text nested inside a JSON field.",
         "A decimal or binary representation of ASCII bytes.",
         "Base58 text with no lookalike characters."
-      ]
+      ],
+      "version": 1,
+      "updated": "2026-09-23"
     },
     {
       "technique": "multilayer-encoding",
       "category": "misc",
       "difficulty": "easy",
       "concept": "Decoding is iterative; each layer tells you what the next one is.",
-      "signals": ["decoded output that is itself valid encoded text", "gzip magic bytes after a decode"],
-      "first_checks": ["decode one layer and re-examine", "check magic bytes at every stage"],
+      "signals": [
+        "decoded output that is itself valid encoded text",
+        "gzip magic bytes after a decode"
+      ],
+      "first_checks": [
+        "decode one layer and re-examine",
+        "check magic bytes at every stage"
+      ],
       "scenarios": [
         "Base64 wrapping hex wrapping a compressed blob.",
         "Repeated ROT and base64 alternation over many rounds.",
         "URL encoding hiding a base32 payload.",
         "A QR code whose payload is itself an encoded document."
-      ]
+      ],
+      "version": 1,
+      "updated": "2026-09-23"
     },
     {
       "technique": "string-decryption",
       "category": "rev",
       "difficulty": "easy",
       "concept": "Strings that are absent from the binary are usually built at runtime by a small routine.",
-      "signals": ["no useful output from strings", "a loop over a data blob near startup"],
-      "first_checks": ["run strings and note what is missing", "find cross-references to the data section"],
+      "signals": [
+        "no useful output from strings",
+        "a loop over a data blob near startup"
+      ],
+      "first_checks": [
+        "run strings and note what is missing",
+        "find cross-references to the data section"
+      ],
       "scenarios": [
         "Password is compared after an XOR decode of a data blob.",
         "Error messages are assembled character by character at runtime.",
         "A lookup table maps indices to decoded text.",
         "Strings are decoded lazily on first use and cached."
-      ]
+      ],
+      "version": 1,
+      "updated": "2026-09-23"
     },
     {
       "technique": "algorithm-recovery",
       "category": "rev",
       "difficulty": "medium",
       "concept": "The goal is understanding the transformation well enough to invert it, not reading every instruction.",
-      "signals": ["a check function comparing against a constant", "recognisable constants from known algorithms"],
-      "first_checks": ["find the comparison and work backwards", "search constants against known algorithm tables"],
+      "signals": [
+        "a check function comparing against a constant",
+        "recognisable constants from known algorithms"
+      ],
+      "first_checks": [
+        "find the comparison and work backwards",
+        "search constants against known algorithm tables"
+      ],
       "scenarios": [
         "A licence check applies a reversible transform before comparing.",
         "A serial validator sums and rotates digits in a fixed pattern.",
         "Input is hashed with a custom function and matched to a constant.",
         "A checksum routine mirrors a well-known algorithm with tweaked constants."
-      ]
+      ],
+      "version": 1,
+      "updated": "2026-09-23"
     },
     {
       "technique": "anti-debug-bypass",
       "category": "rev",
       "difficulty": "medium",
       "concept": "Anti-debugging checks are ordinary code paths and can be understood like any other branch.",
-      "signals": ["process tracing calls", "timing comparisons", "different behaviour under a debugger"],
-      "first_checks": ["compare behaviour with and without a debugger", "locate the check before the divergence"],
+      "signals": [
+        "process tracing calls",
+        "timing comparisons",
+        "different behaviour under a debugger"
+      ],
+      "first_checks": [
+        "compare behaviour with and without a debugger",
+        "locate the check before the divergence"
+      ],
       "scenarios": [
         "The program exits early when a tracer is attached.",
         "A timing check detects single-stepping and alters results.",
         "Breakpoint bytes are detected via a self-checksum.",
         "The binary behaves differently when a debugger environment variable is present."
-      ]
+      ],
+      "version": 1,
+      "updated": "2026-09-23"
     },
     {
       "technique": "packed-binary",
       "category": "rev",
       "difficulty": "medium",
       "concept": "A packer replaces the real code with a stub that reconstructs it, so find the moment after unpacking.",
-      "signals": ["very few imports", "high entropy sections", "unusual section names"],
-      "first_checks": ["check entropy per section", "look for a known packer signature"],
+      "signals": [
+        "very few imports",
+        "high entropy sections",
+        "unusual section names"
+      ],
+      "first_checks": [
+        "check entropy per section",
+        "look for a known packer signature"
+      ],
       "scenarios": [
         "A standard packer with a well-known unpacking utility.",
         "A custom stub that decompresses into freshly allocated memory.",
         "Only part of the binary is packed, leaving a readable loader.",
         "The entry point jumps into a section marked writable and executable."
-      ]
+      ],
+      "version": 1,
+      "updated": "2026-09-23"
     },
     {
       "technique": "vm-obfuscation",
       "category": "rev",
       "difficulty": "insane",
       "concept": "A bytecode interpreter moves the logic into data, so recover the instruction set first.",
-      "signals": ["a large dispatch switch", "a byte array driving control flow", "an instruction pointer variable"],
-      "first_checks": ["identify the dispatch loop", "map opcodes to handlers one at a time"],
+      "signals": [
+        "a large dispatch switch",
+        "a byte array driving control flow",
+        "an instruction pointer variable"
+      ],
+      "first_checks": [
+        "identify the dispatch loop",
+        "map opcodes to handlers one at a time"
+      ],
       "scenarios": [
         "A custom interpreter validates the input through bytecode.",
         "Handlers are dispatched through a table of function pointers.",
         "The bytecode is itself decrypted before execution.",
         "A stack machine implements the comparison logic."
-      ]
+      ],
+      "version": 1,
+      "updated": "2026-09-23"
     },
     {
       "technique": "control-flow-flattening",
       "category": "rev",
       "difficulty": "hard",
       "concept": "Flattening hides order, not logic; recovering the state transitions restores the original flow.",
-      "signals": ["a single loop with a large switch", "a state variable assigned in every block"],
-      "first_checks": ["find the state variable", "record which state each block sets next"],
+      "signals": [
+        "a single loop with a large switch",
+        "a state variable assigned in every block"
+      ],
+      "first_checks": [
+        "find the state variable",
+        "record which state each block sets next"
+      ],
       "scenarios": [
         "All basic blocks are reachable only through one dispatcher.",
         "State values are computed rather than assigned as constants.",
         "Opaque predicates add branches that never actually execute.",
         "Only the validation routine is flattened, not the rest of the program."
-      ]
+      ],
+      "version": 1,
+      "updated": "2026-09-23"
     },
     {
       "technique": "pcap-carving",
       "category": "forensics",
       "difficulty": "easy",
       "concept": "A capture is a transcript; follow the conversation rather than reading packets one by one.",
-      "signals": ["HTTP or FTP traffic in the capture", "large transfers between two endpoints"],
-      "first_checks": ["list conversations by size", "export any transferred objects"],
+      "signals": [
+        "HTTP or FTP traffic in the capture",
+        "large transfers between two endpoints"
+      ],
+      "first_checks": [
+        "list conversations by size",
+        "export any transferred objects"
+      ],
       "scenarios": [
         "An HTTP session transfers a file of interest.",
         "An FTP session shows commands and a data channel.",
         "DNS queries encode data in subdomain labels.",
         "Plaintext credentials appear in an unencrypted protocol.",
         "A file is split across several TCP streams."
-      ]
+      ],
+      "version": 1,
+      "updated": "2026-09-23"
     },
     {
       "technique": "file-carving",
       "category": "forensics",
       "difficulty": "medium",
       "concept": "Files are recognisable by their headers and footers even when the filesystem has forgotten them.",
-      "signals": ["a disk image or blob larger than its visible contents", "magic bytes mid-file"],
-      "first_checks": ["scan for known magic byte sequences", "check what follows a file's declared end"],
+      "signals": [
+        "a disk image or blob larger than its visible contents",
+        "magic bytes mid-file"
+      ],
+      "first_checks": [
+        "scan for known magic byte sequences",
+        "check what follows a file's declared end"
+      ],
       "scenarios": [
         "A deleted image remains in unallocated space on a disk image.",
         "An archive is appended after the end of a picture.",
         "Several files are concatenated into one blob.",
         "A partially overwritten file must be reconstructed from fragments."
-      ]
+      ],
+      "version": 1,
+      "updated": "2026-09-23"
     },
     {
       "technique": "image-metadata",
       "category": "forensics",
       "difficulty": "easy",
       "concept": "Photographs carry structured metadata that is easy to forget and easy to read.",
-      "signals": ["camera-generated image", "unusually large metadata block"],
-      "first_checks": ["dump all metadata fields", "compare against what the image visually shows"],
+      "signals": [
+        "camera-generated image",
+        "unusually large metadata block"
+      ],
+      "first_checks": [
+        "dump all metadata fields",
+        "compare against what the image visually shows"
+      ],
       "scenarios": [
         "Coordinates in the metadata identify where a photo was taken.",
         "A comment field carries text left by the author.",
         "A thumbnail preserves content the full image no longer shows.",
         "Editing software names and timestamps establish a timeline."
-      ]
+      ],
+      "version": 1,
+      "updated": "2026-09-23"
     },
     {
       "technique": "steganography",
       "category": "forensics",
       "difficulty": "medium",
       "concept": "Check structure before tooling; most 'stego' is data appended or stored in an extra chunk.",
-      "signals": ["file larger than its visible content", "unexpected chunks", "noise in the lowest bits"],
-      "first_checks": ["compare file size against expected dimensions", "list the structural chunks"],
+      "signals": [
+        "file larger than its visible content",
+        "unexpected chunks",
+        "noise in the lowest bits"
+      ],
+      "first_checks": [
+        "compare file size against expected dimensions",
+        "list the structural chunks"
+      ],
       "scenarios": [
         "Data is stored in the least significant bits of an image.",
         "An extra chunk holds text a viewer ignores.",
         "Content is appended after the image's end marker.",
         "Two nearly identical images differ only in specific pixels.",
         "An audio file carries data in a spectrogram."
-      ]
+      ],
+      "version": 1,
+      "updated": "2026-09-23"
     },
     {
       "technique": "memory-forensics",
       "category": "forensics",
       "difficulty": "hard",
       "concept": "A memory image captures what was true at one instant, including things never written to disk.",
-      "signals": ["a memory dump", "process list expectations", "credential material in RAM"],
-      "first_checks": ["identify the profile and OS version", "list processes and look for anomalies"],
+      "signals": [
+        "a memory dump",
+        "process list expectations",
+        "credential material in RAM"
+      ],
+      "first_checks": [
+        "identify the profile and OS version",
+        "list processes and look for anomalies"
+      ],
       "scenarios": [
         "A process dump contains credentials typed during the capture.",
         "An injected region appears in an otherwise normal process.",
         "Command history survives in a shell's memory.",
         "Network connections reveal a handler that is gone from disk."
-      ]
+      ],
+      "version": 1,
+      "updated": "2026-09-23"
     },
     {
       "technique": "log-analysis",
       "category": "forensics",
       "difficulty": "medium",
       "concept": "Anomalies stand out against a baseline, so establish normal before hunting for strange.",
-      "signals": ["large log files", "timestamps clustering unusually", "rare user agents or status codes"],
-      "first_checks": ["aggregate by frequency", "sort by time and look for bursts"],
+      "signals": [
+        "large log files",
+        "timestamps clustering unusually",
+        "rare user agents or status codes"
+      ],
+      "first_checks": [
+        "aggregate by frequency",
+        "sort by time and look for bursts"
+      ],
       "scenarios": [
         "Web logs contain a single unusual request among many normal ones.",
         "Authentication logs show a successful attempt after many failures.",
         "Timestamps are inconsistent with the claimed sequence of events.",
         "A rare user agent string appears only during the incident window."
-      ]
+      ],
+      "version": 1,
+      "updated": "2026-09-23"
     },
     {
       "technique": "osint-geolocation",
       "category": "osint",
       "difficulty": "easy",
       "concept": "Narrow by what cannot change: architecture, signage, vegetation, sun angle.",
-      "signals": ["identifiable landmarks", "language on signage", "distinctive infrastructure"],
-      "first_checks": ["list every fixed feature visible", "work from country to region to street"],
+      "signals": [
+        "identifiable landmarks",
+        "language on signage",
+        "distinctive infrastructure"
+      ],
+      "first_checks": [
+        "list every fixed feature visible",
+        "work from country to region to street"
+      ],
       "scenarios": [
         "A photo shows a recognisable skyline.",
         "Street furniture and signage narrow the country.",
         "Shadows and vegetation indicate hemisphere and season.",
         "A reflection reveals detail not directly photographed."
-      ]
+      ],
+      "version": 1,
+      "updated": "2026-09-23"
     },
     {
       "technique": "osint-username",
       "category": "osint",
       "difficulty": "medium",
       "concept": "People reuse handles; correlation across platforms builds a picture no single site holds.",
-      "signals": ["a distinctive handle", "cross-posted content", "consistent avatars"],
-      "first_checks": ["search the handle across public platforms", "compare writing style and timing"],
+      "signals": [
+        "a distinctive handle",
+        "cross-posted content",
+        "consistent avatars"
+      ],
+      "first_checks": [
+        "search the handle across public platforms",
+        "compare writing style and timing"
+      ],
       "scenarios": [
         "The same handle appears on several public sites.",
         "A profile picture is reused across accounts.",
         "Public commit history links a handle to an email address.",
         "Archived pages preserve a profile that was later edited."
-      ]
+      ],
+      "version": 1,
+      "updated": "2026-09-23"
     },
     {
       "technique": "osint-domain-dns",
       "category": "osint",
       "difficulty": "medium",
       "concept": "Infrastructure has history, and history is frequently public.",
-      "signals": ["subdomains in certificate logs", "historical DNS records", "registration metadata"],
-      "first_checks": ["enumerate subdomains from public sources", "check certificate transparency logs"],
+      "signals": [
+        "subdomains in certificate logs",
+        "historical DNS records",
+        "registration metadata"
+      ],
+      "first_checks": [
+        "enumerate subdomains from public sources",
+        "check certificate transparency logs"
+      ],
       "scenarios": [
         "Historical DNS records reveal a staging host.",
         "A certificate log lists subdomains not linked anywhere.",
         "Registration data connects two apparently separate domains.",
         "An archived page references an endpoint that still resolves."
-      ]
+      ],
+      "version": 1,
+      "updated": "2026-09-23"
     },
     {
       "technique": "nested-archive",
       "category": "misc",
       "difficulty": "easy",
       "concept": "Automate the repetitive part, but cap the depth so a zip bomb cannot exhaust the machine.",
-      "signals": ["archive containing exactly one archive", "many repetitive extraction layers"],
-      "first_checks": ["check the compression ratio before extracting", "set an extraction depth limit"],
+      "signals": [
+        "archive containing exactly one archive",
+        "many repetitive extraction layers"
+      ],
+      "first_checks": [
+        "check the compression ratio before extracting",
+        "set an extraction depth limit"
+      ],
       "scenarios": [
         "Hundreds of nested archives wrap a single file.",
         "Each layer uses a different archive format.",
         "Layers are password protected with the password in the previous layer.",
         "A high compression ratio suggests a decompression bomb."
-      ]
+      ],
+      "version": 1,
+      "updated": "2026-09-23"
     },
     {
       "technique": "esoteric-lang",
       "category": "misc",
       "difficulty": "medium",
       "concept": "Identify the language from its character set, then use an interpreter rather than reading it.",
-      "signals": ["a tiny symbol alphabet", "whitespace-only content", "extremely repetitive text"],
-      "first_checks": ["identify the language from its distinctive characters", "find a reference interpreter"],
+      "signals": [
+        "a tiny symbol alphabet",
+        "whitespace-only content",
+        "extremely repetitive text"
+      ],
+      "first_checks": [
+        "identify the language from its distinctive characters",
+        "find a reference interpreter"
+      ],
       "scenarios": [
         "A program written in a minimal eight-instruction language.",
         "Source consisting only of whitespace characters.",
         "Code disguised as ordinary English prose.",
         "A two-dimensional program whose control flow moves on a grid."
-      ]
+      ],
+      "version": 1,
+      "updated": "2026-09-23"
     },
     {
       "technique": "reentrancy",
       "category": "blockchain",
       "difficulty": "hard",
       "concept": "An external call hands control away; state must be settled before that happens.",
-      "signals": ["external call before a state update", "no reentrancy guard", "balance written after transfer"],
-      "first_checks": ["order every state write against every external call", "check for a guard modifier"],
+      "signals": [
+        "external call before a state update",
+        "no reentrancy guard",
+        "balance written after transfer"
+      ],
+      "first_checks": [
+        "order every state write against every external call",
+        "check for a guard modifier"
+      ],
       "scenarios": [
         "A withdrawal sends funds before zeroing the recorded balance.",
         "A callback hook lets a recipient re-enter during transfer.",
         "Cross-function reentrancy touches shared state via a second entry point.",
         "A read-only view returns stale state during an in-flight call."
-      ]
+      ],
+      "version": 1,
+      "updated": "2026-09-23"
     },
     {
       "technique": "access-control",
       "category": "blockchain",
       "difficulty": "medium",
       "concept": "A privileged function without an ownership check is a public function.",
-      "signals": ["sensitive function with no modifier", "initialiser callable more than once"],
-      "first_checks": ["list externally callable functions", "check each for an ownership or role modifier"],
+      "signals": [
+        "sensitive function with no modifier",
+        "initialiser callable more than once"
+      ],
+      "first_checks": [
+        "list externally callable functions",
+        "check each for an ownership or role modifier"
+      ],
       "scenarios": [
         "A minting function is missing its owner-only modifier.",
         "An initialiser can be called again by anyone after deployment.",
         "Ownership transfer lacks a two-step confirmation.",
         "A role check reads a variable the caller can influence."
-      ]
+      ],
+      "version": 1,
+      "updated": "2026-09-23"
     },
     {
       "technique": "integer-accounting",
       "category": "blockchain",
       "difficulty": "hard",
       "concept": "Rounding and unchecked arithmetic in accounting logic quietly redistribute value.",
-      "signals": ["unchecked arithmetic blocks", "division before multiplication", "share calculations"],
-      "first_checks": ["trace the arithmetic on balances", "test the boundaries and the rounding direction"],
+      "signals": [
+        "unchecked arithmetic blocks",
+        "division before multiplication",
+        "share calculations"
+      ],
+      "first_checks": [
+        "trace the arithmetic on balances",
+        "test the boundaries and the rounding direction"
+      ],
       "scenarios": [
         "Share calculation rounds in the depositor's favour every time.",
         "An unchecked block skips overflow protection on a subtraction.",
         "Fee maths divides before multiplying, truncating value.",
         "A first-depositor edge case sets an exploitable exchange rate."
-      ]
+      ],
+      "version": 1,
+      "updated": "2026-09-23"
     },
     {
       "technique": "android-exported-component",
       "category": "mobile",
       "difficulty": "medium",
       "concept": "Anything exported in the manifest is reachable by any other app on the device.",
-      "signals": ["exported flag set true", "intent filters on sensitive components", "no permission attribute"],
-      "first_checks": ["read the manifest and list exported components", "check which of them touch private data"],
+      "signals": [
+        "exported flag set true",
+        "intent filters on sensitive components",
+        "no permission attribute"
+      ],
+      "first_checks": [
+        "read the manifest and list exported components",
+        "check which of them touch private data"
+      ],
       "scenarios": [
         "An activity handling private data is exported without a permission.",
         "A content provider grants read access far beyond what it needs.",
         "A broadcast receiver acts on unauthenticated intents.",
         "A deep link accepts parameters that bypass the login flow."
-      ]
+      ],
+      "version": 1,
+      "updated": "2026-09-23"
     },
     {
       "technique": "insecure-storage",
       "category": "mobile",
       "difficulty": "medium",
       "concept": "On-device storage is readable given device access; encoding is not protection.",
-      "signals": ["credentials in preferences files", "unencrypted local database", "tokens in logs"],
-      "first_checks": ["inventory what the app writes to disk", "check whether anything sensitive is stored in the clear"],
+      "signals": [
+        "credentials in preferences files",
+        "unencrypted local database",
+        "tokens in logs"
+      ],
+      "first_checks": [
+        "inventory what the app writes to disk",
+        "check whether anything sensitive is stored in the clear"
+      ],
       "scenarios": [
         "Session tokens are saved in shared preferences as plain text.",
         "A local database holds account details unencrypted.",
         "Sensitive values are written to the system log.",
         "A cache directory retains downloaded private documents."
-      ]
+      ],
+      "version": 1,
+      "updated": "2026-09-23"
     },
     {
       "technique": "hardcoded-secret",
       "category": "mobile",
       "difficulty": "easy",
       "concept": "A secret shipped to the client is a secret the client owns.",
-      "signals": ["API keys in resources", "credentials in decompiled source", "keys in native libraries"],
-      "first_checks": ["search extracted resources for key-shaped strings", "check native libraries as well as bytecode"],
+      "signals": [
+        "API keys in resources",
+        "credentials in decompiled source",
+        "keys in native libraries"
+      ],
+      "first_checks": [
+        "search extracted resources for key-shaped strings",
+        "check native libraries as well as bytecode"
+      ],
       "scenarios": [
         "An API key sits in a string resource file.",
         "Credentials appear in decompiled application code.",
         "A key is split across several constants and reassembled.",
         "A native library embeds the secret to make it less obvious."
-      ]
+      ],
+      "version": 1,
+      "updated": "2026-09-23"
     },
     {
       "technique": "certificate-pinning-bypass",
       "category": "mobile",
       "difficulty": "hard",
       "concept": "Pinning is a client-side check, and client-side checks run on hardware the user controls.",
-      "signals": ["pinned certificates in the app", "traffic invisible to a proxy"],
-      "first_checks": ["identify where pinning is implemented", "check whether a debug path disables it"],
+      "signals": [
+        "pinned certificates in the app",
+        "traffic invisible to a proxy"
+      ],
+      "first_checks": [
+        "identify where pinning is implemented",
+        "check whether a debug path disables it"
+      ],
       "scenarios": [
         "The app pins a certificate in its network configuration.",
         "Pinning is implemented in a custom trust manager.",
         "A debug build flag disables validation entirely.",
         "Only some endpoints are pinned, leaving others observable."
-      ]
+      ],
+      "version": 1,
+      "updated": "2026-09-23"
+    },
+    {
+      "technique": "tcache-poisoning",
+      "category": "pwn",
+      "difficulty": "insane",
+      "concept": "glibc tcache stores next-chunk pointers in free slots; corrupting one lets you allocate nearly anywhere.",
+      "signals": [
+        "glibc 2.26+ with tcache enabled",
+        "UAF or overflow into a freed chunk's fd pointer",
+        "repeated same-size allocate/free cycles"
+      ],
+      "first_checks": [
+        "identify glibc version and tcache bins in use",
+        "map which free slots hold attacker-controlled data"
+      ],
+      "scenarios": [
+        "Note free leaves a pointer that can be overwritten before the next malloc of the same size.",
+        "Heap overflow into an adjacent freed tcache chunk corrupts its next pointer.",
+        "Double-free of a tcache chunk puts the same address on the list twice.",
+        "House-of-spirit style fake chunk is linked into tcache via a poisoned fd."
+      ],
+      "version": 1,
+      "updated": "2026-09-23"
+    },
+    {
+      "technique": "fastbin-dup",
+      "category": "pwn",
+      "difficulty": "insane",
+      "concept": "Fastbin LIFO lists trust the size field on unlink; a double-free or size forge can return the same chunk twice.",
+      "signals": [
+        "fastbin-sized allocations (roughly under 0x80 on 64-bit)",
+        "double free without intervening allocation",
+        "ability to forge a chunk size field"
+      ],
+      "first_checks": [
+        "confirm allocation sizes land in fastbins",
+        "check whether free is called twice on the same pointer"
+      ],
+      "scenarios": [
+        "Challenge frees the same note twice before reallocating.",
+        "Overflow changes a free chunk's size so it is treated as a different fastbin.",
+        "Fake chunk on the stack is linked via a corrupted fastbin fd.",
+        "After dup, one allocation is used to overwrite another object's metadata."
+      ],
+      "version": 1,
+      "updated": "2026-09-23"
+    },
+    {
+      "technique": "unsorted-bin-leak",
+      "category": "pwn",
+      "difficulty": "hard",
+      "concept": "Chunks in the unsorted bin contain libc pointers (bk/fd); reading them leaks the arena and thus libc base.",
+      "signals": [
+        "large free that does not fit tcache/fastbin",
+        "UAF or print of a freed buffer",
+        "need for a libc address before ROP"
+      ],
+      "first_checks": [
+        "force a chunk into the unsorted bin",
+        "see whether freed content is still readable"
+      ],
+      "scenarios": [
+        "Free a large note then print it; residual pointers show libc.",
+        "Heap consolidation puts a main_arena pointer into a readable slot.",
+        "Partial overwrite of bk is combined with a later allocation to control where the leak points.",
+        "Challenge echoes heap contents after free without clearing the buffer."
+      ],
+      "version": 1,
+      "updated": "2026-09-23"
+    },
+    {
+      "technique": "ret2csu",
+      "category": "pwn",
+      "difficulty": "hard",
+      "concept": "__libc_csu_init gadgets let you set multiple registers from the stack when useful gadgets are scarce.",
+      "signals": [
+        "statically limited gadget set",
+        "need to call a function with controlled rdi/rsi/rdx",
+        "binary linked with standard crt begin/end"
+      ],
+      "first_checks": [
+        "locate __libc_csu_init / __libc_csu_fini gadgets",
+        "map which registers each gadget restores"
+      ],
+      "scenarios": [
+        "ROP needs three controlled arguments but only pop rdi gadgets exist.",
+        "ret2csu is used to call write with a known buffer for an info leak.",
+        "Combined with a partial overwrite to pivot into a longer chain.",
+        "Binary is partially RELRO so GOT writes follow a csu-controlled call."
+      ],
+      "version": 1,
+      "updated": "2026-09-23"
+    },
+    {
+      "technique": "srop",
+      "category": "pwn",
+      "difficulty": "insane",
+      "concept": "sigreturn restores an entire register frame from the stack; a forged frame becomes arbitrary control with one syscall gadget.",
+      "signals": [
+        "sigreturn / rt_sigreturn available",
+        "control of a large contiguous stack region",
+        "need for many register values at once"
+      ],
+      "first_checks": [
+        "confirm a syscall; ret gadget and knowledge of frame layout",
+        "measure how much stack you can fill"
+      ],
+      "scenarios": [
+        "Only a syscall gadget exists; the rest of control is a forged ucontext.",
+        "SROP is used to pivot to a second-stage payload after an initial overflow.",
+        "Challenge disables common ROP gadgets but leaves signal handling intact.",
+        "Frame sets rax/rdi/rsi/rdx for an arbitrary execve."
+      ],
+      "version": 1,
+      "updated": "2026-09-23"
+    },
+    {
+      "technique": "seccomp-escape",
+      "category": "pwn",
+      "difficulty": "insane",
+      "concept": "A seccomp filter limits syscalls; escape means finding allowed primitives (openat, mmap, or argument tricks) that still achieve the goal.",
+      "signals": [
+        "seccomp / prctl mentioned or filter installed early",
+        "execve blocked but open/read/write still allowed",
+        "challenge says blacklisted syscalls"
+      ],
+      "first_checks": [
+        "dump the BPF filter or log which syscalls fail",
+        "list still-allowed file and memory operations"
+      ],
+      "scenarios": [
+        "execve is blocked; open+read of flag still works.",
+        "Filter checks only the syscall number, not arguments, so clever paths remain.",
+        "ORW (open-read-write) shellcode is used instead of /bin/sh.",
+        "Filter is installed after some setup, leaving a window for earlier gadgets."
+      ],
+      "version": 1,
+      "updated": "2026-09-23"
+    },
+    {
+      "technique": "info-leak",
+      "category": "pwn",
+      "difficulty": "medium",
+      "concept": "Before defeating ASLR or canaries you usually need to read something that was never meant to be printed.",
+      "signals": [
+        "format string without a format argument",
+        "uninitialized stack/heap buffer returned to the user",
+        "partial overwrite possible only after knowing high bits"
+      ],
+      "first_checks": [
+        "list every output path that might echo raw memory",
+        "check for %p / leftover buffer contents"
+      ],
+      "scenarios": [
+        "printf(user) leaks stack addresses including libc.",
+        "Heap note is printed after free, exposing allocator pointers.",
+        "Stack canary is readable via an off-by-one before the overflow is used.",
+        "Binary prints a function pointer during an error path."
+      ],
+      "version": 1,
+      "updated": "2026-09-23"
+    },
+    {
+      "technique": "rsa-wiener",
+      "category": "crypto",
+      "difficulty": "hard",
+      "concept": "When the private exponent d is small, continued fractions recover d from (e, n) alone.",
+      "signals": [
+        "unusually large public exponent e",
+        "challenge hints that d is small",
+        "no plaintext samples, only n and e"
+      ],
+      "first_checks": [
+        "compare bit length of e against n",
+        "try Wiener bounds before factoring"
+      ],
+      "scenarios": [
+        "Keygen accidentally chose a tiny d for speed.",
+        "CTF provides n and a huge e with a note about short private keys.",
+        "Boneh-Durfee applies when d is somewhat larger but still small relative to n.",
+        "Same n is reused with a weak d across challenges."
+      ],
+      "version": 1,
+      "updated": "2026-09-23"
+    },
+    {
+      "technique": "rsa-franklin-reiter",
+      "category": "crypto",
+      "difficulty": "hard",
+      "concept": "Related plaintexts encrypted under the same RSA modulus with small e leak each other via polynomial GCDs.",
+      "signals": [
+        "two ciphertexts, one modulus, small e",
+        "plaintexts related by a known linear function",
+        "stereotyped message prefixes"
+      ],
+      "first_checks": [
+        "confirm same n and small e",
+        "model the known relationship between messages"
+      ],
+      "scenarios": [
+        "Two nearly identical JSON blobs differ only in a counter.",
+        "Messages are sequential IDs encrypted with e=3.",
+        "Padding is deterministic so related plaintexts stay algebraic.",
+        "Challenge encrypts m and m+1 under the same key."
+      ],
+      "version": 1,
+      "updated": "2026-09-23"
+    },
+    {
+      "technique": "rsa-broadcast",
+      "category": "crypto",
+      "difficulty": "hard",
+      "concept": "The same small-exponent message sent under many moduli can be recovered with CRT and integer roots (Hastad).",
+      "signals": [
+        "identical plaintext, e=3, at least three moduli",
+        "broadcast encryption setting"
+      ],
+      "first_checks": [
+        "count independent (n_i, c_i) pairs with the same e",
+        "apply CRT then take the e-th root"
+      ],
+      "scenarios": [
+        "Message is sent to three recipients with e=3 and no padding.",
+        "CTF gives a list of public keys and matching ciphertexts.",
+        "Broadcast of a short flag under textbook RSA.",
+        "e equals the number of recipients provided."
+      ],
+      "version": 1,
+      "updated": "2026-09-23"
+    },
+    {
+      "technique": "ecdsa-nonce-reuse",
+      "category": "crypto",
+      "difficulty": "hard",
+      "concept": "Reusing the ECDSA nonce k across two signatures leaks the private key via simple linear algebra.",
+      "signals": [
+        "two signatures share the same r value",
+        "non-deterministic k generation suspected",
+        "same message signed twice with identical r"
+      ],
+      "first_checks": [
+        "compare r components of signatures",
+        "recover k then d from the ECDSA equation"
+      ],
+      "scenarios": [
+        "Broken RNG reuses k for consecutive transactions.",
+        "Two JWT-like signatures share r under the same public key.",
+        "Challenge provides a batch of signatures with colliding r.",
+        "Deterministic signing was misimplemented and collapsed to a constant."
+      ],
+      "version": 1,
+      "updated": "2026-09-23"
+    },
+    {
+      "technique": "lattice-reduction",
+      "category": "crypto",
+      "difficulty": "insane",
+      "concept": "Hidden number / partial key problems become shortest-vector instances; LLL/BKZ recovers the secret when enough noisy samples exist.",
+      "signals": [
+        "partial bits of nonces or keys known",
+        "Coppersmith-style stereotyped RSA",
+        "mentions of lattices, LLL, or BKZ"
+      ],
+      "first_checks": [
+        "quantify how many known bits you have",
+        "set up the lattice dimension carefully"
+      ],
+      "scenarios": [
+        "ECDSA nonces leak high bits through a side channel.",
+        "RSA with stereotyped plaintext and small unknown middle.",
+        "Boneh-Durfee style attack on medium-size d.",
+        "Hidden number problem from biased nonces."
+      ],
+      "version": 1,
+      "updated": "2026-09-23"
+    },
+    {
+      "technique": "ctr-nonce-reuse",
+      "category": "crypto",
+      "difficulty": "medium",
+      "concept": "Reusing a CTR/GCM nonce under the same key turns keystream into a known XOR between plaintexts.",
+      "signals": [
+        "two ciphertexts with identical IV/nonce",
+        "AES-CTR or AES-GCM mentioned",
+        "crib dragging succeeds between messages"
+      ],
+      "first_checks": [
+        "compare nonces across captured packets or files",
+        "XOR ciphertexts and look for English structure"
+      ],
+      "scenarios": [
+        "File encryption library resets the counter every file.",
+        "Two messages in a protocol share a static IV.",
+        "GCM fails authentication but CTR keystream is still reusable.",
+        "Challenge stores nonce next to ciphertext and reuses it."
+      ],
+      "version": 1,
+      "updated": "2026-09-23"
+    },
+    {
+      "technique": "http-request-smuggling",
+      "category": "web",
+      "difficulty": "insane",
+      "concept": "Front-end and back-end disagree on Content-Length vs Transfer-Encoding, so one HTTP message is parsed as two.",
+      "signals": [
+        "proxy or CDN in front of the app",
+        "both CL and TE headers accepted",
+        "desync symptoms: poisoned queues, odd 404s"
+      ],
+      "first_checks": [
+        "probe CL.TE and TE.CL disagreements",
+        "observe timing and response pairing"
+      ],
+      "scenarios": [
+        "CDN honours Content-Length while origin honours chunked encoding.",
+        "Smuggled request steals the next user's session response.",
+        "Admin-only endpoint is reached by prefixing a smuggled verb.",
+        "HTTP/1.1 keep-alive queue is poisoned for a later victim."
+      ],
+      "version": 1,
+      "updated": "2026-09-23"
+    },
+    {
+      "technique": "graphql-introspection",
+      "category": "web",
+      "difficulty": "medium",
+      "concept": "If introspection is enabled, the schema documents every query, mutation, and sensitive field for you.",
+      "signals": [
+        "GraphQL endpoint at /graphql or similar",
+        "__schema or __type queries succeed",
+        "single endpoint for all API traffic"
+      ],
+      "first_checks": [
+        "send a minimal introspection query",
+        "map mutations that change state or reveal secrets"
+      ],
+      "scenarios": [
+        "Public GraphQL playground still allows full introspection in production.",
+        "Nested query walks from user to admin-only fields.",
+        "Batch queries bypass naive rate limits.",
+        "Mutation names reveal hidden admin operations."
+      ],
+      "version": 1,
+      "updated": "2026-09-23"
+    },
+    {
+      "technique": "nosql-injection",
+      "category": "web",
+      "difficulty": "medium",
+      "concept": "Mongo-style queries treat operator objects as code; injecting $gt or $ne changes the filter logic.",
+      "signals": [
+        "JSON body reaches a NoSQL query",
+        "login bypass with {\"$ne\": null}",
+        "error messages mention Mongo / BSON"
+      ],
+      "first_checks": [
+        "replace string parameters with operator objects",
+        "compare true/false responses for $gt/$lt probes"
+      ],
+      "scenarios": [
+        "Login accepts password: {\"$ne\": \"\"} and returns a session.",
+        "Search endpoint interpolates JSON into a find filter.",
+        "Regex operator $regex is used to extract field values bit by bit.",
+        "Array injection expands an $in list the developer did not expect."
+      ],
+      "version": 1,
+      "updated": "2026-09-23"
+    },
+    {
+      "technique": "oauth-flow-abuse",
+      "category": "web",
+      "difficulty": "hard",
+      "concept": "OAuth redirects and state parameters are trust boundaries; weak validation turns the provider into an open redirect or account linker.",
+      "signals": [
+        "OAuth/OIDC login buttons",
+        "redirect_uri not strictly matched",
+        "state parameter missing or predictable"
+      ],
+      "first_checks": [
+        "enumerate allowed redirect_uri patterns",
+        "test whether state is verified on callback"
+      ],
+      "scenarios": [
+        "redirect_uri allows subdomain wildcards that you control.",
+        "Code is leaked via Referer to a third-party resource on the redirect page.",
+        "Account linking binds an attacker-controlled IdP identity to a victim session.",
+        "PKCE is absent and the auth code is usable from another client."
+      ],
+      "version": 1,
+      "updated": "2026-09-23"
+    },
+    {
+      "technique": "cors-misconfiguration",
+      "category": "web",
+      "difficulty": "medium",
+      "concept": "Reflecting Origin with Access-Control-Allow-Credentials true lets a malicious site read authenticated responses.",
+      "signals": [
+        "ACA-Origin echoes the request Origin",
+        "Access-Control-Allow-Credentials: true",
+        "sensitive JSON API without CSRF tokens"
+      ],
+      "first_checks": [
+        "send a cross-origin XHR with credentials and inspect ACAO",
+        "try null origin and arbitrary subdomains"
+      ],
+      "scenarios": [
+        "API reflects any Origin and allows credentials.",
+        "null origin is trusted because of a sandboxed iframe pattern.",
+        "Subdomain takeover plus loose CORS reads session-bound data.",
+        "Preflight is skipped for simple requests that still carry cookies."
+      ],
+      "version": 1,
+      "updated": "2026-09-23"
+    },
+    {
+      "technique": "go-binary-analysis",
+      "category": "rev",
+      "difficulty": "hard",
+      "concept": "Go binaries carry rich metadata (pclntab, itabs) but look alien in C-oriented tools; recover types and names from runtime structures.",
+      "signals": [
+        "Go build ID or runtime.main",
+        "large .gopclntab section",
+        "paths like /usr/local/go in strings"
+      ],
+      "first_checks": [
+        "confirm Go via strings or buildinfo",
+        "parse pclntab for function names"
+      ],
+      "scenarios": [
+        "Stripped Go binary still has function names in pclntab.",
+        "Interface methods are recovered from itab entries.",
+        "Challenge encrypts a flag inside a Go init function.",
+        "Custom encoding is implemented as a Go method on a named type."
+      ],
+      "version": 1,
+      "updated": "2026-09-23"
+    },
+    {
+      "technique": "rust-binary-analysis",
+      "category": "rev",
+      "difficulty": "hard",
+      "concept": "Rust monomorphization and panic paths produce many similar functions; focus on string literals, trait objects, and rustc metadata.",
+      "signals": [
+        "rust_begin_unwind / core::panicking",
+        "mangled symbols with Rust hash suffixes",
+        "cargo or rustc paths in debug info"
+      ],
+      "first_checks": [
+        "demangle symbols if present",
+        "locate panic messages that name the failing assertion"
+      ],
+      "scenarios": [
+        "Flag check is a panic message on mismatch.",
+        "String comparison is inlined across monomorphized copies.",
+        "Trait object vtable points at the real comparison routine.",
+        "Strip leaves only panic and allocator symbols as anchors."
+      ],
+      "version": 1,
+      "updated": "2026-09-23"
+    },
+    {
+      "technique": "dotnet-deobfuscation",
+      "category": "rev",
+      "difficulty": "medium",
+      "concept": ".NET IL is high-level; obfuscators rename and pack, but decompilers plus deobfuscators recover readable C# quickly.",
+      "signals": [
+        "PE with CLR header / mscoree",
+        "ConfuserEx, SmartAssembly, or similar markers",
+        "strings stored encrypted in resources"
+      ],
+      "first_checks": [
+        "open in dnSpy or ILSpy",
+        "identify the obfuscator and apply a matching deobfuscator"
+      ],
+      "scenarios": [
+        "ConfuserEx packs methods; deobfuscator restores IL.",
+        "Flag is decrypted at runtime from an embedded resource.",
+        "Control-flow obfuscation is undone by simplifying branches.",
+        "Dynamic method generation hides the real checker until invoke."
+      ],
+      "version": 1,
+      "updated": "2026-09-23"
+    },
+    {
+      "technique": "api-hashing",
+      "category": "rev",
+      "difficulty": "hard",
+      "concept": "Malware resolves APIs by hashing names at runtime so the import table stays empty and static tools see nothing useful.",
+      "signals": [
+        "empty or tiny import table",
+        "loops over LoadLibrary/GetProcAddress with a hash compare",
+        "known hash constants (ror13, djb2) in code"
+      ],
+      "first_checks": [
+        "list imports; if nearly empty, search for hash routines",
+        "identify the hash algorithm and rebuild the API map"
+      ],
+      "scenarios": [
+        "Shellcode hashes module and function names before calling them.",
+        "Packed sample resolves APIs only after the first stage decrypts.",
+        "Custom ROR-13 hash table maps to kernel32 exports.",
+        "Challenge asks which API is invoked when a given hash is matched."
+      ],
+      "version": 1,
+      "updated": "2026-09-23"
+    },
+    {
+      "technique": "arbitrary-write",
+      "category": "pwn",
+      "difficulty": "hard",
+      "concept": "A controlled write of an arbitrary value to an arbitrary address turns almost any remaining protection into a stepping stone.",
+      "signals": [
+        "write-what-where primitive",
+        "function pointer or GOT entry under attacker control",
+        "relative write that can be aimed with a leak"
+      ],
+      "first_checks": [
+        "identify what address and value the bug lets you set",
+        "list high-value targets: GOT, hooks, exit handlers"
+      ],
+      "scenarios": [
+        "Off-by-one null sets a size field so a later copy becomes a write-what-where.",
+        "Format-string %n writes a chosen value to a chosen stack slot.",
+        "Heap metadata corruption yields an arbitrary free that becomes an arbitrary write.",
+        "Challenge explicitly offers a write gadget once a pointer is known."
+      ],
+      "version": 1,
+      "updated": "2026-09-23"
+    },
+    {
+      "technique": "archive-analysis",
+      "category": "misc",
+      "difficulty": "easy",
+      "concept": "Flags hide inside nested or mislabeled archives; the work is inventory, correct extraction, and not stopping at the first layer.",
+      "signals": [
+        "zip/tar/7z/rar with unexpected members",
+        "polyglot or appended archive data",
+        "password-protected members"
+      ],
+      "first_checks": [
+        "file and binwalk the container",
+        "list all members before extracting anything"
+      ],
+      "scenarios": [
+        "ZIP contains another ZIP named like an image.",
+        "Trailing data after a PNG is a second archive.",
+        "Password is embedded in a comment or adjacent text file.",
+        "Broken local headers need manual repair before unzip works."
+      ],
+      "version": 1,
+      "updated": "2026-09-23"
+    },
+    {
+      "technique": "cache-poisoning",
+      "category": "web",
+      "difficulty": "hard",
+      "concept": "If a shared cache keys on the wrong inputs, one malicious request can make everyone else receive attacker-controlled content.",
+      "signals": [
+        "CDN or reverse-proxy cache in front of the app",
+        "unkeyed header or cookie reflected into a cached response",
+        "X-Cache hits after a crafted request"
+      ],
+      "first_checks": [
+        "identify which request components are in the cache key",
+        "test whether a reflected header is stored and replayed"
+      ],
+      "scenarios": [
+        "X-Forwarded-Host is reflected into links and is not part of the cache key.",
+        "Path normalization differs between cache and origin so /admin%2f is cached as public.",
+        "Fat GET with a body is cached and later served to other clients.",
+        "Unkeyed cookie flips a response into an error page cached for everyone."
+      ],
+      "version": 1,
+      "updated": "2026-09-23"
+    },
+    {
+      "technique": "disk-image-analysis",
+      "category": "forensics",
+      "difficulty": "hard",
+      "concept": "A disk image is a filesystem plus slack, deleted files, and partitions; triage means mounting or carving with the right offsets.",
+      "signals": [
+        "raw .img / .dd / E01 image",
+        "multiple partitions or unknown filesystem",
+        "deleted files or unallocated space matter"
+      ],
+      "first_checks": [
+        "mmls / fdisk to map partitions",
+        "identify filesystem and mount read-only or use foremost/photorec"
+      ],
+      "scenarios": [
+        "Flag sits in an unallocated cluster after a secure-looking delete.",
+        "Second partition is hidden past the reported disk size.",
+        "NTFS ADS or alternate stream holds the secret.",
+        "Challenge provides only a partial image and needs carving by signature."
+      ],
+      "version": 1,
+      "updated": "2026-09-23"
+    },
+    {
+      "technique": "file-signature",
+      "category": "misc",
+      "difficulty": "easy",
+      "concept": "Magic bytes define the real type; extensions and claimed MIME types are optional fiction.",
+      "signals": [
+        "file extension disagrees with content",
+        "unknown or stripped header",
+        "polyglot file that is valid as two formats"
+      ],
+      "first_checks": [
+        "run file / xxd on the first bytes",
+        "compare claimed type against magic"
+      ],
+      "scenarios": [
+        "PNG renamed to .txt still has an IHDR chunk.",
+        "JPEG with appended ZIP needs the correct offset to extract.",
+        "Broken magic is one byte off and must be repaired.",
+        "Polyglot is both a valid PDF and a valid ZIP."
+      ],
+      "version": 1,
+      "updated": "2026-09-23"
+    },
+    {
+      "technique": "file-structure-abuse",
+      "category": "pwn",
+      "difficulty": "insane",
+      "concept": "glibc FILE structures (vtable, wide data, lock) are ripe targets once you can allocate or free with partial control.",
+      "signals": [
+        "FILE* or fopen-family usage",
+        "heap control near a FILE object",
+        "mentions of FSOP / vtable / _IO_flush_lockp"
+      ],
+      "first_checks": [
+        "locate FILE objects and their vtables on this glibc",
+        "check whether a controlled chunk can overlap a FILE"
+      ],
+      "scenarios": [
+        "House-of-orange style unsorted-bin attack ends in a forged FILE.",
+        "Partial overwrite of a FILE vtable pointer redirects overflow.",
+        "Wide-data wide_vtable is used on newer glibc where vtable checks exist.",
+        "Challenge leaks a FILE pointer and asks for arbitrary code via FSOP."
+      ],
+      "version": 1,
+      "updated": "2026-09-23"
+    },
+    {
+      "technique": "file-upload-chain",
+      "category": "web",
+      "difficulty": "hard",
+      "concept": "Upload filters fail in sequence: extension, content-type, magic, path — each weak link is a step toward execution or overwrite.",
+      "signals": [
+        "file upload form or API",
+        "server stores user files under a web root",
+        "partial filters (extension only, or content-type only)"
+      ],
+      "first_checks": [
+        "map every check applied to the upload",
+        "test double extensions, null bytes, and path traversal in the name"
+      ],
+      "scenarios": [
+        "Apache executes .php.png when the handler is misconfigured.",
+        "Content-Type is checked but the body is a PHP webshell.",
+        "Upload path allows ../ to overwrite a config file.",
+        "Image resize pipeline shells out and is vulnerable to ImageTragick-style args."
+      ],
+      "version": 1,
+      "updated": "2026-09-23"
+    },
+    {
+      "technique": "keygen",
+      "category": "rev",
+      "difficulty": "medium",
+      "concept": "The binary already contains the algorithm that accepts a serial; recovering that algorithm is the keygen.",
+      "signals": [
+        "serial / license / registration prompt",
+        "compare against a derived value rather than a fixed string",
+        "challenge asks for a valid key for a given name"
+      ],
+      "first_checks": [
+        "find the validation function and list the transforms",
+        "determine whether the check is reversible or must be searched"
+      ],
+      "scenarios": [
+        "Name is hashed and compared to the entered serial.",
+        "Serial must satisfy a checksum over several fields.",
+        "Part of the key is time-based and part is static.",
+        "Validation is split across several functions to slow analysis."
+      ],
+      "version": 1,
+      "updated": "2026-09-23"
+    },
+    {
+      "technique": "opaque-predicates",
+      "category": "rev",
+      "difficulty": "hard",
+      "concept": "Branches that always take one path (opaque predicates) bloat the CFG so real logic is hard to see.",
+      "signals": [
+        "predicates involving x*(x+1) % 2 or similar always-true math",
+        "control-flow graph full of dead blocks",
+        "obfuscator known to insert opaques"
+      ],
+      "first_checks": [
+        "identify predicates that never change outcome",
+        "patch or script them out and re-graph"
+      ],
+      "scenarios": [
+        "Every basic block is guarded by a polynomial that is always even.",
+        "MBA (mixed boolean arithmetic) hides a constant comparison.",
+        "Dead code after opaque branches contains fake flag checks.",
+        "Challenge requires counting only the live path to the real compare."
+      ],
+      "version": 1,
+      "updated": "2026-09-23"
+    },
+    {
+      "technique": "osint-metadata",
+      "category": "osint",
+      "difficulty": "easy",
+      "concept": "Documents and images often still carry author, GPS, software, and revision history the publisher forgot to strip.",
+      "signals": [
+        "office document or image provided as the clue",
+        "challenge hints at who / where / when",
+        "exiftool or similar is the intended first step"
+      ],
+      "first_checks": [
+        "exiftool / strings the file",
+        "check PDF info, Office core properties, and GPS tags"
+      ],
+      "scenarios": [
+        "Photo still has GPS coordinates in EXIF.",
+        "DOCX creator name matches a social profile.",
+        "PDF Producer string reveals the exact tool and version used.",
+        "Revision history inside the document names a co-author."
+      ],
+      "version": 1,
+      "updated": "2026-09-23"
+    },
+    {
+      "technique": "prng-prediction",
+      "category": "crypto",
+      "difficulty": "hard",
+      "concept": "A predictable PRNG (glibc rand, MT19937 with enough outputs, time-seeded generators) lets you reproduce future tokens or recover the seed.",
+      "signals": [
+        "tokens or nonces generated by a standard library PRNG",
+        "enough consecutive outputs observed",
+        "seed derived from time or a short secret"
+      ],
+      "first_checks": [
+        "identify the generator (LCG, MT, etc.)",
+        "count how many outputs you can observe"
+      ],
+      "scenarios": [
+        "Session tokens come from rand() seeded with time(NULL).",
+        "Twenty-four MT19937 outputs are enough to clone the state.",
+        "OTP codes are predictable once the seed is brute-forced.",
+        "Game RNG can be rewound to force a favorable roll."
+      ],
+      "version": 1,
+      "updated": "2026-09-23"
+    },
+    {
+      "technique": "solidity-access-control",
+      "category": "blockchain",
+      "difficulty": "medium",
+      "concept": "Missing or incorrect modifiers (onlyOwner, roles) let anyone call privileged state-changing functions.",
+      "signals": [
+        "public / external function without access modifier",
+        "tx.origin used for authorization",
+        "initialize() callable more than once"
+      ],
+      "first_checks": [
+        "list state-changing functions and their modifiers",
+        "check proxy initialize and ownership transfer paths"
+      ],
+      "scenarios": [
+        "withdraw() is public with no onlyOwner.",
+        "Initializer on a proxy can be called by the first attacker.",
+        "tx.origin auth is bypassed through an intermediate contract.",
+        "Role admin can grant itself a higher role through a misordered check."
+      ],
+      "version": 1,
+      "updated": "2026-09-23"
+    },
+    {
+      "technique": "symbolic-execution",
+      "category": "rev",
+      "difficulty": "insane",
+      "concept": "When brute force is too large, symbolic execution explores path constraints until a satisfying input (the flag) drops out.",
+      "signals": [
+        "heavy branching on input bytes",
+        "challenge size beyond reasonable brute force",
+        "angr / KLEE / Triton mentioned or appropriate"
+      ],
+      "first_checks": [
+        "measure input length and constraint style",
+        "try a symbolic tool on the check function alone"
+      ],
+      "scenarios": [
+        "Each flag byte is constrained by a separate arithmetic check.",
+        "Nested conditions form a path that only one string satisfies.",
+        "Anti-debug paths must be avoided with carefully chosen symbolic state.",
+        "Challenge is a VM whose handlers are easier to model symbolically than to reverse fully."
+      ],
+      "version": 1,
+      "updated": "2026-09-23"
+    },
+    {
+      "technique": "timing-side-channel",
+      "category": "crypto",
+      "difficulty": "hard",
+      "concept": "Secret-dependent branches or early exits leak through response time; statistical samples recover the secret byte by byte.",
+      "signals": [
+        "compare that returns on first mismatch",
+        "measurable timing difference per correct prefix byte",
+        "remote oracle with stable latency"
+      ],
+      "first_checks": [
+        "time many requests while varying one byte",
+        "confirm the implementation is not constant-time"
+      ],
+      "scenarios": [
+        "Password check uses strcmp and exits early.",
+        "HMAC compare is not constant-time on the server.",
+        "Padding oracle expressed purely as a timing difference.",
+        "Challenge documents a slow equality check and invites measurement."
+      ],
+      "version": 1,
+      "updated": "2026-09-23"
     }
-  ]
+  ],
+  "_meta": {
+    "schema_version": "1.1",
+    "updated": "2026-09-23",
+    "technique_count": 97,
+    "notes": "Freshness fields enable knowledge_quality freshness scoring (item 68)."
+  }
 }

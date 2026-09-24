@@ -1,0 +1,26 @@
+{
+  "attempts": [
+    {
+      "technique": "jwt-none-bypass",
+      "success": true,
+      "hint_level": 1,
+      "hints_requested": 0,
+      "scenario": "cookie-admin",
+      "difficulty": "medium",
+      "verified": true,
+      "steps_before_hint": 0,
+      "timestamp": "2026-09-24T04:02:07.819361+00:00"
+    },
+    {
+      "technique": "jwt-none-bypass",
+      "success": true,
+      "hint_level": 0,
+      "hints_requested": 0,
+      "scenario": "header-none",
+      "difficulty": "medium",
+      "verified": true,
+      "steps_before_hint": 0,
+      "timestamp": "2026-09-24T04:02:08.644472+00:00"
+    }
+  ]
+}

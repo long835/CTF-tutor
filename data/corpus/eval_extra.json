@@ -2257,5 +2257,1301 @@
       "certificate-pinning-bypass"
     ],
     "difficulty": "hard"
+  },
+  {
+    "id": "scenario-tcache-poisoning-1",
+    "description": "Note free leaves a pointer that can be overwritten before the next malloc of the same size. glibc tcache stores next-chunk pointers in free slots; corrupting one lets you allocate nearly anywhere.",
+    "expected_category": "pwn",
+    "expected_techniques": [
+      "tcache-poisoning"
+    ],
+    "difficulty": "insane"
+  },
+  {
+    "id": "scenario-tcache-poisoning-2",
+    "description": "Heap overflow into an adjacent freed tcache chunk corrupts its next pointer. glibc tcache stores next-chunk pointers in free slots; corrupting one lets you allocate nearly anywhere.",
+    "expected_category": "pwn",
+    "expected_techniques": [
+      "tcache-poisoning"
+    ],
+    "difficulty": "insane"
+  },
+  {
+    "id": "scenario-tcache-poisoning-3",
+    "description": "Double-free of a tcache chunk puts the same address on the list twice. glibc tcache stores next-chunk pointers in free slots; corrupting one lets you allocate nearly anywhere.",
+    "expected_category": "pwn",
+    "expected_techniques": [
+      "tcache-poisoning"
+    ],
+    "difficulty": "insane"
+  },
+  {
+    "id": "scenario-tcache-poisoning-4",
+    "description": "House-of-spirit style fake chunk is linked into tcache via a poisoned fd. glibc tcache stores next-chunk pointers in free slots; corrupting one lets you allocate nearly anywhere.",
+    "expected_category": "pwn",
+    "expected_techniques": [
+      "tcache-poisoning"
+    ],
+    "difficulty": "insane"
+  },
+  {
+    "id": "scenario-fastbin-dup-1",
+    "description": "Challenge frees the same note twice before reallocating. Fastbin LIFO lists trust the size field on unlink; a double-free or size forge can return the same chunk twice.",
+    "expected_category": "pwn",
+    "expected_techniques": [
+      "fastbin-dup"
+    ],
+    "difficulty": "insane"
+  },
+  {
+    "id": "scenario-fastbin-dup-2",
+    "description": "Overflow changes a free chunk's size so it is treated as a different fastbin. Fastbin LIFO lists trust the size field on unlink; a double-free or size forge can return the same chunk twice.",
+    "expected_category": "pwn",
+    "expected_techniques": [
+      "fastbin-dup"
+    ],
+    "difficulty": "insane"
+  },
+  {
+    "id": "scenario-fastbin-dup-3",
+    "description": "Fake chunk on the stack is linked via a corrupted fastbin fd. Fastbin LIFO lists trust the size field on unlink; a double-free or size forge can return the same chunk twice.",
+    "expected_category": "pwn",
+    "expected_techniques": [
+      "fastbin-dup"
+    ],
+    "difficulty": "insane"
+  },
+  {
+    "id": "scenario-fastbin-dup-4",
+    "description": "After dup, one allocation is used to overwrite another object's metadata. Fastbin LIFO lists trust the size field on unlink; a double-free or size forge can return the same chunk twice.",
+    "expected_category": "pwn",
+    "expected_techniques": [
+      "fastbin-dup"
+    ],
+    "difficulty": "insane"
+  },
+  {
+    "id": "scenario-unsorted-bin-leak-1",
+    "description": "Free a large note then print it; residual pointers show libc. Chunks in the unsorted bin contain libc pointers (bk/fd); reading them leaks the arena and thus libc base.",
+    "expected_category": "pwn",
+    "expected_techniques": [
+      "unsorted-bin-leak"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "scenario-unsorted-bin-leak-2",
+    "description": "Heap consolidation puts a main_arena pointer into a readable slot. Chunks in the unsorted bin contain libc pointers (bk/fd); reading them leaks the arena and thus libc base.",
+    "expected_category": "pwn",
+    "expected_techniques": [
+      "unsorted-bin-leak"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "scenario-unsorted-bin-leak-3",
+    "description": "Partial overwrite of bk is combined with a later allocation to control where the leak points. Chunks in the unsorted bin contain libc pointers (bk/fd); reading them leaks the arena and thus libc base.",
+    "expected_category": "pwn",
+    "expected_techniques": [
+      "unsorted-bin-leak"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "scenario-unsorted-bin-leak-4",
+    "description": "Challenge echoes heap contents after free without clearing the buffer. Chunks in the unsorted bin contain libc pointers (bk/fd); reading them leaks the arena and thus libc base.",
+    "expected_category": "pwn",
+    "expected_techniques": [
+      "unsorted-bin-leak"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "scenario-ret2csu-1",
+    "description": "ROP needs three controlled arguments but only pop rdi gadgets exist. __libc_csu_init gadgets let you set multiple registers from the stack when useful gadgets are scarce.",
+    "expected_category": "pwn",
+    "expected_techniques": [
+      "ret2csu"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "scenario-ret2csu-2",
+    "description": "ret2csu is used to call write with a known buffer for an info leak. __libc_csu_init gadgets let you set multiple registers from the stack when useful gadgets are scarce.",
+    "expected_category": "pwn",
+    "expected_techniques": [
+      "ret2csu"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "scenario-ret2csu-3",
+    "description": "Combined with a partial overwrite to pivot into a longer chain. __libc_csu_init gadgets let you set multiple registers from the stack when useful gadgets are scarce.",
+    "expected_category": "pwn",
+    "expected_techniques": [
+      "ret2csu"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "scenario-ret2csu-4",
+    "description": "Binary is partially RELRO so GOT writes follow a csu-controlled call. __libc_csu_init gadgets let you set multiple registers from the stack when useful gadgets are scarce.",
+    "expected_category": "pwn",
+    "expected_techniques": [
+      "ret2csu"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "scenario-srop-1",
+    "description": "Only a syscall gadget exists; the rest of control is a forged ucontext. sigreturn restores an entire register frame from the stack; a forged frame becomes arbitrary control with one syscall gadget.",
+    "expected_category": "pwn",
+    "expected_techniques": [
+      "srop"
+    ],
+    "difficulty": "insane"
+  },
+  {
+    "id": "scenario-srop-2",
+    "description": "SROP is used to pivot to a second-stage payload after an initial overflow. sigreturn restores an entire register frame from the stack; a forged frame becomes arbitrary control with one syscall gadget.",
+    "expected_category": "pwn",
+    "expected_techniques": [
+      "srop"
+    ],
+    "difficulty": "insane"
+  },
+  {
+    "id": "scenario-srop-3",
+    "description": "Challenge disables common ROP gadgets but leaves signal handling intact. sigreturn restores an entire register frame from the stack; a forged frame becomes arbitrary control with one syscall gadget.",
+    "expected_category": "pwn",
+    "expected_techniques": [
+      "srop"
+    ],
+    "difficulty": "insane"
+  },
+  {
+    "id": "scenario-srop-4",
+    "description": "Frame sets rax/rdi/rsi/rdx for an arbitrary execve. sigreturn restores an entire register frame from the stack; a forged frame becomes arbitrary control with one syscall gadget.",
+    "expected_category": "pwn",
+    "expected_techniques": [
+      "srop"
+    ],
+    "difficulty": "insane"
+  },
+  {
+    "id": "scenario-seccomp-escape-1",
+    "description": "execve is blocked; open+read of flag still works. A seccomp filter limits syscalls; escape means finding allowed primitives (openat, mmap, or argument tricks) that still achieve the goal.",
+    "expected_category": "pwn",
+    "expected_techniques": [
+      "seccomp-escape"
+    ],
+    "difficulty": "insane"
+  },
+  {
+    "id": "scenario-seccomp-escape-2",
+    "description": "Filter checks only the syscall number, not arguments, so clever paths remain. A seccomp filter limits syscalls; escape means finding allowed primitives (openat, mmap, or argument tricks) that still achieve the goal.",
+    "expected_category": "pwn",
+    "expected_techniques": [
+      "seccomp-escape"
+    ],
+    "difficulty": "insane"
+  },
+  {
+    "id": "scenario-seccomp-escape-3",
+    "description": "ORW (open-read-write) shellcode is used instead of /bin/sh. A seccomp filter limits syscalls; escape means finding allowed primitives (openat, mmap, or argument tricks) that still achieve the goal.",
+    "expected_category": "pwn",
+    "expected_techniques": [
+      "seccomp-escape"
+    ],
+    "difficulty": "insane"
+  },
+  {
+    "id": "scenario-seccomp-escape-4",
+    "description": "Filter is installed after some setup, leaving a window for earlier gadgets. A seccomp filter limits syscalls; escape means finding allowed primitives (openat, mmap, or argument tricks) that still achieve the goal.",
+    "expected_category": "pwn",
+    "expected_techniques": [
+      "seccomp-escape"
+    ],
+    "difficulty": "insane"
+  },
+  {
+    "id": "scenario-info-leak-1",
+    "description": "printf(user) leaks stack addresses including libc. Before defeating ASLR or canaries you usually need to read something that was never meant to be printed.",
+    "expected_category": "pwn",
+    "expected_techniques": [
+      "info-leak"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "scenario-info-leak-2",
+    "description": "Heap note is printed after free, exposing allocator pointers. Before defeating ASLR or canaries you usually need to read something that was never meant to be printed.",
+    "expected_category": "pwn",
+    "expected_techniques": [
+      "info-leak"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "scenario-info-leak-3",
+    "description": "Stack canary is readable via an off-by-one before the overflow is used. Before defeating ASLR or canaries you usually need to read something that was never meant to be printed.",
+    "expected_category": "pwn",
+    "expected_techniques": [
+      "info-leak"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "scenario-info-leak-4",
+    "description": "Binary prints a function pointer during an error path. Before defeating ASLR or canaries you usually need to read something that was never meant to be printed.",
+    "expected_category": "pwn",
+    "expected_techniques": [
+      "info-leak"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "scenario-rsa-wiener-1",
+    "description": "Keygen accidentally chose a tiny d for speed. When the private exponent d is small, continued fractions recover d from (e, n) alone.",
+    "expected_category": "crypto",
+    "expected_techniques": [
+      "rsa-wiener"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "scenario-rsa-wiener-2",
+    "description": "CTF provides n and a huge e with a note about short private keys. When the private exponent d is small, continued fractions recover d from (e, n) alone.",
+    "expected_category": "crypto",
+    "expected_techniques": [
+      "rsa-wiener"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "scenario-rsa-wiener-3",
+    "description": "Boneh-Durfee applies when d is somewhat larger but still small relative to n. When the private exponent d is small, continued fractions recover d from (e, n) alone.",
+    "expected_category": "crypto",
+    "expected_techniques": [
+      "rsa-wiener"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "scenario-rsa-wiener-4",
+    "description": "Same n is reused with a weak d across challenges. When the private exponent d is small, continued fractions recover d from (e, n) alone.",
+    "expected_category": "crypto",
+    "expected_techniques": [
+      "rsa-wiener"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "scenario-rsa-franklin-reiter-1",
+    "description": "Two nearly identical JSON blobs differ only in a counter. Related plaintexts encrypted under the same RSA modulus with small e leak each other via polynomial GCDs.",
+    "expected_category": "crypto",
+    "expected_techniques": [
+      "rsa-franklin-reiter"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "scenario-rsa-franklin-reiter-2",
+    "description": "Messages are sequential IDs encrypted with e=3. Related plaintexts encrypted under the same RSA modulus with small e leak each other via polynomial GCDs.",
+    "expected_category": "crypto",
+    "expected_techniques": [
+      "rsa-franklin-reiter"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "scenario-rsa-franklin-reiter-3",
+    "description": "Padding is deterministic so related plaintexts stay algebraic. Related plaintexts encrypted under the same RSA modulus with small e leak each other via polynomial GCDs.",
+    "expected_category": "crypto",
+    "expected_techniques": [
+      "rsa-franklin-reiter"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "scenario-rsa-franklin-reiter-4",
+    "description": "Challenge encrypts m and m+1 under the same key. Related plaintexts encrypted under the same RSA modulus with small e leak each other via polynomial GCDs.",
+    "expected_category": "crypto",
+    "expected_techniques": [
+      "rsa-franklin-reiter"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "scenario-rsa-broadcast-1",
+    "description": "Message is sent to three recipients with e=3 and no padding. The same small-exponent message sent under many moduli can be recovered with CRT and integer roots (Hastad).",
+    "expected_category": "crypto",
+    "expected_techniques": [
+      "rsa-broadcast"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "scenario-rsa-broadcast-2",
+    "description": "CTF gives a list of public keys and matching ciphertexts. The same small-exponent message sent under many moduli can be recovered with CRT and integer roots (Hastad).",
+    "expected_category": "crypto",
+    "expected_techniques": [
+      "rsa-broadcast"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "scenario-rsa-broadcast-3",
+    "description": "Broadcast of a short flag under textbook RSA. The same small-exponent message sent under many moduli can be recovered with CRT and integer roots (Hastad).",
+    "expected_category": "crypto",
+    "expected_techniques": [
+      "rsa-broadcast"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "scenario-rsa-broadcast-4",
+    "description": "e equals the number of recipients provided. The same small-exponent message sent under many moduli can be recovered with CRT and integer roots (Hastad).",
+    "expected_category": "crypto",
+    "expected_techniques": [
+      "rsa-broadcast"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "scenario-ecdsa-nonce-reuse-1",
+    "description": "Broken RNG reuses k for consecutive transactions. Reusing the ECDSA nonce k across two signatures leaks the private key via simple linear algebra.",
+    "expected_category": "crypto",
+    "expected_techniques": [
+      "ecdsa-nonce-reuse"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "scenario-ecdsa-nonce-reuse-2",
+    "description": "Two JWT-like signatures share r under the same public key. Reusing the ECDSA nonce k across two signatures leaks the private key via simple linear algebra.",
+    "expected_category": "crypto",
+    "expected_techniques": [
+      "ecdsa-nonce-reuse"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "scenario-ecdsa-nonce-reuse-3",
+    "description": "Challenge provides a batch of signatures with colliding r. Reusing the ECDSA nonce k across two signatures leaks the private key via simple linear algebra.",
+    "expected_category": "crypto",
+    "expected_techniques": [
+      "ecdsa-nonce-reuse"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "scenario-ecdsa-nonce-reuse-4",
+    "description": "Deterministic signing was misimplemented and collapsed to a constant. Reusing the ECDSA nonce k across two signatures leaks the private key via simple linear algebra.",
+    "expected_category": "crypto",
+    "expected_techniques": [
+      "ecdsa-nonce-reuse"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "scenario-lattice-reduction-1",
+    "description": "ECDSA nonces leak high bits through a side channel. Hidden number / partial key problems become shortest-vector instances; LLL/BKZ recovers the secret when enough noisy samples exist.",
+    "expected_category": "crypto",
+    "expected_techniques": [
+      "lattice-reduction"
+    ],
+    "difficulty": "insane"
+  },
+  {
+    "id": "scenario-lattice-reduction-2",
+    "description": "RSA with stereotyped plaintext and small unknown middle. Hidden number / partial key problems become shortest-vector instances; LLL/BKZ recovers the secret when enough noisy samples exist.",
+    "expected_category": "crypto",
+    "expected_techniques": [
+      "lattice-reduction"
+    ],
+    "difficulty": "insane"
+  },
+  {
+    "id": "scenario-lattice-reduction-3",
+    "description": "Boneh-Durfee style attack on medium-size d. Hidden number / partial key problems become shortest-vector instances; LLL/BKZ recovers the secret when enough noisy samples exist.",
+    "expected_category": "crypto",
+    "expected_techniques": [
+      "lattice-reduction"
+    ],
+    "difficulty": "insane"
+  },
+  {
+    "id": "scenario-lattice-reduction-4",
+    "description": "Hidden number problem from biased nonces. Hidden number / partial key problems become shortest-vector instances; LLL/BKZ recovers the secret when enough noisy samples exist.",
+    "expected_category": "crypto",
+    "expected_techniques": [
+      "lattice-reduction"
+    ],
+    "difficulty": "insane"
+  },
+  {
+    "id": "scenario-ctr-nonce-reuse-1",
+    "description": "File encryption library resets the counter every file. Reusing a CTR/GCM nonce under the same key turns keystream into a known XOR between plaintexts.",
+    "expected_category": "crypto",
+    "expected_techniques": [
+      "ctr-nonce-reuse"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "scenario-ctr-nonce-reuse-2",
+    "description": "Two messages in a protocol share a static IV. Reusing a CTR/GCM nonce under the same key turns keystream into a known XOR between plaintexts.",
+    "expected_category": "crypto",
+    "expected_techniques": [
+      "ctr-nonce-reuse"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "scenario-ctr-nonce-reuse-3",
+    "description": "GCM fails authentication but CTR keystream is still reusable. Reusing a CTR/GCM nonce under the same key turns keystream into a known XOR between plaintexts.",
+    "expected_category": "crypto",
+    "expected_techniques": [
+      "ctr-nonce-reuse"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "scenario-ctr-nonce-reuse-4",
+    "description": "Challenge stores nonce next to ciphertext and reuses it. Reusing a CTR/GCM nonce under the same key turns keystream into a known XOR between plaintexts.",
+    "expected_category": "crypto",
+    "expected_techniques": [
+      "ctr-nonce-reuse"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "scenario-http-request-smuggling-1",
+    "description": "CDN honours Content-Length while origin honours chunked encoding. Front-end and back-end disagree on Content-Length vs Transfer-Encoding, so one HTTP message is parsed as two.",
+    "expected_category": "web",
+    "expected_techniques": [
+      "http-request-smuggling"
+    ],
+    "difficulty": "insane"
+  },
+  {
+    "id": "scenario-http-request-smuggling-2",
+    "description": "Smuggled request steals the next user's session response. Front-end and back-end disagree on Content-Length vs Transfer-Encoding, so one HTTP message is parsed as two.",
+    "expected_category": "web",
+    "expected_techniques": [
+      "http-request-smuggling"
+    ],
+    "difficulty": "insane"
+  },
+  {
+    "id": "scenario-http-request-smuggling-3",
+    "description": "Admin-only endpoint is reached by prefixing a smuggled verb. Front-end and back-end disagree on Content-Length vs Transfer-Encoding, so one HTTP message is parsed as two.",
+    "expected_category": "web",
+    "expected_techniques": [
+      "http-request-smuggling"
+    ],
+    "difficulty": "insane"
+  },
+  {
+    "id": "scenario-http-request-smuggling-4",
+    "description": "HTTP/1.1 keep-alive queue is poisoned for a later victim. Front-end and back-end disagree on Content-Length vs Transfer-Encoding, so one HTTP message is parsed as two.",
+    "expected_category": "web",
+    "expected_techniques": [
+      "http-request-smuggling"
+    ],
+    "difficulty": "insane"
+  },
+  {
+    "id": "scenario-graphql-introspection-1",
+    "description": "Public GraphQL playground still allows full introspection in production. If introspection is enabled, the schema documents every query, mutation, and sensitive field for you.",
+    "expected_category": "web",
+    "expected_techniques": [
+      "graphql-introspection"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "scenario-graphql-introspection-2",
+    "description": "Nested query walks from user to admin-only fields. If introspection is enabled, the schema documents every query, mutation, and sensitive field for you.",
+    "expected_category": "web",
+    "expected_techniques": [
+      "graphql-introspection"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "scenario-graphql-introspection-3",
+    "description": "Batch queries bypass naive rate limits. If introspection is enabled, the schema documents every query, mutation, and sensitive field for you.",
+    "expected_category": "web",
+    "expected_techniques": [
+      "graphql-introspection"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "scenario-graphql-introspection-4",
+    "description": "Mutation names reveal hidden admin operations. If introspection is enabled, the schema documents every query, mutation, and sensitive field for you.",
+    "expected_category": "web",
+    "expected_techniques": [
+      "graphql-introspection"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "scenario-nosql-injection-1",
+    "description": "Login accepts password: {\"$ne\": \"\"} and returns a session. Mongo-style queries treat operator objects as code; injecting $gt or $ne changes the filter logic.",
+    "expected_category": "web",
+    "expected_techniques": [
+      "nosql-injection"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "scenario-nosql-injection-2",
+    "description": "Search endpoint interpolates JSON into a find filter. Mongo-style queries treat operator objects as code; injecting $gt or $ne changes the filter logic.",
+    "expected_category": "web",
+    "expected_techniques": [
+      "nosql-injection"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "scenario-nosql-injection-3",
+    "description": "Regex operator $regex is used to extract field values bit by bit. Mongo-style queries treat operator objects as code; injecting $gt or $ne changes the filter logic.",
+    "expected_category": "web",
+    "expected_techniques": [
+      "nosql-injection"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "scenario-nosql-injection-4",
+    "description": "Array injection expands an $in list the developer did not expect. Mongo-style queries treat operator objects as code; injecting $gt or $ne changes the filter logic.",
+    "expected_category": "web",
+    "expected_techniques": [
+      "nosql-injection"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "scenario-oauth-flow-abuse-1",
+    "description": "redirect_uri allows subdomain wildcards that you control. OAuth redirects and state parameters are trust boundaries; weak validation turns the provider into an open redirect or account linker.",
+    "expected_category": "web",
+    "expected_techniques": [
+      "oauth-flow-abuse"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "scenario-oauth-flow-abuse-2",
+    "description": "Code is leaked via Referer to a third-party resource on the redirect page. OAuth redirects and state parameters are trust boundaries; weak validation turns the provider into an open redirect or account linker.",
+    "expected_category": "web",
+    "expected_techniques": [
+      "oauth-flow-abuse"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "scenario-oauth-flow-abuse-3",
+    "description": "Account linking binds an attacker-controlled IdP identity to a victim session. OAuth redirects and state parameters are trust boundaries; weak validation turns the provider into an open redirect or account linker.",
+    "expected_category": "web",
+    "expected_techniques": [
+      "oauth-flow-abuse"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "scenario-oauth-flow-abuse-4",
+    "description": "PKCE is absent and the auth code is usable from another client. OAuth redirects and state parameters are trust boundaries; weak validation turns the provider into an open redirect or account linker.",
+    "expected_category": "web",
+    "expected_techniques": [
+      "oauth-flow-abuse"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "scenario-cors-misconfiguration-1",
+    "description": "API reflects any Origin and allows credentials. Reflecting Origin with Access-Control-Allow-Credentials true lets a malicious site read authenticated responses.",
+    "expected_category": "web",
+    "expected_techniques": [
+      "cors-misconfiguration"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "scenario-cors-misconfiguration-2",
+    "description": "null origin is trusted because of a sandboxed iframe pattern. Reflecting Origin with Access-Control-Allow-Credentials true lets a malicious site read authenticated responses.",
+    "expected_category": "web",
+    "expected_techniques": [
+      "cors-misconfiguration"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "scenario-cors-misconfiguration-3",
+    "description": "Subdomain takeover plus loose CORS reads session-bound data. Reflecting Origin with Access-Control-Allow-Credentials true lets a malicious site read authenticated responses.",
+    "expected_category": "web",
+    "expected_techniques": [
+      "cors-misconfiguration"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "scenario-cors-misconfiguration-4",
+    "description": "Preflight is skipped for simple requests that still carry cookies. Reflecting Origin with Access-Control-Allow-Credentials true lets a malicious site read authenticated responses.",
+    "expected_category": "web",
+    "expected_techniques": [
+      "cors-misconfiguration"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "scenario-go-binary-analysis-1",
+    "description": "Stripped Go binary still has function names in pclntab. Go binaries carry rich metadata (pclntab, itabs) but look alien in C-oriented tools; recover types and names from runtime structures.",
+    "expected_category": "rev",
+    "expected_techniques": [
+      "go-binary-analysis"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "scenario-go-binary-analysis-2",
+    "description": "Interface methods are recovered from itab entries. Go binaries carry rich metadata (pclntab, itabs) but look alien in C-oriented tools; recover types and names from runtime structures.",
+    "expected_category": "rev",
+    "expected_techniques": [
+      "go-binary-analysis"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "scenario-go-binary-analysis-3",
+    "description": "Challenge encrypts a flag inside a Go init function. Go binaries carry rich metadata (pclntab, itabs) but look alien in C-oriented tools; recover types and names from runtime structures.",
+    "expected_category": "rev",
+    "expected_techniques": [
+      "go-binary-analysis"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "scenario-go-binary-analysis-4",
+    "description": "Custom encoding is implemented as a Go method on a named type. Go binaries carry rich metadata (pclntab, itabs) but look alien in C-oriented tools; recover types and names from runtime structures.",
+    "expected_category": "rev",
+    "expected_techniques": [
+      "go-binary-analysis"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "scenario-rust-binary-analysis-1",
+    "description": "Flag check is a panic message on mismatch. Rust monomorphization and panic paths produce many similar functions; focus on string literals, trait objects, and rustc metadata.",
+    "expected_category": "rev",
+    "expected_techniques": [
+      "rust-binary-analysis"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "scenario-rust-binary-analysis-2",
+    "description": "String comparison is inlined across monomorphized copies. Rust monomorphization and panic paths produce many similar functions; focus on string literals, trait objects, and rustc metadata.",
+    "expected_category": "rev",
+    "expected_techniques": [
+      "rust-binary-analysis"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "scenario-rust-binary-analysis-3",
+    "description": "Trait object vtable points at the real comparison routine. Rust monomorphization and panic paths produce many similar functions; focus on string literals, trait objects, and rustc metadata.",
+    "expected_category": "rev",
+    "expected_techniques": [
+      "rust-binary-analysis"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "scenario-rust-binary-analysis-4",
+    "description": "Strip leaves only panic and allocator symbols as anchors. Rust monomorphization and panic paths produce many similar functions; focus on string literals, trait objects, and rustc metadata.",
+    "expected_category": "rev",
+    "expected_techniques": [
+      "rust-binary-analysis"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "scenario-dotnet-deobfuscation-1",
+    "description": "ConfuserEx packs methods; deobfuscator restores IL. .NET IL is high-level; obfuscators rename and pack, but decompilers plus deobfuscators recover readable C# quickly.",
+    "expected_category": "rev",
+    "expected_techniques": [
+      "dotnet-deobfuscation"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "scenario-dotnet-deobfuscation-2",
+    "description": "Flag is decrypted at runtime from an embedded resource. .NET IL is high-level; obfuscators rename and pack, but decompilers plus deobfuscators recover readable C# quickly.",
+    "expected_category": "rev",
+    "expected_techniques": [
+      "dotnet-deobfuscation"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "scenario-dotnet-deobfuscation-3",
+    "description": "Control-flow obfuscation is undone by simplifying branches. .NET IL is high-level; obfuscators rename and pack, but decompilers plus deobfuscators recover readable C# quickly.",
+    "expected_category": "rev",
+    "expected_techniques": [
+      "dotnet-deobfuscation"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "scenario-dotnet-deobfuscation-4",
+    "description": "Dynamic method generation hides the real checker until invoke. .NET IL is high-level; obfuscators rename and pack, but decompilers plus deobfuscators recover readable C# quickly.",
+    "expected_category": "rev",
+    "expected_techniques": [
+      "dotnet-deobfuscation"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "scenario-api-hashing-1",
+    "description": "Shellcode hashes module and function names before calling them. Malware resolves APIs by hashing names at runtime so the import table stays empty and static tools see nothing useful.",
+    "expected_category": "rev",
+    "expected_techniques": [
+      "api-hashing"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "scenario-api-hashing-2",
+    "description": "Packed sample resolves APIs only after the first stage decrypts. Malware resolves APIs by hashing names at runtime so the import table stays empty and static tools see nothing useful.",
+    "expected_category": "rev",
+    "expected_techniques": [
+      "api-hashing"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "scenario-api-hashing-3",
+    "description": "Custom ROR-13 hash table maps to kernel32 exports. Malware resolves APIs by hashing names at runtime so the import table stays empty and static tools see nothing useful.",
+    "expected_category": "rev",
+    "expected_techniques": [
+      "api-hashing"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "scenario-api-hashing-4",
+    "description": "Challenge asks which API is invoked when a given hash is matched. Malware resolves APIs by hashing names at runtime so the import table stays empty and static tools see nothing useful.",
+    "expected_category": "rev",
+    "expected_techniques": [
+      "api-hashing"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "scenario-arbitrary-write-1",
+    "description": "Off-by-one null sets a size field so a later copy becomes a write-what-where. A controlled write of an arbitrary value to an arbitrary address turns almost any remaining protection into a stepping stone.",
+    "expected_category": "pwn",
+    "expected_techniques": [
+      "arbitrary-write"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "scenario-arbitrary-write-2",
+    "description": "Format-string %n writes a chosen value to a chosen stack slot. A controlled write of an arbitrary value to an arbitrary address turns almost any remaining protection into a stepping stone.",
+    "expected_category": "pwn",
+    "expected_techniques": [
+      "arbitrary-write"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "scenario-arbitrary-write-3",
+    "description": "Heap metadata corruption yields an arbitrary free that becomes an arbitrary write. A controlled write of an arbitrary value to an arbitrary address turns almost any remaining protection into a stepping stone.",
+    "expected_category": "pwn",
+    "expected_techniques": [
+      "arbitrary-write"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "scenario-arbitrary-write-4",
+    "description": "Challenge explicitly offers a write gadget once a pointer is known. A controlled write of an arbitrary value to an arbitrary address turns almost any remaining protection into a stepping stone.",
+    "expected_category": "pwn",
+    "expected_techniques": [
+      "arbitrary-write"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "scenario-archive-analysis-1",
+    "description": "ZIP contains another ZIP named like an image. Flags hide inside nested or mislabeled archives; the work is inventory, correct extraction, and not stopping at the first layer.",
+    "expected_category": "misc",
+    "expected_techniques": [
+      "archive-analysis"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "scenario-archive-analysis-2",
+    "description": "Trailing data after a PNG is a second archive. Flags hide inside nested or mislabeled archives; the work is inventory, correct extraction, and not stopping at the first layer.",
+    "expected_category": "misc",
+    "expected_techniques": [
+      "archive-analysis"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "scenario-archive-analysis-3",
+    "description": "Password is embedded in a comment or adjacent text file. Flags hide inside nested or mislabeled archives; the work is inventory, correct extraction, and not stopping at the first layer.",
+    "expected_category": "misc",
+    "expected_techniques": [
+      "archive-analysis"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "scenario-archive-analysis-4",
+    "description": "Broken local headers need manual repair before unzip works. Flags hide inside nested or mislabeled archives; the work is inventory, correct extraction, and not stopping at the first layer.",
+    "expected_category": "misc",
+    "expected_techniques": [
+      "archive-analysis"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "scenario-cache-poisoning-1",
+    "description": "X-Forwarded-Host is reflected into links and is not part of the cache key. If a shared cache keys on the wrong inputs, one malicious request can make everyone else receive attacker-controlled content.",
+    "expected_category": "web",
+    "expected_techniques": [
+      "cache-poisoning"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "scenario-cache-poisoning-2",
+    "description": "Path normalization differs between cache and origin so /admin%2f is cached as public. If a shared cache keys on the wrong inputs, one malicious request can make everyone else receive attacker-controlled content.",
+    "expected_category": "web",
+    "expected_techniques": [
+      "cache-poisoning"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "scenario-cache-poisoning-3",
+    "description": "Fat GET with a body is cached and later served to other clients. If a shared cache keys on the wrong inputs, one malicious request can make everyone else receive attacker-controlled content.",
+    "expected_category": "web",
+    "expected_techniques": [
+      "cache-poisoning"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "scenario-cache-poisoning-4",
+    "description": "Unkeyed cookie flips a response into an error page cached for everyone. If a shared cache keys on the wrong inputs, one malicious request can make everyone else receive attacker-controlled content.",
+    "expected_category": "web",
+    "expected_techniques": [
+      "cache-poisoning"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "scenario-disk-image-analysis-1",
+    "description": "Flag sits in an unallocated cluster after a secure-looking delete. A disk image is a filesystem plus slack, deleted files, and partitions; triage means mounting or carving with the right offsets.",
+    "expected_category": "forensics",
+    "expected_techniques": [
+      "disk-image-analysis"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "scenario-disk-image-analysis-2",
+    "description": "Second partition is hidden past the reported disk size. A disk image is a filesystem plus slack, deleted files, and partitions; triage means mounting or carving with the right offsets.",
+    "expected_category": "forensics",
+    "expected_techniques": [
+      "disk-image-analysis"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "scenario-disk-image-analysis-3",
+    "description": "NTFS ADS or alternate stream holds the secret. A disk image is a filesystem plus slack, deleted files, and partitions; triage means mounting or carving with the right offsets.",
+    "expected_category": "forensics",
+    "expected_techniques": [
+      "disk-image-analysis"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "scenario-disk-image-analysis-4",
+    "description": "Challenge provides only a partial image and needs carving by signature. A disk image is a filesystem plus slack, deleted files, and partitions; triage means mounting or carving with the right offsets.",
+    "expected_category": "forensics",
+    "expected_techniques": [
+      "disk-image-analysis"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "scenario-file-signature-1",
+    "description": "PNG renamed to .txt still has an IHDR chunk. Magic bytes define the real type; extensions and claimed MIME types are optional fiction.",
+    "expected_category": "misc",
+    "expected_techniques": [
+      "file-signature"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "scenario-file-signature-2",
+    "description": "JPEG with appended ZIP needs the correct offset to extract. Magic bytes define the real type; extensions and claimed MIME types are optional fiction.",
+    "expected_category": "misc",
+    "expected_techniques": [
+      "file-signature"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "scenario-file-signature-3",
+    "description": "Broken magic is one byte off and must be repaired. Magic bytes define the real type; extensions and claimed MIME types are optional fiction.",
+    "expected_category": "misc",
+    "expected_techniques": [
+      "file-signature"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "scenario-file-signature-4",
+    "description": "Polyglot is both a valid PDF and a valid ZIP. Magic bytes define the real type; extensions and claimed MIME types are optional fiction.",
+    "expected_category": "misc",
+    "expected_techniques": [
+      "file-signature"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "scenario-file-structure-abuse-1",
+    "description": "House-of-orange style unsorted-bin attack ends in a forged FILE. glibc FILE structures (vtable, wide data, lock) are ripe targets once you can allocate or free with partial control.",
+    "expected_category": "pwn",
+    "expected_techniques": [
+      "file-structure-abuse"
+    ],
+    "difficulty": "insane"
+  },
+  {
+    "id": "scenario-file-structure-abuse-2",
+    "description": "Partial overwrite of a FILE vtable pointer redirects overflow. glibc FILE structures (vtable, wide data, lock) are ripe targets once you can allocate or free with partial control.",
+    "expected_category": "pwn",
+    "expected_techniques": [
+      "file-structure-abuse"
+    ],
+    "difficulty": "insane"
+  },
+  {
+    "id": "scenario-file-structure-abuse-3",
+    "description": "Wide-data wide_vtable is used on newer glibc where vtable checks exist. glibc FILE structures (vtable, wide data, lock) are ripe targets once you can allocate or free with partial control.",
+    "expected_category": "pwn",
+    "expected_techniques": [
+      "file-structure-abuse"
+    ],
+    "difficulty": "insane"
+  },
+  {
+    "id": "scenario-file-structure-abuse-4",
+    "description": "Challenge leaks a FILE pointer and asks for arbitrary code via FSOP. glibc FILE structures (vtable, wide data, lock) are ripe targets once you can allocate or free with partial control.",
+    "expected_category": "pwn",
+    "expected_techniques": [
+      "file-structure-abuse"
+    ],
+    "difficulty": "insane"
+  },
+  {
+    "id": "scenario-file-upload-chain-1",
+    "description": "Apache executes .php.png when the handler is misconfigured. Upload filters fail in sequence: extension, content-type, magic, path — each weak link is a step toward execution or overwrite.",
+    "expected_category": "web",
+    "expected_techniques": [
+      "file-upload-chain"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "scenario-file-upload-chain-2",
+    "description": "Content-Type is checked but the body is a PHP webshell. Upload filters fail in sequence: extension, content-type, magic, path — each weak link is a step toward execution or overwrite.",
+    "expected_category": "web",
+    "expected_techniques": [
+      "file-upload-chain"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "scenario-file-upload-chain-3",
+    "description": "Upload path allows ../ to overwrite a config file. Upload filters fail in sequence: extension, content-type, magic, path — each weak link is a step toward execution or overwrite.",
+    "expected_category": "web",
+    "expected_techniques": [
+      "file-upload-chain"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "scenario-file-upload-chain-4",
+    "description": "Image resize pipeline shells out and is vulnerable to ImageTragick-style args. Upload filters fail in sequence: extension, content-type, magic, path — each weak link is a step toward execution or overwrite.",
+    "expected_category": "web",
+    "expected_techniques": [
+      "file-upload-chain"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "scenario-keygen-1",
+    "description": "Name is hashed and compared to the entered serial. The binary already contains the algorithm that accepts a serial; recovering that algorithm is the keygen.",
+    "expected_category": "rev",
+    "expected_techniques": [
+      "keygen"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "scenario-keygen-2",
+    "description": "Serial must satisfy a checksum over several fields. The binary already contains the algorithm that accepts a serial; recovering that algorithm is the keygen.",
+    "expected_category": "rev",
+    "expected_techniques": [
+      "keygen"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "scenario-keygen-3",
+    "description": "Part of the key is time-based and part is static. The binary already contains the algorithm that accepts a serial; recovering that algorithm is the keygen.",
+    "expected_category": "rev",
+    "expected_techniques": [
+      "keygen"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "scenario-keygen-4",
+    "description": "Validation is split across several functions to slow analysis. The binary already contains the algorithm that accepts a serial; recovering that algorithm is the keygen.",
+    "expected_category": "rev",
+    "expected_techniques": [
+      "keygen"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "scenario-opaque-predicates-1",
+    "description": "Every basic block is guarded by a polynomial that is always even. Branches that always take one path (opaque predicates) bloat the CFG so real logic is hard to see.",
+    "expected_category": "rev",
+    "expected_techniques": [
+      "opaque-predicates"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "scenario-opaque-predicates-2",
+    "description": "MBA (mixed boolean arithmetic) hides a constant comparison. Branches that always take one path (opaque predicates) bloat the CFG so real logic is hard to see.",
+    "expected_category": "rev",
+    "expected_techniques": [
+      "opaque-predicates"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "scenario-opaque-predicates-3",
+    "description": "Dead code after opaque branches contains fake flag checks. Branches that always take one path (opaque predicates) bloat the CFG so real logic is hard to see.",
+    "expected_category": "rev",
+    "expected_techniques": [
+      "opaque-predicates"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "scenario-opaque-predicates-4",
+    "description": "Challenge requires counting only the live path to the real compare. Branches that always take one path (opaque predicates) bloat the CFG so real logic is hard to see.",
+    "expected_category": "rev",
+    "expected_techniques": [
+      "opaque-predicates"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "scenario-osint-metadata-1",
+    "description": "Photo still has GPS coordinates in EXIF. Documents and images often still carry author, GPS, software, and revision history the publisher forgot to strip.",
+    "expected_category": "osint",
+    "expected_techniques": [
+      "osint-metadata"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "scenario-osint-metadata-2",
+    "description": "DOCX creator name matches a social profile. Documents and images often still carry author, GPS, software, and revision history the publisher forgot to strip.",
+    "expected_category": "osint",
+    "expected_techniques": [
+      "osint-metadata"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "scenario-osint-metadata-3",
+    "description": "PDF Producer string reveals the exact tool and version used. Documents and images often still carry author, GPS, software, and revision history the publisher forgot to strip.",
+    "expected_category": "osint",
+    "expected_techniques": [
+      "osint-metadata"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "scenario-osint-metadata-4",
+    "description": "Revision history inside the document names a co-author. Documents and images often still carry author, GPS, software, and revision history the publisher forgot to strip.",
+    "expected_category": "osint",
+    "expected_techniques": [
+      "osint-metadata"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "scenario-prng-prediction-1",
+    "description": "Session tokens come from rand() seeded with time(NULL). A predictable PRNG (glibc rand, MT19937 with enough outputs, time-seeded generators) lets you reproduce future tokens or recover the seed.",
+    "expected_category": "crypto",
+    "expected_techniques": [
+      "prng-prediction"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "scenario-prng-prediction-2",
+    "description": "Twenty-four MT19937 outputs are enough to clone the state. A predictable PRNG (glibc rand, MT19937 with enough outputs, time-seeded generators) lets you reproduce future tokens or recover the seed.",
+    "expected_category": "crypto",
+    "expected_techniques": [
+      "prng-prediction"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "scenario-prng-prediction-3",
+    "description": "OTP codes are predictable once the seed is brute-forced. A predictable PRNG (glibc rand, MT19937 with enough outputs, time-seeded generators) lets you reproduce future tokens or recover the seed.",
+    "expected_category": "crypto",
+    "expected_techniques": [
+      "prng-prediction"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "scenario-prng-prediction-4",
+    "description": "Game RNG can be rewound to force a favorable roll. A predictable PRNG (glibc rand, MT19937 with enough outputs, time-seeded generators) lets you reproduce future tokens or recover the seed.",
+    "expected_category": "crypto",
+    "expected_techniques": [
+      "prng-prediction"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "scenario-solidity-access-control-1",
+    "description": "withdraw() is public with no onlyOwner. Missing or incorrect modifiers (onlyOwner, roles) let anyone call privileged state-changing functions.",
+    "expected_category": "blockchain",
+    "expected_techniques": [
+      "solidity-access-control"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "scenario-solidity-access-control-2",
+    "description": "Initializer on a proxy can be called by the first attacker. Missing or incorrect modifiers (onlyOwner, roles) let anyone call privileged state-changing functions.",
+    "expected_category": "blockchain",
+    "expected_techniques": [
+      "solidity-access-control"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "scenario-solidity-access-control-3",
+    "description": "tx.origin auth is bypassed through an intermediate contract. Missing or incorrect modifiers (onlyOwner, roles) let anyone call privileged state-changing functions.",
+    "expected_category": "blockchain",
+    "expected_techniques": [
+      "solidity-access-control"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "scenario-solidity-access-control-4",
+    "description": "Role admin can grant itself a higher role through a misordered check. Missing or incorrect modifiers (onlyOwner, roles) let anyone call privileged state-changing functions.",
+    "expected_category": "blockchain",
+    "expected_techniques": [
+      "solidity-access-control"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "scenario-symbolic-execution-1",
+    "description": "Each flag byte is constrained by a separate arithmetic check. When brute force is too large, symbolic execution explores path constraints until a satisfying input (the flag) drops out.",
+    "expected_category": "rev",
+    "expected_techniques": [
+      "symbolic-execution"
+    ],
+    "difficulty": "insane"
+  },
+  {
+    "id": "scenario-symbolic-execution-2",
+    "description": "Nested conditions form a path that only one string satisfies. When brute force is too large, symbolic execution explores path constraints until a satisfying input (the flag) drops out.",
+    "expected_category": "rev",
+    "expected_techniques": [
+      "symbolic-execution"
+    ],
+    "difficulty": "insane"
+  },
+  {
+    "id": "scenario-symbolic-execution-3",
+    "description": "Anti-debug paths must be avoided with carefully chosen symbolic state. When brute force is too large, symbolic execution explores path constraints until a satisfying input (the flag) drops out.",
+    "expected_category": "rev",
+    "expected_techniques": [
+      "symbolic-execution"
+    ],
+    "difficulty": "insane"
+  },
+  {
+    "id": "scenario-symbolic-execution-4",
+    "description": "Challenge is a VM whose handlers are easier to model symbolically than to reverse fully. When brute force is too large, symbolic execution explores path constraints until a satisfying input (the flag) drops out.",
+    "expected_category": "rev",
+    "expected_techniques": [
+      "symbolic-execution"
+    ],
+    "difficulty": "insane"
+  },
+  {
+    "id": "scenario-timing-side-channel-1",
+    "description": "Password check uses strcmp and exits early. Secret-dependent branches or early exits leak through response time; statistical samples recover the secret byte by byte.",
+    "expected_category": "crypto",
+    "expected_techniques": [
+      "timing-side-channel"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "scenario-timing-side-channel-2",
+    "description": "HMAC compare is not constant-time on the server. Secret-dependent branches or early exits leak through response time; statistical samples recover the secret byte by byte.",
+    "expected_category": "crypto",
+    "expected_techniques": [
+      "timing-side-channel"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "scenario-timing-side-channel-3",
+    "description": "Padding oracle expressed purely as a timing difference. Secret-dependent branches or early exits leak through response time; statistical samples recover the secret byte by byte.",
+    "expected_category": "crypto",
+    "expected_techniques": [
+      "timing-side-channel"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "scenario-timing-side-channel-4",
+    "description": "Challenge documents a slow equality check and invites measurement. Secret-dependent branches or early exits leak through response time; statistical samples recover the secret byte by byte.",
+    "expected_category": "crypto",
+    "expected_techniques": [
+      "timing-side-channel"
+    ],
+    "difficulty": "hard"
   }
 ]

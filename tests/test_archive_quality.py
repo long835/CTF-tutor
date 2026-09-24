@@ -6,7 +6,7 @@ from archive_quality import validate_entry, entry_fingerprint, load_existing_fin
 def make_entry(**kw):
     data = dict(challenge_name='Test Pattern', category='web', techniques=['jwt'], difficulty='easy', description='desc', explanation='why', solve_steps=['inspect'], references=['https://example.test/source'])
     data.update(kw)
-    return ArchiveEntry(**data)
+    return ArchiveEntry.from_dict(data)
 
 
 def test_valid_entry_has_no_errors():

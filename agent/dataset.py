@@ -41,6 +41,7 @@ exploit a real binary.
 from __future__ import annotations
 
 import json
+import math
 import os
 import random
 import re
@@ -158,32 +159,78 @@ def has_decisive_keyword(text: str) -> bool:
 
 def _strip_decisive_terms(text: str) -> str:
     """
-    Remove technique names the classifier keys on, keeping the situation.
+    Remove decisive classifier signals while preserving the situation.
 
-    Used on generated conditions so the blind subset is genuinely blind: the
-    case still describes an algorithm field in a token header, it just never
-    writes the letters J-W-T.
+    The classifier is the source of truth for what counts as a keyword leak.
+    This function first applies readable replacements for common technique
+    names, then removes any remaining decisive pattern matches dynamically.
+    That keeps blind cases genuinely blind even when new classifier signals
+    are added later.
     """
     replacements = {
-        r"\bjwt\b": "the bearer token",
+        r"\\bjwt\\b": "the bearer token",
         r"json web token": "the bearer token",
-        r"sql\s*injection": "the query construction",
-        r"\bsqli\b": "the query construction",
-        r"\bssti\b": "the template rendering",
+        r"sql\\s*injection": "the query construction",
+        r"\\bsqli\\b": "the query construction",
+        r"\\bssti\\b": "the template rendering",
         r"template injection": "the template rendering",
-        r"\bxss\b": "the reflected output",
+        r"\\bxss\\b": "the reflected output",
         r"cross.site scripting": "the reflected output",
-        r"\bssrf\b": "the outbound fetch",
-        r"\bxxe\b": "the XML parse",
+        r"\\bssrf\\b": "the outbound fetch",
+        r"server.side request forgery": "the outbound fetch",
+        r"\\bxxe\\b": "the XML parse",
         r"buffer overflow": "the oversized copy",
+        r"stack overflow": "the oversized stack operation",
+        r"heap overflow": "the oversized heap operation",
         r"format string": "the logging call",
-        r"\brop\b": "the return sequence",
-        r"\bstego\b|steganograph\w*": "the hidden payload",
-        r"reentranc\w*": "the repeated external call",
+        r"\\brop\\b": "the return sequence",
+        r"ret2libc": "the return sequence",
+        r"ret2win": "the return sequence",
+        r"ret2csu": "the return sequence",
+        r"\\bsrop\\b": "the return sequence",
+        r"stego": "the hidden payload",
+        r"steganograph\\w*": "the hidden payload",
+        r"reentranc\\w*": "the repeated external call",
+        r"\\bseccomp\\b": "the syscall restriction",
+        r"\\belf\\b": "the executable",
+        r"\\bghidra\\b": "the analysis tool",
+        r"\\bwireshark\\b": "the packet analysis tool",
+        r"\\bpcap(?:ng)?\\b": "the network capture",
+        r"\\bapk\\b": "the mobile package",
+        r"\\bsolidity\\b": "the contract language",
+        r"\\berc-?20\\b": "the token interface",
+        r"\\bosint\\b": "the information gathering",
     }
+
     out = text or ""
+
+    # Human-readable replacements for the common explicit names.
     for pattern, rep in replacements.items():
         out = re.sub(pattern, rep, out, flags=re.IGNORECASE)
+
+    # The classifier's decisive patterns are the authoritative leak detector.
+    # Remove any remaining matches so blind=True really means:
+    # has_decisive_keyword(description) == False.
+    for _ in range(3):
+        changed = False
+        for pattern, _category in _decisive_patterns():
+            try:
+                new_out = re.sub(
+                    pattern,
+                    "the described condition",
+                    out,
+                    flags=re.IGNORECASE,
+                )
+            except re.error:
+                new_out = out.replace(pattern, "the described condition")
+
+            if new_out != out:
+                changed = True
+                out = new_out
+
+        if not changed or not has_decisive_keyword(out):
+            break
+
     return out
 
 
@@ -345,9 +392,12 @@ def build_dataset(
 
     cases: List[Case] = []
     for band in BANDS:
+        blind_count = min(per_band, max(0, math.ceil(per_band * blind_fraction)))
+        blind_indices = set(rng.sample(range(per_band), blind_count))
+
         for i in range(per_band):
             node = nodes[(i * 7 + BANDS.index(band) * 3) % len(nodes)]
-            blind = rng.random() < blind_fraction
+            blind = i in blind_indices
             description, extra = _compose(rng, node, band, blind)
             techniques = [node.technique]
             if band == "multi_step":

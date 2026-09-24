@@ -1,0 +1,11 @@
+include README.md
+include ARCHITECTURE.md
+include LICENSE
+include requirements.txt
+include pyproject.toml
+recursive-include data *.json *.jsonl
+recursive-include agent *.py
+recursive-include tools *.py
+recursive-include plugins *.py
+recursive-include tests *.py
+global-exclude __pycache__ *.py[cod]
