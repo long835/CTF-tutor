@@ -19,7 +19,8 @@ def classify(description: str, artifacts: Optional[List[str]] = None) -> Dict[st
         "primary_category": getattr(profile, "primary_category", None) or profile.category,
         "secondary_categories": list(getattr(profile, "secondary_categories", None) or []),
         "confidence": profile.confidence,
-        "belief_score": profile.confidence,  # alias: not a calibrated probability
+        "belief_score": profile.confidence,
+        "belief_score_is_probability": False,
         "runner_up": getattr(profile, "runner_up", None),
         "ambiguous": getattr(profile, "ambiguous", None),
         "scores": dict(getattr(profile, "scores", {}) or {}),
@@ -185,3 +186,24 @@ def classify_experience_lab(lab_id: str) -> Dict[str, Any]:
 def attach_experience_lab(lab_id: str, challenge_id: str | None = None) -> Dict[str, Any]:
     from agent.experience_labs import attach_lab_to_workspace
     return attach_lab_to_workspace(lab_id, challenge_id=challenge_id)
+
+
+def present_belief(belief_score: float, **kwargs) -> Dict[str, Any]:
+    from agent.confidence_policy import present_confidence
+    return present_confidence(belief_score, **kwargs)
+
+
+def get_repro_fingerprint():
+    from agent.repro_fingerprint import repro_fingerprint
+    return repro_fingerprint()
+
+
+def classify_with_decision(description: str):
+    from agent.classify_challenge import classify_challenge
+    from agent.active_classify import suggest_discriminators
+    from agent.calibration_fit import present_with_calibration
+    p = classify_challenge(description)
+    d = p.to_dict()
+    d["discriminators"] = suggest_discriminators(p)
+    d.update(present_with_calibration(p.confidence))
+    return d

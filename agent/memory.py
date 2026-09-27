@@ -3,6 +3,8 @@ agent/memory.py
 
 Long-term learner memory (local JSON).
 
+Prefer agent.learner_view.record_learning() for new code so both stores stay in sync.
+
 Tracks mastered / weak techniques, hint usage, and preferred depth
 so the tutor can adapt explanations over sessions.
 """
@@ -17,7 +19,7 @@ from pathlib import Path
 from typing import Dict, List, Optional
 
 
-DEFAULT_PATH = os.path.join("data", "learner_memory.json")
+DEFAULT_PATH = os.path.join("data", "learner_memory.json")  # legacy mirror; prefer learner_store.json
 
 
 @dataclass
@@ -102,6 +104,27 @@ class LearnerMemory:
         )
 
 
+def load_memory_from_unified() -> "LearnerMemory":
+    """Preferred: hydrate from data/learner_store.json."""
+    try:
+        from agent.unified_learner_store import load_store
+        store = load_store()
+        mem = LearnerMemory()
+        mem.preferred_depth = store.get("preferred_depth") or "balanced"
+        mem.misconceptions = list(store.get("misconceptions") or [])
+        for tech, st in (store.get("legacy_stats") or {}).items():
+            mem.techniques[tech] = TechniqueStats(
+                attempts=int(st.get("attempts") or 0),
+                successes=int(st.get("successes") or 0),
+                hints_used=int(st.get("hints_used") or 0),
+                last_seen=str(st.get("last_seen") or ""),
+                notes=list(st.get("notes") or []),
+            )
+        return mem
+    except Exception:
+        return LearnerMemory()
+
+
 def load_memory(path: str = DEFAULT_PATH) -> LearnerMemory:
     p = Path(path)
     if not p.exists():
@@ -120,3 +143,27 @@ def save_memory(mem: LearnerMemory, path: str = DEFAULT_PATH) -> None:
     mem.total_sessions += 1
     with open(p, "w", encoding="utf-8") as f:
         json.dump(mem.to_dict(), f, indent=2)
+
+
+def hydrate_from_learner_record(path: str = DEFAULT_PATH) -> LearnerMemory:
+    """
+    Build a LearnerMemory view from the canonical learner_model record.
+
+    New code should write via agent.learner_view.record_learning().
+    This helper keeps dashboards that only understand TechniqueStats working.
+    """
+    mem = LearnerMemory()
+    try:
+        from agent.learner_model import load_record
+        record = load_record()
+        for tech in record.techniques():
+            ti = record.for_technique(tech)
+            st = TechniqueStats(
+                attempts=int(ti.attempts),
+                successes=int(ti.successes),
+                hints_used=int(getattr(ti, "deepest_hint", 0) or 0),
+            )
+            mem.techniques[tech] = st
+    except Exception:
+        pass
+    return mem

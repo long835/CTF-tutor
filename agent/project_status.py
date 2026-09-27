@@ -17,6 +17,41 @@ def _learner_summary() -> Dict[str, Any]:
         return {"error": str(e)}
 
 
+
+def _next_practice_brief():
+    try:
+        from agent.curriculum_next import next_practice
+        d = next_practice(limit=3)
+        return {
+            "due": len(d.get("due_reviews") or []),
+            "labs": [x.get("lab_id") for x in (d.get("suggested_labs") or [])],
+        }
+    except Exception as e:
+        return {"error": str(e)}
+
+
+def _eval_honesty() -> Dict[str, Any]:
+    """Report independent vs generated vs external-hard scores when cheap."""
+    out: Dict[str, Any] = {
+        "note": "generated benchmark may share vocabulary with classifier rules; prefer independent/public/external_hard",
+    }
+    try:
+        import json
+        from agent.classify_challenge import classify_challenge
+        path = ROOT / "data" / "eval" / "external_hard.json"
+        if path.is_file():
+            cases = json.loads(path.read_text(encoding="utf-8"))
+            ok = sum(
+                1
+                for c in cases
+                if classify_challenge(c.get("description", "")).category
+                == c.get("expected_category")
+            )
+            out["external_hard"] = {"ok": ok, "n": len(cases), "accuracy": round(ok / max(len(cases), 1), 3)}
+    except Exception as e:
+        out["external_hard_error"] = str(e)
+    return out
+
 def _experience_labs() -> Dict[str, Any]:
     man = ROOT / "data" / "samples" / "experience" / "manifest.json"
     if not man.is_file():
@@ -70,7 +105,7 @@ def project_status() -> Dict[str, Any]:
 
     cfg = get_config()
     return {
-        "version": "0.4.2",
+        "version": "0.9.2",
         "techniques_library": techniques,
         "evidence_rubrics": len(REQUIREMENTS),
         "uncovered_signals": uncovered_signals(),
@@ -86,6 +121,8 @@ def project_status() -> Dict[str, Any]:
         "learner": _learner_summary(),
         "phase": "6.5-integration",
         "experience_labs": _experience_labs(),
+        "eval_honesty": _eval_honesty(),
+        "next_practice": _next_practice_brief(),
     }
 
 
@@ -101,5 +138,7 @@ def format_status(s: Dict[str, Any] | None = None) -> str:
         f"  model: {s['model']}  embed: {s['embed_backend']}  network: {s['network_enabled']}",
         f"  api: {s['api']}",
         f"  experience_labs: {s.get('experience_labs', {})}",
+        f"  eval_honesty: {s.get('eval_honesty', {})}",
+        f"  next_practice: {s.get('next_practice', {})}",
     ]
     return "\n".join(lines)

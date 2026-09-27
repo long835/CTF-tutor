@@ -53,7 +53,6 @@ DECISIVE, STRONG, MODERATE, WEAK = 4.0, 2.5, 1.2, 0.4
 # (pattern, category, weight). Patterns are regexes matched case-insensitively
 # with word-ish boundaries where it matters, so "api" does not match "rapid".
 SIGNALS: List[Tuple[str, str, float]] = [
-    # --- web
     (r"\bjwt\b|json web token", "web", DECISIVE),
     (r"sql\s*injection|\bsqli\b", "web", DECISIVE),
     (r"\bssti\b|template injection", "web", DECISIVE),
@@ -74,8 +73,6 @@ SIGNALS: List[Tuple[str, str, float]] = [
     (r"\bhttp\b|\bhttps\b|\burl\b|\bendpoint\b|web app|website", "web", MODERATE),
     (r"log(?:ging)?\s*in|logs? in|login|sign(?:ing)? in|authentication", "web", MODERATE),
     (r"\bapi\b|\brequest\b|\bresponse\b|\bheader\b|\bcookie\b", "web", WEAK),
-
-    # --- pwn
     (r"buffer overflow|stack overflow|heap overflow|fixed local buffer|overlong input crashes|control(?:s|led)? return address|neighbouring (?:safe )?variable|two heap buffers|smash the stack|\bSIGSEGV\b|overflow the correct buffer", "pwn", DECISIVE),
     (r"\brop\b|ret2libc|ret2win|ret2csu|\bsrop\b", "pwn", DECISIVE),
     (r"format string|%n\b|printf-family|percent signs leak|printf\s*\(|format specifiers|prints your input with printf|writable GOT", "pwn", DECISIVE),
@@ -91,8 +88,6 @@ SIGNALS: List[Tuple[str, str, float]] = [
     (r"non.executable stack|\bnx\b|\baslr\b|\bpie\b|position.independent", "pwn", MODERATE),
     (r"\bpwntools\b|\blibc\b|get a shell|spawn a shell", "pwn", MODERATE),
     (r"\bsegfault\b|\bcrash(?:es)?\b|local array|stack frame", "pwn", MODERATE),
-
-    # --- crypto
     (r"\brsa\b|\bmodulus\b|public exponent", "crypto", DECISIVE),
     (r"padding oracle|\becb\b|\bcbc\b|\bctr\b mode", "crypto", DECISIVE),
     (r"\bxor\b.{0,20}(?:key|cipher)|single.byte xor|repeating.key", "crypto", DECISIVE),
@@ -101,15 +96,11 @@ SIGNALS: List[Tuple[str, str, float]] = [
     (r"length extension|hash collision", "crypto", DECISIVE),
     (r"\bprng\b|mt19937|mersenne twister|predictable.{0,20}rand|predict the next (?:token|value)", "crypto", DECISIVE),
     (r"timing (?:attack|side.?channel|difference)|early exit|not constant.?time|measure timing|first differing character|latency is stable", "crypto", DECISIVE),
-    (r"caesar|\brot-?13\b|vigen[eè]re|atbash|playfair|rail fence|substitution cipher",
-     "crypto", DECISIVE),
-    (r"shift cipher|frequency analysis|recover (?:the )?(?:english )?plaintext",
-     "crypto", STRONG),
+    (r"caesar|\brot-?13\b|vigen[eè]re|atbash|playfair|rail fence|substitution cipher", "crypto", DECISIVE),
+    (r"shift cipher|frequency analysis|recover (?:the )?(?:english )?plaintext", "crypto", STRONG),
     (r"\baes\b|\bdes\b|block cipher|stream cipher|nonce reuse|same 16-byte", "crypto", STRONG),
     (r"\bcipher(?:text)?\b|encrypt(?:ed|ion)?|decrypt", "crypto", MODERATE),
     (r"\bmd5\b|\bsha-?\d+\b|\bhash\b|private key|\bprime\b|\bnonce\b", "crypto", MODERATE),
-
-    # --- rev
     (r"reverse engineer|\bcrackme\b|\bkeygen\b", "rev", DECISIVE),
     (r"decompil|disassembl|\bghidra\b|\bida pro\b|\bilspy\b|\bdnspy\b", "rev", DECISIVE),
     (r"obfuscat|anti.debug|control.flow flattening|\bupx\b|\bpacked\b|unpacks the real code|import table is rebuilt|pack(?:er|ed) stub", "rev", DECISIVE),
@@ -122,8 +113,6 @@ SIGNALS: List[Tuple[str, str, float]] = [
     (r"license (?:key|check)|serial (?:key|number) check|registration dialog|derived from the name", "rev", STRONG),
     (r"\bassembly\b|\bopcodes?\b|\.net assembly|go binary|rust binary", "rev", MODERATE),
     (r"binary analysis|static analysis|symbol table", "rev", MODERATE),
-
-    # --- forensics
     (r"\bpcap(?:ng)?\b|\bwireshark\b|\btshark\b|network capture|packet capture|TCP stream|reassembl(?:e|ing) the TCP", "forensics", DECISIVE),
     (r"steganograph|\bstego\b|\blsb\b|hidden in (?:the )?image|lowest bit|color channel.{0,30}hidden|hidden bitstream", "forensics", DECISIVE),
     (r"memory dump|disk image|\bvolatility\b|file carving", "forensics", DECISIVE),
@@ -132,19 +121,13 @@ SIGNALS: List[Tuple[str, str, float]] = [
     (r"hidden file|deleted file|recover the file|\bartifacts?\b", "forensics", MODERATE),
     (r"\bpng\b|\bjpe?g\b|\bwav\b|\bzip\b archive|log file", "forensics", WEAK),
     (r"nested (?:zip|archive)|polyglot file|magic bytes|file signature", "misc", STRONG),
-
-    # --- osint
     (r"\bosint\b|open.source intelligence", "osint", DECISIVE),
     (r"geolocat|reverse image search|\bwhois\b|\bshodan\b|google dork|where this photo was taken|find where.{0,20}taken", "osint", DECISIVE),
-
-    # --- generated-eval / blind paraphrase coverage ---
     (r"\bELF\b|64-bit ELF|32-bit ELF|stripped (?:64-bit )?executable|single stripped|32-bit binary|win function|gets overflow|control the return address", "pwn", DECISIVE),
     (r"stripped (?:64-bit )?executable|custom instruction set|dispatch switch|anti[- ]?debug|exits early under a debugger", "rev", DECISIVE),
     (r"\bAPK\b|android package|smali|dalvik", "mobile", DECISIVE),
     (r"contract source|solidity|\bERC-?20\b|smart contract|test suite.*contract", "blockchain", DECISIVE),
     (r"photograph with no caption|identifiable landmarks|geotag", "osint", DECISIVE),
-
-    # --- generated template openers / framing cues ---
     (r"URL and the application source|docker-compose|Hs256|RS256 tokens|binary blob in a cookie", "web", DECISIVE),
     (r"You are handed a URL|running service and its source tree|application source", "web", STRONG),
     (r"archive of recovered files|credential material in RAM|unusually large metadata|recovered files", "forensics", DECISIVE),
@@ -154,27 +137,20 @@ SIGNALS: List[Tuple[str, str, float]] = [
     (r"two ciphertexts and the public parameters|coprime exponents|Wiener|small public exponent", "crypto", DECISIVE),
     (r"oracle endpoint and a sample token|E equal to 3|N factors quickly|short plaintext|no padding scheme|Hamming distance minimum|repeating byte patterns", "crypto", DECISIVE),
     (r"frequency match|readable strings|nested encoding|uniform-looking bytes", "crypto", STRONG),
-
     (r"timing differences on (?:heavy )?conditions|identical responses but different status", "web", DECISIVE),
     (r"contract source and a test suite", "blockchain", DECISIVE),
-
     (r"encoding layers|base64 and hex|nested (?:password-protected )?archives|polyglot|opens as an image|secondary interpretation", "misc", DECISIVE),
     (r"flag is hidden under|multilayer encoding|layered encoding", "misc", STRONG),
-
     (r"\blibc\b|checksec|no range check|adjacent (?:variable|allocation)", "pwn", STRONG),
     (r"decode without verify|verify without allowlist|retry endpoint", "web", STRONG),
     (r"role from request|client-side only check", "web", MODERATE),
     (r"role from request|client-side only check", "blockchain", MODERATE),
     (r"exif|document metadata|gps tag|pdf producer|embedded coordinates|file properties|camera still|location metadata|photo was taken", "osint", DECISIVE),
     (r"social media|public record|find (?:this|the) person|\bhandle\b", "osint", STRONG),
-
-    # --- blockchain
     (r"smart contract|\bsolidity\b|\berc-?20\b|\bweb3\b", "blockchain", DECISIVE),
     (r"\breentran|\bethereum\b|\bgas\b limit|\bwallet\b|\bether\b", "blockchain", STRONG),
     (r"onlyOwner|missing (?:access )?modifier|tx\.origin auth|withdraw function marked public", "blockchain", STRONG),
     (r"on.chain|\btestnet\b|\btransaction\b hash", "blockchain", MODERATE),
-
-    # --- mobile
     (r"\bapk\b|\bandroid\b|\bipa\b|\bios app\b", "mobile", DECISIVE),
     (r"\bfrida\b|\bjadx\b|exported activity|shared preferences|\bkeystore\b", "mobile", DECISIVE),
     (r"mobile app|\bmanifest\.xml\b|\bdex\b", "mobile", STRONG),
@@ -228,11 +204,103 @@ _EXT_KIND: Dict[str, str] = {
 # category — a description that describes alg=none is a web challenge even if
 # it never says "web".
 TECHNIQUE_CATEGORY: Dict[str, str] = {
-    "jwt-none-bypass": "web", "jwt-alg-confusion": "web", "sql-injection": "web",
-    "ssti": "web", "path-traversal": "web", "idor": "web", "xss-reflected": "web",
-    "stack-buffer-overflow": "pwn", "format-string": "pwn", "ret2libc": "pwn",
-    "xor-single-byte": "crypto", "xor-repeating-key": "crypto",
-    "packed-binary": "rev", "steganography": "forensics",
+    "access-control": "blockchain",
+    "algorithm-recovery": "rev",
+    "android-exported-component": "mobile",
+    "anti-debug-bypass": "rev",
+    "api-hashing": "rev",
+    "arbitrary-write": "pwn",
+    "archive-analysis": "misc",
+    "aslr-bypass": "pwn",
+    "auth-bypass": "web",
+    "cache-poisoning": "web",
+    "canary-bypass": "pwn",
+    "certificate-pinning-bypass": "mobile",
+    "classical-caesar": "crypto",
+    "classical-substitution": "crypto",
+    "control-flow-flattening": "rev",
+    "cors-misconfiguration": "web",
+    "ctr-nonce-reuse": "crypto",
+    "deserialization-rce": "web",
+    "disk-image-analysis": "forensics",
+    "dotnet-deobfuscation": "rev",
+    "ecb-byte-at-a-time": "crypto",
+    "ecdsa-nonce-reuse": "crypto",
+    "encoding-recognition": "crypto",
+    "esoteric-lang": "misc",
+    "fastbin-dup": "pwn",
+    "file-carving": "forensics",
+    "file-signature": "misc",
+    "file-structure-abuse": "pwn",
+    "file-upload-chain": "web",
+    "format-string": "pwn",
+    "go-binary-analysis": "rev",
+    "graphql-introspection": "web",
+    "hardcoded-secret": "mobile",
+    "hash-length-extension": "crypto",
+    "heap-overflow": "pwn",
+    "http-request-smuggling": "web",
+    "idor": "web",
+    "image-metadata": "forensics",
+    "info-leak": "pwn",
+    "insecure-storage": "mobile",
+    "integer-accounting": "blockchain",
+    "integer-overflow": "pwn",
+    "jwt-alg-confusion": "web",
+    "jwt-none-bypass": "web",
+    "keygen": "rev",
+    "lattice-reduction": "crypto",
+    "log-analysis": "forensics",
+    "memory-forensics": "forensics",
+    "multilayer-encoding": "misc",
+    "nested-archive": "misc",
+    "nosql-injection": "web",
+    "oauth-flow-abuse": "web",
+    "off-by-one": "pwn",
+    "opaque-predicates": "rev",
+    "osint-domain-dns": "osint",
+    "osint-geolocation": "osint",
+    "osint-metadata": "osint",
+    "osint-username": "osint",
+    "packed-binary": "rev",
+    "padding-oracle": "crypto",
+    "path-traversal": "web",
+    "pcap-carving": "forensics",
+    "prng-prediction": "crypto",
+    "prototype-pollution": "web",
+    "race-condition": "web",
+    "reentrancy": "blockchain",
+    "ret2csu": "pwn",
+    "ret2libc": "pwn",
+    "rop-chain": "pwn",
+    "rsa-broadcast": "crypto",
+    "rsa-common-modulus": "crypto",
+    "rsa-factorisation": "crypto",
+    "rsa-franklin-reiter": "crypto",
+    "rsa-small-e": "crypto",
+    "rsa-wiener": "crypto",
+    "rust-binary-analysis": "rev",
+    "seccomp-escape": "pwn",
+    "solidity-access-control": "blockchain",
+    "sql-injection": "web",
+    "sqli-blind-boolean": "web",
+    "sqli-union": "web",
+    "srop": "pwn",
+    "ssrf": "web",
+    "ssti": "web",
+    "stack-buffer-overflow": "pwn",
+    "steganography": "forensics",
+    "string-decryption": "rev",
+    "symbolic-execution": "rev",
+    "tcache-poisoning": "pwn",
+    "timing-side-channel": "crypto",
+    "unsorted-bin-leak": "pwn",
+    "use-after-free": "pwn",
+    "vm-obfuscation": "rev",
+    "xor-repeating-key": "crypto",
+    "xor-single-byte": "crypto",
+    "xss-reflected": "web",
+    "xxe": "web",
 }
 
 
@@ -256,6 +324,9 @@ class ChallengeProfile:
 
     category: str = "misc"
     confidence: float = 0.0
+    unknown: bool = False  # True when evidence is too weak to classify
+    decision: str = "commit"  # commit | abstain | unknown
+    calibrated_probability: float | None = None
     runner_up: str = ""
     margin: float = 0.0
     ambiguous: bool = True
@@ -308,6 +379,29 @@ class ChallengeProfile:
         for note in self.notes:
             lines.append(f"  · {note}")
         return "\n".join(lines)
+
+
+
+# Structural (non-keyword-spam) cues: event patterns rather than technique names.
+STRUCTURAL_HINTS = (
+    (r"terminates after|crashes after|overwrites a function pointer|return address|free a note object twice|heap allocation", "pwn", 0.4),
+    (r"password|serial number|wrong answers take different|dispatcher state machine|decoder loop runs over a byte table", "rev", 0.35),
+    (r"reflects its contents into|angle brackets in the query|cookie from role=|search box|login form concatenates", "web", 0.35),
+    (r"padding error|auth failed|stream key|public exponent is three|xor.?d together|digram frequencies", "crypto", 0.35),
+    (r"packet capture|memory snapshot|disk image|unallocated space|credentials that were never written", "forensics", 0.35),
+    (r"street sign|profile photos|certificate logs|whois|same handle appears", "osint", 0.35),
+    (r"smart contract|re-entering the withdraw|flash.?loan|on-chain|block hash that miners|integer underflows in a token", "blockchain", 0.4),
+    (r"android package|hardcoded endpoints|certificate pinning|exported activities|frida can bypass|root detection", "mobile", 0.4),
+)
+
+def _structural_bonus(text: str) -> dict:
+    import re
+    scores = {}
+    low = text.lower()
+    for pat, cat, w in STRUCTURAL_HINTS:
+        if re.search(pat, low):
+            scores[cat] = scores.get(cat, 0.0) + w
+    return scores
 
 
 def kind_of_path(path: str) -> str:
@@ -377,6 +471,31 @@ def _technique_matches(text: str) -> List[Tuple[str, float]]:
     return scored
 
 
+
+_NEGATION_WINDOW = re.compile(
+    r"(?i)(?:\bnot\b|\bno\b|\bnever\b|\bisn'?t\b|\baren'?t\b|\bwasn'?t\b|"
+    r"\bwithout\b|\bunrelated to\b|\bnothing to do with\b)\s+"
+    r"([a-z0-9][\w\s\-]{0,40}?)(?=[.,;:!?]|$)"
+)
+
+
+def _mask_negated_phrases(text: str) -> str:
+    """Cheap negation: blank out short spans after not/no/never so keyword
+    signals do not fire on explicitly denied cues."""
+    if not text:
+        return text
+    def _blank(m: re.Match) -> str:
+        return " " * len(m.group(0))
+    # Also handle "not a SQL injection" style
+    out = _NEGATION_WINDOW.sub(_blank, text)
+    out = re.sub(
+        r"(?i)\b(?:not|no|never)\s+(?:a\s+)?(?:sql\s+injection|jwt|web|pwn|crypto|buffer\s+overflow|xss|ssti)\b",
+        " ",
+        out,
+    )
+    return out
+
+
 def classify_challenge(
     description: str = "",
     artifacts: Optional[Iterable[str]] = None,
@@ -391,7 +510,7 @@ def classify_challenge(
     verified observation.
     """
     profile = ChallengeProfile()
-    text = f"{description}\n{content_sample}"
+    text = _mask_negated_phrases(f"{description}\n{content_sample}")
     scores: Dict[str, float] = {c: 0.0 for c in CATEGORIES}
 
     # 1. Description and content signals.
@@ -441,6 +560,15 @@ def classify_challenge(
                 weight=MODERATE, source="artifact",
             ))
 
+    # 5. Structural event patterns (behavior, not technique-name spam).
+    for cat, weight in _structural_bonus(text).items():
+        if cat in scores:
+            scores[cat] += weight
+            profile.signals.append(Signal(
+                name=f"structural:{cat}", category=cat,
+                weight=weight, source="description",
+            ))
+
     profile.scores = scores
     ranked = sorted(scores.items(), key=lambda kv: -kv[1])
     top_category, top_score = ranked[0]
@@ -485,6 +613,8 @@ def classify_challenge(
         profile.runner_up = top_category
         profile.margin = 0.0
         profile.ambiguous = True
+        profile.unknown = True
+        profile.decision = "unknown"
         profile.secondary_categories = []
         return _finish(profile, text)
 
@@ -493,42 +623,69 @@ def classify_challenge(
         profile.primary_category = "misc"
         profile.confidence = 0.0
         profile.ambiguous = True
+        profile.unknown = True
+        profile.decision = "unknown"
         profile.notes.append("no category signals found — triage the files and re-classify")
-    else:
-        profile.category = top_category
-        profile.primary_category = top_category
-        profile.margin = (top_score - runner_score) / top_score if top_score else 0.0
-        profile.runner_up = runner_category
-        profile.secondary_categories = _secondaries(ranked, top_category, top_score)
-        volume = min(1.0, top_score / (DECISIVE * 2))
-        separation = min(1.0, profile.margin)
-        profile.confidence = round(
-            min(0.97, max(0.05, 0.05 + 0.3 * volume + 0.65 * separation * volume)), 3
+        return _finish(profile, text)
+
+    profile.category = top_category
+    profile.primary_category = top_category
+    profile.margin = (top_score - runner_score) / top_score if top_score else 0.0
+    profile.runner_up = runner_category
+    profile.secondary_categories = _secondaries(ranked, top_category, top_score)
+    volume = min(1.0, top_score / (DECISIVE * 2))
+    separation = min(1.0, profile.margin)
+    profile.confidence = round(
+        min(0.97, max(0.05, 0.05 + 0.3 * volume + 0.65 * separation * volume)), 3
+    )
+    # Unknown vs misc: weak absolute evidence keeps best-guess category but marks unknown
+    if top_score < WEAK:
+        profile.unknown = True
+        profile.ambiguous = True
+        profile.confidence = min(profile.confidence, 0.2)
+        profile.notes.append(
+            f"low-evidence classification ({top_score:.1f}) for {top_category} — unknown-strength"
         )
-        # Soft band: weak absolute evidence → keep category but lower confidence
-        if top_score < MODERATE * 1.5:
-            profile.confidence = min(profile.confidence, 0.35)
-            profile.ambiguous = True
-            profile.notes.append(
-                f"weak-but-usable signals ({top_score:.1f}) for {top_category}"
-            )
-        profile.ambiguous = profile.ambiguous or profile.margin < 0.35 or profile.confidence < 0.35
-        if profile.ambiguous and runner_category:
-            profile.notes.append(
-                f"{top_category} and {runner_category} are close "
-                f"({top_score:.1f} vs {runner_score:.1f}) — expect to revise, "
-                f"and consider a chained challenge"
-            )
-        if profile.secondary_categories:
-            profile.notes.append(
-                "secondary: " + ", ".join(profile.secondary_categories)
-            )
+    elif top_score < MODERATE * 1.5:
+        profile.confidence = min(profile.confidence, 0.35)
+        profile.ambiguous = True
+        profile.notes.append(
+            f"weak-but-usable signals ({top_score:.1f}) for {top_category}"
+        )
+    profile.ambiguous = profile.ambiguous or profile.margin < 0.35 or profile.confidence < 0.35
+    # First-class abstain: close race or weak absolute score
+    if profile.unknown or top_score <= 0:
+        profile.decision = "unknown"
+    elif profile.margin < 0.2 and runner_score > 0:
+        profile.decision = "abstain"
+        profile.ambiguous = True
+        profile.notes.append(
+            f"ABSTAIN: {top_category} vs {runner_category} too close "
+            f"({top_score:.1f} vs {runner_score:.1f}) — run discriminating checks"
+        )
+    else:
+        profile.decision = "commit"
+    if profile.ambiguous and runner_category:
+        profile.notes.append(
+            f"{top_category} and {runner_category} are close "
+            f"({top_score:.1f} vs {runner_score:.1f}) — expect to revise, "
+            f"and consider a chained challenge"
+        )
+    if profile.secondary_categories:
+        profile.notes.append(
+            "secondary: " + ", ".join(profile.secondary_categories)
+        )
 
     return _finish(profile, text)
 
 
 def _finish(profile: ChallengeProfile, text: str) -> ChallengeProfile:
     """Attach the missing signals and the tools that could close them."""
+    try:
+        from agent.calibration_fit import calibrated_probability
+        profile.calibrated_probability = calibrated_probability(float(profile.confidence or 0.0))
+    except Exception:
+        profile.calibrated_probability = None
     if profile.candidate_techniques:
         try:
             from agent.evidence import _matches, requirements_for

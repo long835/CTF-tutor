@@ -1,0 +1,527 @@
+[
+  {
+    "id": "ext-pwn-01",
+    "description": "A remote service terminates after roughly eighty bytes of input. The supplied executable is dynamically linked and ships with a companion shared library.",
+    "expected_category": "pwn"
+  },
+  {
+    "id": "ext-pwn-02",
+    "description": "Sending longer and longer lines to the daemon eventually overwrites a function pointer stored next to a local array. No source is provided.",
+    "expected_category": "pwn"
+  },
+  {
+    "id": "ext-pwn-03",
+    "description": "The process prints memory addresses when you insert percent signs into the greeting field. ASLR is enabled on the host.",
+    "expected_category": "pwn"
+  },
+  {
+    "id": "ext-pwn-04",
+    "description": "You can free a note object twice from the menu. Afterward, allocating again lets you corrupt a pointer that used to belong to the note.",
+    "expected_category": "pwn"
+  },
+  {
+    "id": "ext-rev-01",
+    "description": "An executable rejects most passwords. Comparing two failing runs shows an early exit when the fifth character differs.",
+    "expected_category": "rev"
+  },
+  {
+    "id": "ext-rev-02",
+    "description": "The program contains a large switch that dispatches on numeric opcodes read from a file. No symbols remain in the binary.",
+    "expected_category": "rev"
+  },
+  {
+    "id": "ext-rev-03",
+    "description": "Strings that look like API names only appear after a small decoder loop runs over a byte table at startup.",
+    "expected_category": "rev"
+  },
+  {
+    "id": "ext-web-01",
+    "description": "Changing a browser cookie from role=user to role=admin grants access even though you never typed a password.",
+    "expected_category": "web"
+  },
+  {
+    "id": "ext-web-02",
+    "description": "A search box reflects its contents into an HTML attribute without encoding. Angle brackets in the query change the page structure.",
+    "expected_category": "web"
+  },
+  {
+    "id": "ext-web-03",
+    "description": "Uploading a file whose name contains ../ writes outside the uploads directory on the server.",
+    "expected_category": "web"
+  },
+  {
+    "id": "ext-web-04",
+    "description": "The login form concatenates the password into a database query string. Supplying a quotation mark changes how many rows come back.",
+    "expected_category": "web"
+  },
+  {
+    "id": "ext-crypto-01",
+    "description": "Two messages encrypted under the same stream key cancel when XOR'd together, revealing English-looking residue.",
+    "expected_category": "crypto"
+  },
+  {
+    "id": "ext-crypto-02",
+    "description": "The server rejects some ciphertexts with 'padding error' and others with 'auth failed'. The difference is observable over the network.",
+    "expected_category": "crypto"
+  },
+  {
+    "id": "ext-crypto-03",
+    "description": "A modulus factors in under a second on a laptop. The public exponent is three and the plaintext is short.",
+    "expected_category": "crypto"
+  },
+  {
+    "id": "ext-for-01",
+    "description": "A packet capture of a short HTTP session is provided. The interesting payload is not in the first request.",
+    "expected_category": "forensics"
+  },
+  {
+    "id": "ext-for-02",
+    "description": "An image file's metadata block is unusually large. Pixel data looks ordinary at a glance.",
+    "expected_category": "forensics"
+  },
+  {
+    "id": "ext-for-03",
+    "description": "A memory snapshot from a laptop may still hold credentials that were never written to disk.",
+    "expected_category": "forensics"
+  },
+  {
+    "id": "ext-osint-01",
+    "description": "Only a username is given. The same handle appears on two public sites with overlapping profile photos.",
+    "expected_category": "osint"
+  },
+  {
+    "id": "ext-osint-02",
+    "description": "A photo includes a visible street sign. No other context is provided.",
+    "expected_category": "osint"
+  },
+  {
+    "id": "ext-misc-01",
+    "description": "The attachment decodes once to hexadecimal text and that text decodes again to a readable sentence.",
+    "expected_category": "misc"
+  },
+  {
+    "id": "ext-misc-02",
+    "description": "Nested archives each ask for a short password derived from the previous layer's comment field.",
+    "expected_category": "misc"
+  },
+  {
+    "id": "ext-bc-01",
+    "description": "A smart contract updates balances after an external call returns. Re-entering the withdraw function drains funds.",
+    "expected_category": "blockchain"
+  },
+  {
+    "id": "ext-mob-01",
+    "description": "An Android package stores an API key in a resource file readable after unpacking the archive.",
+    "expected_category": "mobile"
+  },
+  {
+    "id": "ext-pwn-05",
+    "description": "The daemon accepts a username then a password. Overlong usernames change which function runs after the prompt returns.",
+    "expected_category": "pwn"
+  },
+  {
+    "id": "ext-pwn-06",
+    "description": "A local program reads a file path and copies its contents into a fixed-size region without checking length first.",
+    "expected_category": "pwn"
+  },
+  {
+    "id": "ext-pwn-07",
+    "description": "You control the length field of a heap allocation. Setting it larger than the actual chunk lets neighboring metadata be rewritten.",
+    "expected_category": "pwn"
+  },
+  {
+    "id": "ext-rev-04",
+    "description": "The binary asks for a serial number. Wrong answers take different numbers of instructions before printing 'no'.",
+    "expected_category": "rev"
+  },
+  {
+    "id": "ext-rev-05",
+    "description": "A packed-looking section unpacks itself into newly allocated memory before the real logic starts.",
+    "expected_category": "rev"
+  },
+  {
+    "id": "ext-web-05",
+    "description": "The admin panel is reachable if you send the same cookie the UI sets after login, even from a different browser profile.",
+    "expected_category": "web"
+  },
+  {
+    "id": "ext-web-06",
+    "description": "Server-side rendering inserts the profile bio into a template language that evaluates expressions.",
+    "expected_category": "web"
+  },
+  {
+    "id": "ext-web-07",
+    "description": "An API trusts the algorithm field inside a signed token header and will treat an empty signature as valid under one setting.",
+    "expected_category": "web"
+  },
+  {
+    "id": "ext-crypto-04",
+    "description": "Identical plaintext blocks produce identical ciphertext blocks under this mode of operation.",
+    "expected_category": "crypto"
+  },
+  {
+    "id": "ext-crypto-05",
+    "description": "Two signatures share the same ephemeral value; algebra recovers the private key from the pair.",
+    "expected_category": "crypto"
+  },
+  {
+    "id": "ext-crypto-06",
+    "description": "A repeating single-byte key was used on a short English sentence; frequency of the most common byte is revealing.",
+    "expected_category": "crypto"
+  },
+  {
+    "id": "ext-for-04",
+    "description": "A disk image contains deleted files whose headers still match known document types.",
+    "expected_category": "forensics"
+  },
+  {
+    "id": "ext-for-05",
+    "description": "Network traffic includes DNS queries for unusual hostnames that encode parts of a message.",
+    "expected_category": "forensics"
+  },
+  {
+    "id": "ext-osint-03",
+    "description": "A company email domain is known. Public certificate logs list additional hostnames under that domain.",
+    "expected_category": "osint"
+  },
+  {
+    "id": "ext-misc-03",
+    "description": "The puzzle is only a sequence of Morse-like dots and dashes in a text file.",
+    "expected_category": "misc"
+  },
+  {
+    "id": "ext-bc-02",
+    "description": "Anyone can call a privileged function because ownership is checked only in the web UI, not in the contract.",
+    "expected_category": "blockchain"
+  },
+  {
+    "id": "ext-mob-02",
+    "description": "Decompiling the mobile app shows hardcoded endpoints and a bearer token in a constants class.",
+    "expected_category": "mobile"
+  },
+  {
+    "id": "ext-web-08",
+    "description": "Cross-origin requests succeed with credentials because the server reflects any Origin and allows credentials.",
+    "expected_category": "web"
+  },
+  {
+    "id": "ext-pwn-08",
+    "description": "After leaking a library address from a write primitive, you need a chain of return addresses to call system.",
+    "expected_category": "pwn"
+  },
+  {
+    "id": "ext-rev-06",
+    "description": "Anti-analysis code exits early when a debugger is detected via timing of a short loop.",
+    "expected_category": "rev"
+  },
+  {
+    "id": "ext-crypto-07",
+    "description": "Broadcast encryption of the same message under related moduli allows recovery without the private keys.",
+    "expected_category": "crypto"
+  },
+  {
+    "id": "ext-for-06",
+    "description": "A chat export contains timestamps and GPS-like coordinates embedded in message metadata.",
+    "expected_category": "forensics"
+  },
+  {
+    "id": "ext-osint-04",
+    "description": "A nickname from an old forum post matches a developer account that still lists a personal blog.",
+    "expected_category": "osint"
+  },
+  {
+    "id": "ext-misc-04",
+    "description": "Each layer of the archive is compressed with a different tool; the final payload is plain text.",
+    "expected_category": "misc"
+  },
+  {
+    "id": "ext-web-09",
+    "description": "A GraphQL endpoint answers introspection queries and returns fields the official client never requests.",
+    "expected_category": "web"
+  },
+  {
+    "id": "ext-pwn-09",
+    "description": "The service installs a syscall filter before reading input; only a few system calls remain allowed.",
+    "expected_category": "pwn"
+  },
+  {
+    "id": "ext-rev-07",
+    "description": "Go runtime metadata is still present and can be used to recover function names the strip step left behind.",
+    "expected_category": "rev"
+  },
+  {
+    "id": "ext-pwn-10",
+    "description": "The binary greets you and then reads a line. Values past the end of the greeting buffer alter the return address observed in a debugger.",
+    "expected_category": "pwn"
+  },
+  {
+    "id": "ext-pwn-11",
+    "description": "Only open, read, and write remain after the filter installs. Building a shell requires staying inside that set.",
+    "expected_category": "pwn"
+  },
+  {
+    "id": "ext-rev-08",
+    "description": "Floating-point constants in the data section match coefficients of a known checksum polynomial.",
+    "expected_category": "rev"
+  },
+  {
+    "id": "ext-rev-09",
+    "description": "A Rust-built binary still embeds panic strings that name internal modules.",
+    "expected_category": "rev"
+  },
+  {
+    "id": "ext-web-10",
+    "description": "Password reset tokens are predictable integers. Requesting consecutive values resets other accounts.",
+    "expected_category": "web"
+  },
+  {
+    "id": "ext-web-11",
+    "description": "The application deserializes a cookie with a library known to invoke gadget chains when type fields are attacker-controlled.",
+    "expected_category": "web"
+  },
+  {
+    "id": "ext-crypto-08",
+    "description": "Nonce reuse in an authenticated encryption scheme lets an observer recover the authentication key material.",
+    "expected_category": "crypto"
+  },
+  {
+    "id": "ext-crypto-09",
+    "description": "A classical cipher over English leaves digram frequencies almost unchanged from plaintext.",
+    "expected_category": "crypto"
+  },
+  {
+    "id": "ext-for-07",
+    "description": "A browser profile directory still holds cookies and form history after the user thought they logged out.",
+    "expected_category": "forensics"
+  },
+  {
+    "id": "ext-for-08",
+    "description": "Carve tools recover a JPEG from unallocated space; EXIF still contains a phone model string.",
+    "expected_category": "forensics"
+  },
+  {
+    "id": "ext-osint-05",
+    "description": "A resume PDF lists an old personal domain. The domain's historical WHOIS is still in public archives.",
+    "expected_category": "osint"
+  },
+  {
+    "id": "ext-misc-05",
+    "description": "The only attachment is a QR code image that decodes to another short encoded string.",
+    "expected_category": "misc"
+  },
+  {
+    "id": "ext-bc-03",
+    "description": "Integer underflows in a token accounting function mint extra balance when amounts wrap.",
+    "expected_category": "blockchain"
+  },
+  {
+    "id": "ext-mob-03",
+    "description": "Certificate pinning is implemented in Java but a debug build disables the pin check when a flag file exists.",
+    "expected_category": "mobile"
+  },
+  {
+    "id": "ext-web-12",
+    "description": "File uploads accept SVG. Script inside the SVG executes when an admin opens the avatar page.",
+    "expected_category": "web"
+  },
+  {
+    "id": "ext-pwn-12",
+    "description": "Partial overwrite of a pointer is possible because only two bytes differ between the heap and a libc address.",
+    "expected_category": "pwn"
+  },
+  {
+    "id": "ext-rev-10",
+    "description": "Control flow flattens into a dispatcher state machine; recovering the original order needs the state variable.",
+    "expected_category": "rev"
+  },
+  {
+    "id": "ext-crypto-10",
+    "description": "Related-key messages under a short repeating pad are solvable by crib-dragging known headers.",
+    "expected_category": "crypto"
+  },
+  {
+    "id": "ext-for-09",
+    "description": "A hibernation file from Windows may still contain plaintext documents from the last session.",
+    "expected_category": "forensics"
+  },
+  {
+    "id": "ext-osint-06",
+    "description": "Satellite imagery timestamps and shadow direction roughly confirm when an outdoor photo was taken.",
+    "expected_category": "osint"
+  },
+  {
+    "id": "ext-web-13",
+    "description": "Websocket messages are not authenticated. Replaying a prior admin message performs privileged actions.",
+    "expected_category": "web"
+  },
+  {
+    "id": "ext-misc-06",
+    "description": "A programming challenge judges only stdout; the intended solution is a short golfed script, not exploitation.",
+    "expected_category": "misc"
+  },
+  {
+    "id": "ext-pwn-13",
+    "description": "The canary is leaked through an off-by-one that does not kill the process immediately.",
+    "expected_category": "pwn"
+  },
+  {
+    "id": "ext-rev-11",
+    "description": "Dotnet assemblies retain method names unless obfuscated; a decompiler shows the license check clearly.",
+    "expected_category": "rev"
+  },
+  {
+    "id": "ext-crypto-11",
+    "description": "Small private exponents make Wiener's attack practical against the public key file provided.",
+    "expected_category": "crypto"
+  },
+  {
+    "id": "ext-for-10",
+    "description": "USB attachment logs on the host show a mass-storage device serial that matches a suspect's keychain drive.",
+    "expected_category": "forensics"
+  },
+  {
+    "id": "ext-web-14",
+    "description": "Cache poisoning makes a shared CDN serve a page with an injected header to other users.",
+    "expected_category": "web"
+  },
+  {
+    "id": "ext-bc-04",
+    "description": "Randomness for a card game on-chain uses a predictable block hash that miners can influence.",
+    "expected_category": "blockchain"
+  },
+  {
+    "id": "ext-mob-04",
+    "description": "Frida can bypass the root detection branch that only returns a boolean checked in one activity.",
+    "expected_category": "mobile"
+  },
+  {
+    "id": "ext-osint-07",
+    "description": "An image board post includes a reflection of a skyline usable to identify the city.",
+    "expected_category": "osint"
+  },
+  {
+    "id": "ext-pwn-14",
+    "description": "The service echoes input and then crashes only when the fifth argument to a format-like specifier is used.",
+    "expected_category": "pwn"
+  },
+  {
+    "id": "ext-pwn-15",
+    "description": "Global offset table entries can be rewritten after a write primitive is obtained from a heap bug.",
+    "expected_category": "pwn"
+  },
+  {
+    "id": "ext-rev-12",
+    "description": "Virtual machine bytecode is interpreted in a loop; recovering the program means understanding the opcodes.",
+    "expected_category": "rev"
+  },
+  {
+    "id": "ext-rev-13",
+    "description": "License check compares a transformed serial to a constant embedded near the end of the text segment.",
+    "expected_category": "rev"
+  },
+  {
+    "id": "ext-web-15",
+    "description": "HTTP request smuggling works because the front proxy and the back app disagree on chunked encoding.",
+    "expected_category": "web"
+  },
+  {
+    "id": "ext-web-16",
+    "description": "A hidden field stores the price of a cart item; changing it on the client changes the charged amount.",
+    "expected_category": "web"
+  },
+  {
+    "id": "ext-crypto-12",
+    "description": "Common modulus attacks apply when the same message is encrypted to two public exponents sharing n.",
+    "expected_category": "crypto"
+  },
+  {
+    "id": "ext-crypto-13",
+    "description": "An ECB mode image encrypts each block independently, leaving silhouettes visible in ciphertext.",
+    "expected_category": "crypto"
+  },
+  {
+    "id": "ext-for-11",
+    "description": "Prefetch files on Windows indicate which binaries were run and when on the suspect machine.",
+    "expected_category": "forensics"
+  },
+  {
+    "id": "ext-for-12",
+    "description": "A pcapng of TLS traffic still leaks hostnames via the server name indication extension.",
+    "expected_category": "forensics"
+  },
+  {
+    "id": "ext-osint-08",
+    "description": "A vehicle plate in a photo can be cross-checked against a regional format to narrow the country.",
+    "expected_category": "osint"
+  },
+  {
+    "id": "ext-misc-07",
+    "description": "The challenge is a logic puzzle stated in prose; no binary or network service is involved.",
+    "expected_category": "misc"
+  },
+  {
+    "id": "ext-bc-05",
+    "description": "A flash-loan pattern drains a pool because the invariant is checked before the loan is repaid.",
+    "expected_category": "blockchain"
+  },
+  {
+    "id": "ext-mob-05",
+    "description": "Exported activities in the manifest can be launched by third-party apps without authentication.",
+    "expected_category": "mobile"
+  },
+  {
+    "id": "ext-web-17",
+    "description": "Host header injection makes password-reset links point at an attacker-controlled domain.",
+    "expected_category": "web"
+  },
+  {
+    "id": "ext-pwn-16",
+    "description": "Stack alignment must be corrected before a movaps instruction in the libc path succeeds.",
+    "expected_category": "pwn"
+  },
+  {
+    "id": "ext-rev-14",
+    "description": "Opaque predicates always take the same branch; simplifying them reveals the real control flow.",
+    "expected_category": "rev"
+  },
+  {
+    "id": "ext-crypto-14",
+    "description": "Franklin-Reiter related-message attack applies to two RSA ciphertexts under a known linear relation.",
+    "expected_category": "crypto"
+  },
+  {
+    "id": "ext-for-13",
+    "description": "Slack export ZIP files include channel histories with deleted messages still present in the JSON.",
+    "expected_category": "forensics"
+  },
+  {
+    "id": "ext-osint-09",
+    "description": "A Git commit email in a public repo matches a personal account that still hosts the same avatar.",
+    "expected_category": "osint"
+  },
+  {
+    "id": "ext-pwn-17",
+    "description": "A networked binary greets you by name. Names longer than the prompt area change which instruction runs after the function returns.",
+    "expected_category": "pwn"
+  },
+  {
+    "id": "ext-web-18",
+    "description": "Submitting a math expression in the profile field evaluates on the server and the result appears in the rendered page.",
+    "expected_category": "web"
+  },
+  {
+    "id": "ext-rev-15",
+    "description": "The program asks for a license key. Wrong keys take a different number of milliseconds before rejection.",
+    "expected_category": "rev"
+  },
+  {
+    "id": "ext-crypto-15",
+    "description": "Two messages under the same keystream cancel when combined, revealing structure of the original language.",
+    "expected_category": "crypto"
+  },
+  {
+    "id": "ext-for-14",
+    "description": "A browser profile directory may still hold session tokens after the user closed the window.",
+    "expected_category": "forensics"
+  }
+]

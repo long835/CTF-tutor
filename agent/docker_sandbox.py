@@ -55,6 +55,7 @@ def run_in_docker(
     workdir: str = "/work",
     mount_ro: Optional[str] = None,
     network: str = "none",
+    pids_limit: int = 64,
 ) -> SandboxResult:
     """
     Run argv inside a disposable container.
@@ -78,7 +79,11 @@ def run_in_docker(
         "--network", network,
         "--memory", f"{mem_mb}m",
         "--cpus", cpus,
+        "--pids-limit", str(max(1, int(pids_limit))),
         "--read-only",
+        "--cap-drop", "ALL",
+        "--security-opt", "no-new-privileges:true",
+        "--ipc", "private",
         "--tmpfs", "/tmp:size=64m",
         "--user", "65534:65534",  # nobody
     ]

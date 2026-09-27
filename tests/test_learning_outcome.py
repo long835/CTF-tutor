@@ -48,3 +48,21 @@ class TestExperienceArtifacts(unittest.TestCase):
         import json
         m = json.loads((ROOT / "data/samples/experience/manifest.json").read_text())
         self.assertGreaterEqual(len(m["items"]), 7)
+
+
+class TestNewP1Labs(unittest.TestCase):
+    def test_multi_pcap(self):
+        data = (ROOT / "data/samples/experience/forensics_pcap_multi/capture.pcap").read_bytes()
+        self.assertIn(b"flag{multi_pcap_lab}", data)
+        # at least global header + multiple packets → larger than single-packet lab
+        single = (ROOT / "data/samples/experience/forensics_pcap/capture.pcap").read_bytes()
+        self.assertGreater(len(data), len(single))
+
+    def test_sqli_db(self):
+        import sqlite3
+        db = ROOT / "data/samples/experience/web_sqli_lab/lab.db"
+        self.assertTrue(db.is_file())
+        row = sqlite3.connect(db).execute(
+            "SELECT secret FROM users WHERE name='admin'"
+        ).fetchone()
+        self.assertEqual(row[0], "flag{sqli_lab}")

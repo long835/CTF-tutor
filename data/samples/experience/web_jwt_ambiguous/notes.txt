@@ -1,0 +1,2 @@
+Server logs show 403 for role=admin in the body even when the token verifies.
+Authorization is checked after JWT validation using a separate role table.

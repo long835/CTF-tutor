@@ -11,6 +11,9 @@ A plugin is a Python file in `plugins/` exporting a `register(api)`
 function. It receives a small API object rather than the raw registry, so
 the loader can enforce three things the registry cannot:
 
+  permission clamping   tool-registry ceiling only (NOT process isolation)
+  TRUSTED LOCAL code   plugins exec_module in-process with host privileges;
+                       see docs/PLUGIN_TRUST.md
   permission clamping   a plugin cannot grant itself more capability than
                         the session policy allows
   namespacing           tools are prefixed with the plugin name, so two

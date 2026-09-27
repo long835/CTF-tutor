@@ -1,17 +1,15 @@
-# CTF-Tutor v0.4.0
+# CTF-Tutor v0.4.6
 
-## Highest priority: real experience labs
-Now **7** local labs under `data/samples/experience/`:
+## Honest classifier numbers
+| Set | Score | Independence |
+|-----|-------|----------------|
+| ground_truth / independent / public | ~100% | medium–high |
+| generated (own vocabulary) | ~96% | **low** — may share rules |
+| **external_hard** | **~70%** | **high** — deliberate non-taxonomy wording |
 
-| Lab | Artifact |
-|-----|----------|
-| crypto_xor | hex ciphertext |
-| web_jwt | alg=none token |
-| misc_encoding | nested encoding |
-| pwn_bof | real ELF (`vuln`) |
-| **forensics_pcap** | real PCAP + HTTP flag |
-| **web_ssti_lab** | localhost stdlib SSTI-style server |
-| **forensics_png** | PNG with tEXt flag |
+Do not market 96% as real-world accuracy.
 
-## Gate
-Still green via `python main.py gate`
+## This pass
+- `data/eval/external_hard.json` (23 cases)
+- Gate check: external_hard ≥ 50%
+- status reports eval_honesty

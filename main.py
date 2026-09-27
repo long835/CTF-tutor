@@ -492,7 +492,8 @@ def cmd_agent(argv) -> int:
         prog="main.py agent",
         description="Run the closed-loop CTF agent (state + hypotheses + tools + verification).",
     )
-    parser.add_argument("description", help="Challenge description or question")
+    parser.add_argument("description", nargs="?", default=None, help="Challenge description or question")
+    parser.add_argument("--lab", default=None, help="Experience lab id (e.g. pwn_bof) — attach artifacts and start")
     parser.add_argument("--category", default=None, help="Optional category hint")
     parser.add_argument("--path", default=None, help="Local challenge directory or file to triage")
     parser.add_argument("--fetch", default=None, help="Fetch public GitHub/zip source first, then triage it")
@@ -502,6 +503,29 @@ def cmd_agent(argv) -> int:
     parser.add_argument("--json", action="store_true", help="Emit final AgentState as JSON")
     parser.add_argument("--writeup", action="store_true", help="Print structured writeup only")
     args = parser.parse_args(argv)
+
+    # Experience lab auto-attach (P1)
+    if args.lab:
+        from agent.experience_labs import attach_lab_to_workspace, get_lab
+        lab = get_lab(args.lab)
+        if not lab:
+            print(f"unknown lab: {args.lab}", file=sys.stderr)
+            return 1
+        attach = attach_lab_to_workspace(args.lab, challenge_id=f"lab-{args.lab}")
+        # Prefer workspace input dir as challenge path
+        args.path = attach.get("workspace") and str(
+            __import__("pathlib").Path(attach["workspace"]) / "input"
+        ) or args.path
+        if not args.description:
+            args.description = lab.challenge_text()
+        if not args.category:
+            args.category = lab.category
+        print(f"lab {lab.id} attached → {args.path}")
+        for c in attach.get("copied") or []:
+            print(f"  + {c}")
+
+    if not args.description:
+        parser.error("description required unless --lab provides one")
 
     # Optional public fetch before agent run
     if args.fetch:
@@ -527,9 +551,9 @@ def cmd_agent(argv) -> int:
             ok = "ok" if payload.get("success") else "FAIL"
             events.append(f"  [{ok}] {payload.get('tool')}: {str(payload.get('summary',''))[:100]}")
         elif name == "verification":
-            events.append(f"✓ verify: {payload.get('verdict')} ({payload.get('confidence', 0):.2f})")
+            events.append(f"✓ verify: {payload.get('verdict')} (belief_score={payload.get('confidence', 0):.2f}, not a probability)")
         elif name == "finished":
-            events.append(f"done: status={payload.get('status')} conf={payload.get('confidence', 0):.2f}")
+            events.append(f"done: status={payload.get('status')} belief_score={payload.get('confidence', 0):.2f}")
 
     agent = AgentLoop(
         challenge_summary=args.description,
@@ -665,6 +689,13 @@ def cmd_platform(argv) -> int:
             print(json.dumps(htb_profile(), indent=2))
         else:
             print(json.dumps(htb_list_machines(args.limit), indent=2))
+    return 0
+
+
+def cmd_webui(argv) -> int:
+    """Start MVP web UI (http://127.0.0.1:8765)."""
+    from webui.server import main as web_main
+    web_main()
     return 0
 
 
@@ -1407,10 +1438,10 @@ def cmd_dataset(argv) -> int:
 
 SUBCOMMAND_NAMES = [
     "run", "search", "list", "history", "chat", "generate", "session", "agent",
-    "fetch", "experiment", "corpus", "platform",
+    "fetch", "experiment", "corpus", "platform", "webui",
     "curriculum", "graph", "audit", "dashboard", "plugins",
     "knowledge", "learner", "dataset",
-    "doctor", "replay", "metrics", "adversarial", "eval", "vision", "route", "dump_eval", "serve", "compare", "cost", "status", "gate", "review", "outcome", "labs", "trust",
+    "doctor", "replay", "metrics", "adversarial", "eval", "vision", "route", "dump_eval", "serve", "compare", "cost", "status", "gate", "review", "outcome", "labs", "next", "calibrate", "fit_calibration", "diagnose", "perf", "compare_models", "trust",
 ]
 
 
@@ -1424,6 +1455,14 @@ try:
     from cli.quality import cmd_review as cmd_review  # noqa: F811
     from cli.quality import cmd_outcome as cmd_outcome  # noqa: F811
     from cli.quality import cmd_labs as cmd_labs  # noqa: F811
+    from cli.ops import cmd_status as cmd_status  # noqa: F811
+    from cli.ops import cmd_gate as cmd_gate  # noqa: F811
+    from cli.quality import cmd_next as cmd_next  # noqa: F811
+    from cli.quality import cmd_calibrate as cmd_calibrate  # noqa: F811
+    from cli.quality import cmd_diagnose as cmd_diagnose  # noqa: F811
+    from cli.quality import cmd_perf as cmd_perf  # noqa: F811
+    from cli.quality import cmd_compare_models as cmd_compare_models  # noqa: F811
+    from cli.quality import cmd_fit_calibration as cmd_fit_calibration  # noqa: F811
 except ImportError:
     pass
 
@@ -1478,6 +1517,7 @@ def main(argv=None) -> int:
         print("  review      spaced-repetition due list / record")
         print("  outcome     learning-outcome benchmark (pre/post/transfer)")
         print("  labs        list/classify experience labs")
+        print("  next        next practice (reviews + weak + labs)")
         print("  dataset     build/measure the generated evaluation set (easy vs blind split)")
         print("  trust       trust policy, and scan a file for injection attempts")
         print()

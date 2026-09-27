@@ -1,6 +1,10 @@
 """
 Unified learner view (Phase 6.5).
 
+CANONICAL WRITER: call record_learning() / record_review() only.
+Do not write agent.memory or agent.learner_model stores directly from new code.
+
+
 Canonical *read* surface over:
 
   agent/memory.py         — TechniqueStats (attempts/successes/hints/mastery)
@@ -50,8 +54,10 @@ def unified_technique(technique: str) -> TechniqueView:
         return view
 
     try:
-        from agent.memory import load_memory
+        from agent.memory import load_memory, hydrate_from_learner_record
         mem = load_memory()
+        if not mem.techniques:
+            mem = hydrate_from_learner_record()
         st = mem.techniques.get(tech)
         if st is None:
             for k, v in mem.techniques.items():
@@ -129,6 +135,21 @@ def record_learning(
     if not tech:
         return unified_technique("").to_dict()
 
+    # Canonical persistence
+    try:
+        from agent.unified_learner_store import record_attempt_unified
+        record_attempt_unified(
+            tech,
+            success=success,
+            hint_level=hint_level,
+            hints=hints,
+            scenario=scenario,
+            verified=verified,
+        )
+    except Exception:
+        pass
+
+    # Legacy dual stores (kept in sync via unified mirrors + direct write)
     try:
         from agent.memory import load_memory, save_memory
         mem = load_memory()

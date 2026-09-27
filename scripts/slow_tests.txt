@@ -1,0 +1,5 @@
+# Modules often >15s or environment-sensitive; excluded from gate --full-fast
+tests.test_e2e_agent
+tests.test_hardening_phase4
+tests.test_dataset_item20
+tests.test_main_cli

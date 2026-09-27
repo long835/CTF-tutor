@@ -1,4 +1,5 @@
-"""
+"""NOTE: hash embedding fallback is NOT semantic.
+
 agent/embeddings.py — embedding backend separation (item 31).
 
 Retrievers and vector stores should not import Ollama or chromadb directly.

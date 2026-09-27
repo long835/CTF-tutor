@@ -226,18 +226,41 @@ def _limits():
 
 
 def _execute(cmd: List[str], cwd: Path, language: str, source_name: str, timeout: int) -> ExecutionRecord:
+    """Execute learner code through the shared sandbox boundary.
+
+    The previous implementation only used rlimits, so Python/compiled challenge
+    code could still open sockets or inherit ambient credentials. The shared
+    sandbox provides explicit network denial, a scrubbed environment, output
+    caps, and process/resource limits.
+    """
     try:
-        kwargs = dict(cwd=str(cwd), capture_output=True, text=True, timeout=timeout, check=False)
-        if os.name == "posix":
-            kwargs["preexec_fn"] = _limits
-        completed = subprocess.run(cmd, **kwargs)
-        return ExecutionRecord(language, source_name, cmd, completed.returncode,
-                               completed.stdout[:MAX_OUTPUT], completed.stderr[:MAX_OUTPUT])
-    except subprocess.TimeoutExpired as exc:
-        stdout = (exc.stdout or "") if isinstance(exc.stdout, str) else ""
-        stderr = (exc.stderr or "") if isinstance(exc.stderr, str) else ""
-        return ExecutionRecord(language, source_name, cmd, None, stdout[:MAX_OUTPUT],
-                               stderr[:MAX_OUTPUT], timed_out=True)
+        from agent.sandbox import run_sandboxed, SandboxPolicy, NetworkPolicy
+        policy = SandboxPolicy(
+            name="multilang", timeout_sec=timeout, cpu_sec=min(max(timeout + 1, 2), 60),
+            mem_mb=512, max_processes=16, max_open_files=128,
+            max_file_size_mb=10, max_output_bytes=MAX_OUTPUT,
+            network=NetworkPolicy.DENY, allow_roots=(str(cwd.resolve()),),
+        )
+        result = run_sandboxed(
+            cmd,
+            policy=policy,
+            timeout_sec=timeout,
+            cwd=str(cwd),
+            max_output_bytes=MAX_OUTPUT,
+        )
+        return ExecutionRecord(
+            language, source_name, cmd, (None if result.timed_out else result.returncode),
+            result.stdout[:MAX_OUTPUT], result.stderr[:MAX_OUTPUT],
+            timed_out=result.timed_out,
+        )
+    except Exception as exc:
+        # A missing optional sandbox dependency should not silently execute
+        # learner code unsandboxed. Surface it as a failed execution instead.
+        return ExecutionRecord(
+            language, source_name, cmd, None, "",
+            f"sandbox execution unavailable: {type(exc).__name__}: {exc}",
+            timed_out=False,
+        )
 
 
 def list_sessions(root: str = "data/sessions") -> List[dict]:

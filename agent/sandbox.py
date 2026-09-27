@@ -70,6 +70,7 @@ class SandboxPolicy:
     network: NetworkPolicy = NetworkPolicy.DENY
     allow_roots: Tuple[str, ...] = (".",)
     inherit_env: Tuple[str, ...] = ("PATH", "LANG", "TERM")
+    require_isolation: bool = False
 
     def to_dict(self) -> Dict[str, Any]:
         return {
@@ -78,6 +79,7 @@ class SandboxPolicy:
             "max_open_files": self.max_open_files,
             "max_file_size_mb": self.max_file_size_mb,
             "network": self.network.value, "allow_roots": list(self.allow_roots),
+            "require_isolation": self.require_isolation,
         }
 
 
@@ -91,7 +93,7 @@ POLICIES: Dict[str, SandboxPolicy] = {
                            max_processes=64, max_open_files=512),
     "hostile": SandboxPolicy(name="hostile", timeout_sec=5.0, cpu_sec=3, mem_mb=128,
                              max_processes=1, max_open_files=32, max_file_size_mb=4,
-                             max_output_bytes=50_000),
+                             max_output_bytes=50_000, require_isolation=True),
 }
 
 
@@ -231,6 +233,7 @@ def run_sandboxed(
             network=pol.network,
             allow_roots=pol.allow_roots,
             inherit_env=pol.inherit_env,
+            require_isolation=pol.require_isolation,
         )
 
     def _denied(reason: str) -> SandboxResult:
@@ -307,12 +310,17 @@ def run_sandboxed(
                     timeout_sec=pol.timeout_sec,
                     mem_mb=pol.mem_mb,
                     mount_ro=cwd,
+                    pids_limit=pol.max_processes,
                 )
                 result.policy = pol.name
                 result.network_enforced = "namespace"
                 return result
         except Exception:
-            pass  # fall through to local rlimits
+            if pol.require_isolation:
+                return _denied("required container isolation is unavailable")
+
+    if pol.require_isolation:
+        return _denied("required container isolation is unavailable")
 
     clean_env = {
         "PATH": os.environ.get("PATH", "/usr/bin:/bin"),
@@ -342,6 +350,15 @@ def run_sandboxed(
         def preexec():
             _apply_limits(pol.cpu_sec, pol.mem_mb, pol.max_processes,
                           pol.max_open_files, pol.max_file_size_mb)
+            # Linux no_new_privs survives exec and blocks setuid/file-capability
+            # privilege escalation in the local fallback. It is not a full
+            # sandbox, which is why HOSTILE requires Docker above.
+            try:
+                import ctypes
+                libc = ctypes.CDLL("libc.so.6", use_errno=True)
+                libc.prctl(38, 1, 0, 0, 0)  # PR_SET_NO_NEW_PRIVS
+            except Exception:
+                pass
             if drop_network:
                 try:
                     import ctypes

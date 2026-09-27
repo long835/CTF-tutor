@@ -8,6 +8,87 @@
       "due_at": "2026-09-25T04:25:01.000454+00:00",
       "last_result": "good",
       "last_reviewed": "2026-09-24T04:25:01.000440+00:00"
+    },
+    "auth-bypass": {
+      "technique": "auth-bypass",
+      "easiness": 2.5,
+      "interval_days": 0,
+      "repetitions": 0,
+      "due_at": "2026-09-25T08:42:30.986398+00:00",
+      "last_result": "",
+      "last_reviewed": ""
+    },
+    "blockchain-access-control": {
+      "technique": "blockchain-access-control",
+      "easiness": 2.5,
+      "interval_days": 0,
+      "repetitions": 0,
+      "due_at": "2026-09-25T08:42:30.986424+00:00",
+      "last_result": "",
+      "last_reviewed": ""
+    },
+    "encoding-recognition": {
+      "technique": "encoding-recognition",
+      "easiness": 2.5,
+      "interval_days": 0,
+      "repetitions": 0,
+      "due_at": "2026-09-25T08:42:30.986428+00:00",
+      "last_result": "",
+      "last_reviewed": ""
+    },
+    "format-string": {
+      "technique": "format-string",
+      "easiness": 2.5,
+      "interval_days": 0,
+      "repetitions": 0,
+      "due_at": "2026-09-25T08:42:30.986431+00:00",
+      "last_result": "",
+      "last_reviewed": ""
+    },
+    "insecure-storage": {
+      "technique": "insecure-storage",
+      "easiness": 2.5,
+      "interval_days": 0,
+      "repetitions": 0,
+      "due_at": "2026-09-25T08:42:30.986434+00:00",
+      "last_result": "",
+      "last_reviewed": ""
+    },
+    "mobile-hardcoded-secret": {
+      "technique": "mobile-hardcoded-secret",
+      "easiness": 2.5,
+      "interval_days": 0,
+      "repetitions": 0,
+      "due_at": "2026-09-25T08:42:30.986437+00:00",
+      "last_result": "",
+      "last_reviewed": ""
+    },
+    "osint-geolocation": {
+      "technique": "osint-geolocation",
+      "easiness": 2.5,
+      "interval_days": 0,
+      "repetitions": 0,
+      "due_at": "2026-09-25T08:42:30.986439+00:00",
+      "last_result": "",
+      "last_reviewed": ""
+    },
+    "pcap-carving": {
+      "technique": "pcap-carving",
+      "easiness": 2.5,
+      "interval_days": 0,
+      "repetitions": 0,
+      "due_at": "2026-09-25T08:42:30.986441+00:00",
+      "last_result": "",
+      "last_reviewed": ""
+    },
+    "rsa-small-e": {
+      "technique": "rsa-small-e",
+      "easiness": 2.5,
+      "interval_days": 0,
+      "repetitions": 0,
+      "due_at": "2026-09-25T08:42:30.986443+00:00",
+      "last_result": "",
+      "last_reviewed": ""
     }
   }
 }

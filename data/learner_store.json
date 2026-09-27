@@ -1,0 +1,172 @@
+{
+  "version": 1,
+  "attempts": [
+    {
+      "technique": "jwt-none-bypass",
+      "success": true,
+      "hint_level": 1,
+      "hints_requested": 0,
+      "scenario": "cookie-admin",
+      "difficulty": "medium",
+      "verified": true,
+      "steps_before_hint": 0,
+      "timestamp": "2026-09-24T04:02:07.819361+00:00"
+    },
+    {
+      "technique": "jwt-none-bypass",
+      "success": true,
+      "hint_level": 0,
+      "hints_requested": 0,
+      "scenario": "header-none",
+      "difficulty": "medium",
+      "verified": true,
+      "steps_before_hint": 0,
+      "timestamp": "2026-09-24T04:02:08.644472+00:00"
+    },
+    {
+      "technique": "test-tech-v051",
+      "success": true,
+      "hint_level": 1,
+      "hints_requested": 1,
+      "scenario": "unit",
+      "difficulty": "medium",
+      "verified": false,
+      "steps_before_hint": 0,
+      "timestamp": "2026-09-25T08:42:33.580973+00:00"
+    },
+    {
+      "technique": "test-tech-v051",
+      "success": true,
+      "hint_level": 1,
+      "hints_requested": 1,
+      "scenario": "unit",
+      "difficulty": "medium",
+      "verified": false,
+      "steps_before_hint": 0,
+      "timestamp": "2026-09-27T09:06:48.760639+00:00"
+    }
+  ],
+  "legacy_stats": {
+    "jwt-none-bypass": {
+      "attempts": 4,
+      "successes": 2,
+      "hints_used": 1,
+      "last_seen": "2026-09-25T03:29:02.792479+00:00",
+      "notes": []
+    },
+    "stack-buffer-overflow": {
+      "attempts": 1,
+      "successes": 0,
+      "hints_used": 0,
+      "last_seen": "2026-09-24T05:45:41.153339+00:00",
+      "notes": []
+    },
+    "rsa-small-e": {
+      "attempts": 1,
+      "successes": 0,
+      "hints_used": 0,
+      "last_seen": "2026-09-24T06:00:47.942162+00:00",
+      "notes": []
+    },
+    "string-decryption": {
+      "attempts": 1,
+      "successes": 0,
+      "hints_used": 0,
+      "last_seen": "2026-09-24T06:00:51.251932+00:00",
+      "notes": []
+    },
+    "pcap-carving": {
+      "attempts": 1,
+      "successes": 0,
+      "hints_used": 0,
+      "last_seen": "2026-09-24T06:00:54.443928+00:00",
+      "notes": []
+    },
+    "osint-geolocation": {
+      "attempts": 1,
+      "successes": 1,
+      "hints_used": 0,
+      "last_seen": "2026-09-24T06:00:57.557453+00:00",
+      "notes": []
+    },
+    "blockchain-access-control": {
+      "attempts": 1,
+      "successes": 0,
+      "hints_used": 0,
+      "last_seen": "2026-09-24T06:01:01.008943+00:00",
+      "notes": []
+    },
+    "mobile-hardcoded-secret": {
+      "attempts": 1,
+      "successes": 0,
+      "hints_used": 0,
+      "last_seen": "2026-09-24T06:01:04.158963+00:00",
+      "notes": []
+    },
+    "insecure-storage": {
+      "attempts": 1,
+      "successes": 0,
+      "hints_used": 0,
+      "last_seen": "2026-09-24T06:01:04.158984+00:00",
+      "notes": []
+    },
+    "ssti": {
+      "attempts": 1,
+      "successes": 1,
+      "hints_used": 0,
+      "last_seen": "2026-09-24T06:01:07.271859+00:00",
+      "notes": []
+    },
+    "sql-injection": {
+      "attempts": 2,
+      "successes": 0,
+      "hints_used": 0,
+      "last_seen": "2026-09-24T06:01:10.550401+00:00",
+      "notes": []
+    },
+    "sqli-union": {
+      "attempts": 1,
+      "successes": 0,
+      "hints_used": 0,
+      "last_seen": "2026-09-24T06:01:10.550396+00:00",
+      "notes": []
+    },
+    "format-string": {
+      "attempts": 1,
+      "successes": 0,
+      "hints_used": 0,
+      "last_seen": "2026-09-24T06:01:16.950620+00:00",
+      "notes": []
+    },
+    "steganography": {
+      "attempts": 1,
+      "successes": 1,
+      "hints_used": 0,
+      "last_seen": "2026-09-24T06:01:20.108646+00:00",
+      "notes": []
+    },
+    "encoding-recognition": {
+      "attempts": 2,
+      "successes": 2,
+      "hints_used": 0,
+      "last_seen": "2026-09-25T03:28:56.753850+00:00",
+      "notes": []
+    },
+    "auth-bypass": {
+      "attempts": 2,
+      "successes": 0,
+      "hints_used": 0,
+      "last_seen": "2026-09-25T03:29:02.792503+00:00",
+      "notes": []
+    },
+    "test-tech-v051": {
+      "attempts": 2,
+      "successes": 2,
+      "hints_used": 2,
+      "last_seen": "2026-09-27T09:06:48.760639+00:00",
+      "notes": []
+    }
+  },
+  "preferred_depth": "balanced",
+  "misconceptions": []
+}

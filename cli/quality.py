@@ -25,7 +25,7 @@ def cmd_gate(argv: Optional[List[str]] = None) -> int:
     import subprocess
     import sys
     gate = Path(__file__).resolve().parents[1] / "scripts" / "release_gate.py"
-    return subprocess.call([sys.executable, str(gate)], cwd=str(gate.parent.parent))
+    return subprocess.call([sys.executable, str(gate), *(argv or [])], cwd=str(gate.parent.parent))
 
 
 def cmd_eval(argv: Optional[List[str]] = None) -> int:
@@ -33,12 +33,18 @@ def cmd_eval(argv: Optional[List[str]] = None) -> int:
     p.add_argument("--data", default=None)
     p.add_argument("--independent", action="store_true")
     p.add_argument("--public", action="store_true")
+    p.add_argument("--external", action="store_true", help="external hard set (unlike taxonomy wording)")
+    p.add_argument("--imported", action="store_true", help="imported literature cases")
     p.add_argument("--classifier", default="formal", choices=["formal", "heuristic"])
     p.add_argument("--decompose", action="store_true")
     p.add_argument("--model", default="")
     args = p.parse_args(argv)
     root = Path(__file__).resolve().parents[1]
-    if args.public:
+    if args.imported:
+        data = root / "data" / "eval" / "imported" / "public_literature.json"
+    elif args.external:
+        data = root / "data" / "eval" / "external_hard.json"
+    elif args.public:
         data = root / "data" / "eval" / "public_contest_grounded.json"
     elif args.independent:
         data = root / "data" / "eval" / "independent_public_style.json"
@@ -105,4 +111,115 @@ def cmd_labs(argv: Optional[List[str]] = None) -> int:
         for lab in summary["labs"]:
             art = lab.get("artifact") or "-"
             print(f"  {lab['id']:18}  {lab['category']:10}  {art}")
+    return 0
+
+
+def cmd_next(argv: Optional[List[str]] = None) -> int:
+    """Suggest next practice from spaced repetition + weak techniques."""
+    p = argparse.ArgumentParser(prog="main.py next")
+    p.add_argument("--limit", type=int, default=5)
+    p.add_argument("--json", action="store_true")
+    args = p.parse_args(argv)
+    from agent.curriculum_next import next_practice
+    data = next_practice(limit=args.limit)
+    if args.json:
+        print(json.dumps(data, indent=2))
+    else:
+        print("Due reviews:", len(data.get("due_reviews") or []))
+        for d in data.get("due_reviews") or []:
+            print(f"  review  {d.get('technique')}")
+        print("Weak techniques:", ", ".join(data.get("weak_techniques") or []) or "(none)")
+        print("Suggested labs:")
+        for lab in data.get("suggested_labs") or []:
+            print(f"  {lab['lab_id']:20}  {lab['category']:10}  {lab['technique']}")
+        if not data.get("suggested_labs"):
+            print("  (none matched — try: python main.py labs)")
+        print(data.get("hint") or "")
+    return 0
+
+
+def cmd_calibrate(argv: Optional[List[str]] = None) -> int:
+    """Confidence calibration report on external_hard."""
+    p = argparse.ArgumentParser(prog="main.py calibrate")
+    p.add_argument("--json", action="store_true")
+    args = p.parse_args(argv)
+    from agent.calibration import calibration_report, format_calibration
+    rep = calibration_report()
+    if args.json:
+        print(json.dumps(rep, indent=2))
+    else:
+        print(format_calibration(rep))
+    return 0
+
+
+def cmd_diagnose(argv: Optional[List[str]] = None) -> int:
+    """Coherent pipeline: classify → arbitrate → capability plan."""
+    p = argparse.ArgumentParser(prog="main.py diagnose")
+    p.add_argument("description", nargs="?", default="")
+    p.add_argument("--json", action="store_true")
+    p.add_argument("--llm", action="store_true", help="force LLM second opinion")
+    args = p.parse_args(argv)
+    from agent.classify_pipeline import classify_pipeline
+    from agent.capability_plan import plan_for_category
+    from agent.knowledge_coverage import knowledge_coverage
+    data = classify_pipeline(args.description, use_llm=True if args.llm else None)
+    plan = plan_for_category(data.get("category") or "misc")
+    data["capability_plan"] = plan
+    techs = []
+    for pair in (data.get("profile") or {}).get("candidate_techniques") or []:
+        if isinstance(pair, (list, tuple)) and pair:
+            techs.append(pair[0])
+        elif isinstance(pair, str):
+            techs.append(pair)
+    data["knowledge_coverage"] = knowledge_coverage(techs)
+    if args.json:
+        print(json.dumps(data, indent=2, default=str))
+    else:
+        print(
+            "category:", data.get("category"),
+            "belief:", data.get("belief_score"),
+            "decision:", data.get("decision"),
+            "arbitration:", data.get("arbitration"),
+        )
+        if data.get("calibrated_probability") is not None:
+            print("calibrated_probability:", data.get("calibrated_probability"))
+        print("discriminators:")
+        for d in data.get("discriminators") or []:
+            print(" -", d)
+        print("plan:", plan.get("status_phrase"))
+        for a in plan.get("next_actions") or []:
+            print(" next:", a)
+        cannot = (plan.get("capabilities") or {}).get("cannot") or []
+        print("cannot reliably:", "; ".join(cannot[:3]))
+        print("knowledge_coverage:", data["knowledge_coverage"].get("score"))
+    return 0
+
+
+def cmd_perf(argv: Optional[List[str]] = None) -> int:
+    p = argparse.ArgumentParser(prog="main.py perf")
+    p.add_argument("--iterations", type=int, default=50)
+    p.add_argument("--json", action="store_true")
+    args = p.parse_args(argv)
+    from agent.perf_bench import run_microbench
+    rep = run_microbench(iterations=args.iterations)
+    print(json.dumps(rep, indent=2) if args.json else rep)
+    return 0
+
+
+def cmd_compare_models(argv: Optional[List[str]] = None) -> int:
+    p = argparse.ArgumentParser(prog="main.py compare-models")
+    p.add_argument("--limit", type=int, default=30)
+    p.add_argument("--llm", action="store_true")
+    p.add_argument("--json", action="store_true")
+    args = p.parse_args(argv)
+    from agent.model_compare import compare_heuristic_vs_llm
+    rep = compare_heuristic_vs_llm(limit=args.limit, use_llm=args.llm)
+    print(json.dumps(rep, indent=2) if args.json else rep)
+    return 0
+
+
+def cmd_fit_calibration(argv: Optional[List[str]] = None) -> int:
+    from agent.calibration_fit import fit_bin_calibration
+    rep = fit_bin_calibration()
+    print(json.dumps(rep, indent=2))
     return 0

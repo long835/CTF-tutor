@@ -1,5 +1,23 @@
 # CTF-Tutor
 
+## CURRENT (v0.7.0)
+
+| Item | Value |
+|------|-------|
+| Techniques | 97 |
+| Corpus cards | 867 (55 curated archive + derived) |
+| Experience labs | 21+ |
+| External hard (honest) | see `python main.py eval --external` |
+| Gate | `python main.py gate` |
+| Full CI | `bash scripts/ci_full.sh` |
+| Calibration | `python main.py calibrate` |
+
+**Confidence is a heuristic belief_score, not a calibrated probability.**
+**Plugins are trusted local Python (see docs/PLUGIN_TRUST.md).**
+**Prefer external_hard / held_out over generated benchmarks.**
+
+---
+
 **Learn the vulnerability. Understand the exploit. Capture the flag.**
 
 Most CTF tools are built to hand you an answer. This one is built to make you

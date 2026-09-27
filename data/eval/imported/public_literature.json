@@ -1,0 +1,138 @@
+[
+  {
+    "id": "imp-jwt-classic",
+    "description": "A web API issues JWTs. Clients can change the header algorithm to none and the server accepts the token without verifying a signature.",
+    "expected_category": "web",
+    "expected_techniques": [
+      "jwt-none-bypass"
+    ],
+    "difficulty": "medium",
+    "provenance": {
+      "type": "imported",
+      "source_url": "https://auth0.com/blog/critical-vulnerabilities-in-json-web-token-libraries/",
+      "license": "public-educational-summary",
+      "attribution": "Classic JWT none-algorithm vulnerability pattern (public literature)",
+      "retrieved": "2026-09-24",
+      "notes": "Rewritten educational summary; not a contest writeup dump."
+    }
+  },
+  {
+    "id": "imp-padding-oracle-classic",
+    "description": "An application decrypts client-supplied ciphertext and returns a distinct error when PKCS7 padding is invalid, allowing byte-by-byte plaintext recovery.",
+    "expected_category": "crypto",
+    "expected_techniques": [
+      "padding-oracle"
+    ],
+    "difficulty": "hard",
+    "provenance": {
+      "type": "imported",
+      "source_url": "https://en.wikipedia.org/wiki/Padding_oracle_attack",
+      "license": "public-educational-summary",
+      "attribution": "Padding oracle attack pattern (public literature)",
+      "retrieved": "2026-09-24",
+      "notes": "Rewritten educational summary."
+    }
+  },
+  {
+    "id": "imp-path-traversal-classic",
+    "description": "A file download endpoint joins a user-supplied path without normalization. Requesting sequences like ../ can read files outside the intended directory.",
+    "expected_category": "web",
+    "expected_techniques": [
+      "path-traversal"
+    ],
+    "difficulty": "easy",
+    "provenance": {
+      "type": "imported",
+      "source_url": "https://owasp.org/www-community/attacks/Path_Traversal",
+      "license": "public-educational-summary",
+      "attribution": "OWASP Path Traversal pattern (public literature)",
+      "retrieved": "2026-09-24",
+      "notes": "Rewritten educational summary."
+    }
+  },
+  {
+    "id": "imp-ssti-classic",
+    "description": "A profile page renders the user's bio field through a server-side template engine. Submitting expressions in the bio changes the rendered page beyond plain text.",
+    "expected_category": "web",
+    "expected_techniques": [
+      "ssti"
+    ],
+    "difficulty": "medium",
+    "provenance": {
+      "type": "imported",
+      "source_url": "https://owasp.org/www-project-web-security-testing-guide/",
+      "license": "public-educational-summary",
+      "attribution": "SSTI pattern (public web security literature)",
+      "retrieved": "2026-09-27",
+      "notes": "Rewritten educational summary."
+    }
+  },
+  {
+    "id": "imp-format-string-classic",
+    "description": "A networked service prints a user-supplied banner string using a printf-style call. Supplying percent directives causes memory contents to appear in the response.",
+    "expected_category": "pwn",
+    "expected_techniques": [
+      "format-string"
+    ],
+    "difficulty": "medium",
+    "provenance": {
+      "type": "imported",
+      "source_url": "https://en.wikipedia.org/wiki/Uncontrolled_format_string",
+      "license": "public-educational-summary",
+      "attribution": "Format string vulnerability pattern (public literature)",
+      "retrieved": "2026-09-27",
+      "notes": "Rewritten educational summary."
+    }
+  },
+  {
+    "id": "imp-xor-classic",
+    "description": "Ciphertext is provided as hex. The same short key was XOR-repeated across a long English message, leaving statistical structure exploitable without the key.",
+    "expected_category": "crypto",
+    "expected_techniques": [
+      "xor-single-byte"
+    ],
+    "difficulty": "easy",
+    "provenance": {
+      "type": "imported",
+      "source_url": "https://en.wikipedia.org/wiki/XOR_cipher",
+      "license": "public-educational-summary",
+      "attribution": "XOR cipher pattern (public literature)",
+      "retrieved": "2026-09-27",
+      "notes": "Rewritten educational summary."
+    }
+  },
+  {
+    "id": "imp-idor-classic",
+    "description": "Changing a numeric resource id in the URL returns another user's invoice without any additional authentication step.",
+    "expected_category": "web",
+    "expected_techniques": [
+      "idor"
+    ],
+    "difficulty": "easy",
+    "provenance": {
+      "type": "imported",
+      "source_url": "https://owasp.org/www-project-top-ten/",
+      "license": "public-educational-summary",
+      "attribution": "IDOR pattern (public OWASP literature)",
+      "retrieved": "2026-09-27",
+      "notes": "Rewritten educational summary."
+    }
+  },
+  {
+    "id": "imp-ecb-classic",
+    "description": "An encrypted image still shows recognizable outlines because each block is transformed independently under the same key.",
+    "expected_category": "crypto",
+    "expected_techniques": [
+      "ecb-mode"
+    ],
+    "difficulty": "medium",
+    "provenance": {
+      "type": "imported",
+      "source_url": "https://en.wikipedia.org/wiki/Block_cipher_mode_of_operation",
+      "license": "public-educational-summary",
+      "attribution": "ECB mode pattern (public literature)",
+      "retrieved": "2026-09-27",
+      "notes": "Rewritten educational summary."
+    }
+  }
+]

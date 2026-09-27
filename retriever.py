@@ -250,3 +250,27 @@ if __name__ == "__main__":
     retriever = Retriever()
     count = retriever.index_directory(archive_dir)
     print(f"indexed {count} entries from {archive_dir} ({retriever.count()} total in store)")
+
+
+def retrieve_with_abstention(query: str, k: int = 5, **kwargs):
+    """Retrieve then apply abstention threshold."""
+    from agent.retrieval_abstain import should_abstain
+    try:
+        # best-effort call into existing API
+        from retriever import retrieve
+        hits = retrieve(query, k=k, **kwargs)
+    except Exception:
+        try:
+            from agent import retriever as ar
+            hits = ar.retrieve(query, k=k, **kwargs) if hasattr(ar, "retrieve") else []
+        except Exception:
+            hits = []
+    # normalize scores
+    norm = []
+    for h in hits or []:
+        if isinstance(h, dict):
+            norm.append(h)
+        else:
+            norm.append({"score": float(getattr(h, "score", 0.5) or 0.5), "item": h})
+    decision = should_abstain(norm, min_score=0.25)
+    return {"hits": hits, "abstain": decision}

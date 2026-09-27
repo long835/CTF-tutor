@@ -962,8 +962,8 @@ REQUIREMENTS: Dict[str, EvidenceRequirement] = {
         alternatives=['padding oracle via error messages'],
         verification='Show statistically significant timing differences that reveal secret bytes.',
     ),
-    "solidity-access-control": EvidenceRequirement(
-        technique="solidity-access-control",
+    "access-control": EvidenceRequirement(
+        technique="access-control",
         required=['onlyOwner|access control|modifier|msg.sender|tx.origin', 'public|external function'],
         supporting=['initialize', 'missing modifier'],
         contradicting=['every state change gated'],

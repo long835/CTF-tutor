@@ -29,6 +29,24 @@ Never invent tool output or flags that were not provided.
 """
 
 
+def _attach_independent(state, result: dict) -> dict:
+    try:
+        from agent.independent_checks import independent_static_checks
+        paths = list(getattr(state, "discovered_artifacts", None) or [])[:5]
+        ind = independent_static_checks(
+            getattr(state, "challenge_summary", "") or "",
+            artifact_paths=[str(p) for p in paths],
+        )
+        result = dict(result or {})
+        result["independent_checks"] = ind
+        if ind.get("count", 0) == 0 and result.get("verdict") in ("pass", "verified", "REPRODUCED"):
+            result["independent_warning"] = "No independent static corroboration"
+    except Exception as e:
+        result = dict(result or {})
+        result["independent_checks_error"] = str(e)
+    return result
+
+
 def verify_solution(
     state: AgentState,
     candidate: str,

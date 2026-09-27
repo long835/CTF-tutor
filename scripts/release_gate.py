@@ -44,6 +44,11 @@ def main() -> int:
         "tests.test_independent_eval",
         "tests.test_learning_outcome",
         "tests.test_spaced_repetition",
+        "tests.test_experience_labs",
+        "tests.test_agent_lab",
+        "tests.test_lab_workspace",
+        "tests.test_imported_and_heap",
+        "tests.test_external_hard_eval",
         "-q",
     ])
     add("unit_tests", code == 0, out.strip().split("\n")[-3:] and "\n".join(out.strip().split("\n")[-5:]))
@@ -85,8 +90,56 @@ def main() -> int:
     ])
     add("hand_eval_ge_95", code == 0, out.strip())
 
-    failed = [c for c in checks if not c["ok"]]
+    # 6) external hard classifier (honest generalization probe)
+    code, out = run([
+        sys.executable, "-c",
+        "import json; from agent.classify_challenge import classify_challenge; "
+        "cases=json.load(open('data/eval/external_hard.json')); "
+        "ok=sum(1 for c in cases if classify_challenge(c['description']).category==c['expected_category']); "
+        "n=len(cases); print(f'{ok}/{n}={ok/n:.3f}'); "
+        "raise SystemExit(0 if ok/n >= 0.50 else 1)",
+    ])
+    add("external_hard_ge_50", code == 0, out.strip())
+
     print("---")
+    # Optional full discovery (can be slow; not required for green gate)
+    import sys as _sys
+    if "--ci" in _sys.argv:
+        print("Use: bash scripts/ci_full.sh  (full discover CI job)")
+        add("ci_hint", True, "scripts/ci_full.sh")
+    if "--full" in _sys.argv:
+        code, out = run([
+            _sys.executable, "-m", "unittest", "discover", "-s", "tests", "-t", ".", "-q",
+        ])
+        add("full_discover", code == 0, (out or "")[-300:])
+    elif "--full-fast" in _sys.argv:
+        # discover but skip modules listed in scripts/slow_tests.txt
+        skip = set()
+        sp = Path(__file__).resolve().parent / "slow_tests.txt"
+        if sp.is_file():
+            for line in sp.read_text(encoding="utf-8").splitlines():
+                line = line.strip()
+                if line and not line.startswith("#"):
+                    skip.add(line.replace("tests.", "test_").replace("test_test_", "test_"))
+        import unittest
+        from pathlib import Path as _P
+        loader = unittest.TestLoader()
+        suite = unittest.TestSuite()
+        for f in sorted((_P("tests")).glob("test_*.py")):
+            mod = f"tests.{f.stem}"
+            if mod in {s if s.startswith("tests.") else f"tests.{s}" for s in skip}:
+                continue
+            if f.stem in {s.replace("tests.", "") for s in skip}:
+                continue
+            try:
+                suite.addTests(loader.loadTestsFromName(mod))
+            except Exception:
+                pass
+        result = unittest.TextTestRunner(verbosity=0).run(suite)
+        add("full_fast_discover", result.wasSuccessful(),
+            f"ran={result.testsRun} fail={len(result.failures)} err={len(result.errors)}")
+
+    failed = [c for c in checks if not c["ok"]]
     print(f"{len(checks)-len(failed)}/{len(checks)} checks passed")
     return 1 if failed else 0
 

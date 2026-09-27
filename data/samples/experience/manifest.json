@@ -1,6 +1,6 @@
 {
   "name": "experience-samples",
-  "version": 2,
+  "version": 11,
   "provenance": "synthetic-lab",
   "items": [
     {
@@ -65,6 +65,134 @@
       ],
       "path": "forensics_png/",
       "artifact": "hidden.png"
+    },
+    {
+      "id": "pwn_fmt",
+      "category": "pwn",
+      "techniques": [
+        "format-string"
+      ],
+      "path": "pwn_fmt/",
+      "artifact": "vuln"
+    },
+    {
+      "id": "forensics_pcap_multi",
+      "category": "forensics",
+      "techniques": [
+        "pcap-http"
+      ],
+      "path": "forensics_pcap_multi/",
+      "artifact": "capture.pcap"
+    },
+    {
+      "id": "web_sqli_lab",
+      "category": "web",
+      "techniques": [
+        "sql-injection"
+      ],
+      "path": "web_sqli_lab/",
+      "artifact": "server.py"
+    },
+    {
+      "id": "pwn_heap",
+      "category": "pwn",
+      "techniques": [
+        "heap-overflow"
+      ],
+      "path": "pwn_heap/",
+      "artifact": "vuln"
+    },
+    {
+      "id": "web_jwt_ambiguous",
+      "category": "web",
+      "techniques": [
+        "jwt-alg-confusion",
+        "auth-bypass"
+      ],
+      "path": "web_jwt_ambiguous/",
+      "artifact": "token.txt"
+    },
+    {
+      "id": "pwn_decoy_crypto",
+      "category": "pwn",
+      "techniques": [
+        "stack-buffer-overflow"
+      ],
+      "path": "pwn_decoy_crypto/",
+      "artifact": "vuln"
+    },
+    {
+      "id": "pwn_ret2win",
+      "category": "pwn",
+      "techniques": [
+        "stack-buffer-overflow"
+      ],
+      "path": "pwn_ret2win/",
+      "artifact": "vuln"
+    },
+    {
+      "id": "forensics_decoy_name",
+      "category": "forensics",
+      "techniques": [
+        "image-metadata"
+      ],
+      "path": "forensics_decoy_name/",
+      "artifact": "invoice.pdf"
+    },
+    {
+      "id": "crypto_repeat_xor",
+      "category": "crypto",
+      "techniques": [
+        "xor-single-byte"
+      ],
+      "path": "crypto_repeat_xor/",
+      "artifact": "cipher.hex"
+    },
+    {
+      "id": "web_path_lab",
+      "category": "web",
+      "techniques": [
+        "path-traversal"
+      ],
+      "path": "web_path_lab/",
+      "artifact": "server.py"
+    },
+    {
+      "id": "rev_password",
+      "category": "rev",
+      "techniques": [
+        "static-analysis"
+      ],
+      "path": "rev_password/",
+      "artifact": "vuln"
+    },
+    {
+      "id": "crypto_aes_decoy",
+      "category": "crypto",
+      "techniques": [
+        "xor-single-byte"
+      ],
+      "path": "crypto_aes_decoy/",
+      "artifact": "cipher.hex"
+    },
+    {
+      "id": "pwn_nx_ret2win",
+      "category": "pwn",
+      "techniques": [
+        "stack-buffer-overflow"
+      ],
+      "path": "pwn_nx_ret2win/",
+      "artifact": "vuln"
+    },
+    {
+      "id": "pwn_canary_fmt",
+      "category": "pwn",
+      "techniques": [
+        "format-string",
+        "stack-buffer-overflow"
+      ],
+      "path": "pwn_canary_fmt/",
+      "artifact": "vuln"
     }
   ]
 }

@@ -180,6 +180,73 @@ class AgentLoop:
             self.workspace.save_state(self.state)
         except Exception as e:
             self.state.add_fact(f"Workspace unavailable: {e}")
+        # Coherent pipeline: classify → arbitrate → capability plan → category loops
+        try:
+            from agent.classify_pipeline import classify_pipeline
+            from agent.capability_plan import plan_for_category, capability_snapshot
+            from agent.environment_snapshot import environment_snapshot
+
+            env = environment_snapshot()
+            arts = list(getattr(self.state, "discovered_artifacts", None) or [])
+            decision = classify_pipeline(
+                self.state.challenge_summary or "",
+                artifacts=[str(a) for a in arts[:12]],
+            )
+            cat = decision.get("category") or self.state.category or "misc"
+            if not self.state.category:
+                self.state.category = cat
+            self.state.add_fact(
+                "Classify: {cat} belief={belief} decision={dec} arbitration={arb} source={src}".format(
+                    cat=cat,
+                    belief=decision.get("belief_score"),
+                    dec=decision.get("decision"),
+                    arb=decision.get("arbitration"),
+                    src=decision.get("reasoning_source"),
+                )
+            )
+            if decision.get("decision") in ("abstain", "unknown"):
+                self.state.add_fact(
+                    "ABSTAIN/UNKNOWN: do not commit to a technique; run discriminating checks"
+                )
+            for tip in (decision.get("discriminators") or [])[:3]:
+                self.state.add_fact(f"Discriminating check: {tip}")
+            if decision.get("calibrated_probability") is not None:
+                self.state.add_fact(
+                    f"Calibrated_probability≈{decision.get('calibrated_probability')} "
+                    f"(not a guarantee; empirical bin/isotonic fit)"
+                )
+            cap = capability_snapshot(env)
+            if cap.get("missing_tools"):
+                self.state.add_fact("Missing tools: " + ", ".join(cap["missing_tools"]))
+            self.state.add_fact(cap["honest_limit"])
+            plan = plan_for_category(cat, env)
+            self.state.add_fact(plan["status_phrase"])
+            for a in plan.get("next_actions") or []:
+                self.state.add_fact(f"Next [{plan.get('stage')}]: {a}")
+            # Store for downstream teaching/verification
+            try:
+                self.state.meta = getattr(self.state, "meta", {}) or {}
+                self.state.meta["classify_pipeline"] = {
+                    k: decision.get(k)
+                    for k in (
+                        "category",
+                        "belief_score",
+                        "decision",
+                        "arbitration",
+                        "calibrated_probability",
+                        "reasoning_source",
+                    )
+                }
+                self.state.meta["capability_plan"] = {
+                    "stage": plan.get("stage"),
+                    "cannot": (cap.get("cannot") or [])[:4],
+                }
+            except Exception:
+                pass
+        except Exception as e:
+            self.state.add_fact(f"Pipeline/capability note: {e}")
+
+
 
         # Surface weak techniques from learner memory
         if self.learner:
