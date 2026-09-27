@@ -1,37 +1,36 @@
 # CTF-Tutor
 
-## CURRENT (v0.7.0)
+## CURRENT (v0.9.2)
 
-| Item | Value |
-|------|-------|
-| Techniques | 97 |
-| Corpus cards | 867 (55 curated archive + derived) |
-| Experience labs | 21+ |
-| External hard (honest) | see `python main.py eval --external` |
-| Gate | `python main.py gate` |
-| Full CI | `bash scripts/ci_full.sh` |
-| Calibration | `python main.py calibrate` |
+| **Item**               | **Value**                                   |
+| ---------------------- | ------------------------------------------- |
+| Version                | 0.9.2                                       |
+| Techniques             | 97                                          |
+| External hard (honest) | ~69.6%                                      |
+| Evaluation             | `python main.py experiment --benchmark`     |
+| Gate                   | `python main.py gate`                       |
+| Full CI                | `bash scripts/ci_full.sh`                   |
+| Calibration            | `python main.py calibrate`                  |
+| Calibration fitting    | `python main.py fit_calibration`            |
+| Model comparison       | `python main.py compare_models`             |
+| Knowledge audit        | `python main.py knowledge --audit --strict` |
+| Web API                | `python main.py serve --port 8765`          |
 
-**Confidence is a heuristic belief_score, not a calibrated probability.**
-**Plugins are trusted local Python (see docs/PLUGIN_TRUST.md).**
-**Prefer external_hard / held_out over generated benchmarks.**
+**Confidence is a heuristic `belief_score`, not a calibrated probability.** Calibration tooling exists, but confidence should not be interpreted as a statistical probability unless a calibrated model and validation set are explicitly being used.
+
+**UNKNOWN / abstain is intentional.** The agent can refuse to make a classification when evidence is insufficient rather than forcing a confident-looking answer.
+
+**Prefer external_hard / held_out over generated benchmarks.** Offline evaluation is a regression signal, not evidence that the system can solve arbitrary real-world CTF challenges.
 
 ---
 
 **Learn the vulnerability. Understand the exploit. Capture the flag.**
 
-Most CTF tools are built to hand you an answer. This one is built to make you
-not need it next time.
+Most CTF tools are built to hand you an answer. This one is built to make you not need it next time.
 
-CTF-Tutor is a local-first CTF assistant that runs entirely on your machine. It
-reads a challenge, works out what kind of problem it is, digs through a library
-of patterns it already knows, forms ranked guesses, tests them with local
-analysis tools, and then — the important part — explains what it found and asks
-you the questions that would have gotten you there yourself.
+CTF-Tutor is a local-first CTF assistant that runs primarily on your machine. It reads a challenge, works out what kind of problem it is, searches a local knowledge base, forms competing hypotheses, tests them with local analysis tools, and then — the important part — explains what it found and asks the questions that would have gotten you there yourself.
 
-It will not solve challenges for you. It will not submit flags. It will not
-touch a system you haven't pointed it at. That's a deliberate design choice, not
-a missing feature.
+It will not submit flags. It will not silently attack arbitrary systems. It does not treat an uncertain classification as a fact. Those are deliberate design choices, not missing features.
 
 ```bash
 python main.py agent "A login portal issues JWTs and the admin panel trusts the role claim."
@@ -41,17 +40,13 @@ python main.py agent "A login portal issues JWTs and the admin panel trusts the 
 
 ## Why this exists
 
-The fastest way to get worse at CTFs is to read a writeup the moment you're
-stuck. You get the flag and you learn nothing, because the insight arrived
-fully formed instead of being something you built.
+The fastest way to get worse at CTFs is to read a writeup the moment you're stuck. You get the flag and you learn nothing, because the insight arrived fully formed instead of being something you built.
 
 But sitting stuck for six hours isn't learning either. It's just being stuck.
 
-CTF-Tutor tries to sit in the gap. It'll tell you *which class of problem*
-you're staring at before it tells you *where to look*, and it'll tell you that
-before it tells you *what to run*. Six levels of hint, and you choose how far
-down you go. It tracks what you've genuinely understood versus what you needed
-hand-holding for, and it plans your next session around the difference.
+CTF-Tutor tries to sit in the gap. It'll tell you *which class of problem* you're staring at before it tells you *where to look*, and it'll tell you that before it tells you *what to run*. Six levels of hint, and you choose how far down you go.
+
+The current agent also tracks uncertainty explicitly. It can retrieve evidence, compare competing techniques, ask active discriminating questions, abstain from retrieval or classification when evidence is weak, and run independent checks before accepting a conclusion.
 
 > **Don't just solve the challenge. Understand why the solution works.**
 >
@@ -61,31 +56,19 @@ hand-holding for, and it plans your next session around the difference.
 
 ## What you get
 
-**A real agent, not a prompt wrapper.** It holds state, ranks competing
-hypotheses with confidence scores, plans which tool to reach for, observes the
-result, updates its beliefs, and verifies before concluding. Every step lands in
-a JSONL trace you can read back.
+**A real agent, not a prompt wrapper.** It holds state, ranks competing hypotheses with `belief_score`, plans which tool to reach for, observes the result, updates its beliefs, and verifies before concluding. Agent activity can be recorded into structured traces so you can inspect what happened instead of treating the model as a black box.
 
-**It works with the network off.** Ollama makes it smarter, but nothing
-*requires* it. No API key, no account, no telemetry. If the model is down the
-agent falls back to heuristics and keeps going.
+**It works with the network off.** Ollama makes it smarter, but nothing *requires* a paid API. The core system can fall back to deterministic heuristics and local analysis when a model is unavailable.
 
-**Knowledge it can actually search.** 45 curated archive entries plus a
-857-card study corpus (45 curated archive + 812 derived) covering 97 library techniques, across pwn, reverse engineering,
-web, crypto, forensics, OSINT, misc, blockchain, and mobile. Hybrid retrieval
-(lexical BM25 always, vectors when available) with a reranking stage that
-diversifies results so you get three different ideas rather than three
-paraphrases of one.
+**Knowledge it can actually search.** The project maintains a canonical technique taxonomy, a local technique library, curated knowledge, derived study material, provenance metadata, and retrieval controls. Lexical retrieval is available locally, while vector retrieval is optional.
 
-**A tutor that adapts.** A skill graph of technique prerequisites, six hint
-levels, Socratic prompts, a misconception engine that catches the beliefs
-quietly costing you hours, and a curriculum that schedules repairs before new
-material.
+**A tutor that adapts.** A skill graph of technique prerequisites, six hint levels, Socratic prompts, learner history, misconception repair, curriculum planning, and transfer-oriented evaluation are all part of the learning layer.
 
-**Safety that's actually load-bearing.** Tool permission tiers, no-shell
-subprocesses with timeouts and resource limits, prompt-injection filtering on
-untrusted challenge text, secret redaction in logs, optional Docker isolation,
-and online research off by default.
+**It knows when not to guess.** UNKNOWN / abstain paths are used when evidence is insufficient. Retrieval can abstain, classification can abstain, and active discriminators can be selected when two techniques remain difficult to distinguish.
+
+**Independent verification.** The agent is designed to separate a hypothesis from verification. Independent checks, evidence requirements, and verification levels help prevent a plausible-looking model answer from becoming an unquestioned conclusion.
+
+**Safety is part of the architecture.** Tool permission tiers, subprocess timeouts, resource limits, archive extraction limits, SSRF restrictions, prompt-injection filtering, secret redaction, optional Docker isolation, and online research controls are treated as load-bearing components rather than documentation-only promises.
 
 ---
 
@@ -94,25 +77,34 @@ and online research off by default.
 You need Python 3.10+. Everything else is optional.
 
 ```bash
-pip install -r requirements.txt
+pip install -e .
 ```
 
-For the smarter path, install [Ollama](https://ollama.com/) and pull two models:
+For the smarter local path, install [Ollama](https://ollama.com/) and pull a model:
 
 ```bash
 ollama pull qwen3:8b
+```
+
+For local embeddings, install an embedding model:
+
+```bash
 ollama pull nomic-embed-text
 ```
 
-Then index the archive and take it for a spin:
+Then take it for a spin:
 
 ```bash
-python ingest.py
 python main.py agent "A binary reads input with gets() into a 64-byte buffer and there's a win() function."
 ```
 
-Want to change defaults? `cp .env.example .env`. Every setting has a sane
-default, so an empty file works fine.
+Want to change defaults? Copy `.env.example` to `.env`.
+
+```bash
+cp .env.example .env
+```
+
+The project is designed so the core workflow remains usable without requiring a hosted API.
 
 ---
 
@@ -126,32 +118,28 @@ python main.py agent --path ./challenge_files --hint-level 3 "Something's hidden
 python main.py agent --fetch owner/repo/path "Analyse this"
 ```
 
-The agent triages any files you point it at, forms hypotheses, runs safe local
-analysis, and finishes with a teaching block. `--hint-level` (1–6) controls how
-much it gives away:
+The agent triages any files you point it at, forms hypotheses, runs safe local analysis, and finishes with a teaching block. `--hint-level` controls how much it gives away:
 
-| Level | What you get |
-|---|---|
-| 1 | Concept — what *class* of problem this is |
-| 2 | Direction — where to look |
-| 3 | Tool class — what kind of thing to run |
-| 4 | Partial technique |
-| 5 | Ordered walkthrough |
-| 6 | Full conclusion (only when you ask) |
+| **Level** | **What you get**                          |
+| --------- | ----------------------------------------- |
+| 1         | Concept — what *class* of problem this is |
+| 2         | Direction — where to look                 |
+| 3         | Tool class — what kind of thing to run    |
+| 4         | Partial technique                         |
+| 5         | Ordered walkthrough                       |
+| 6         | Full conclusion (only when you ask)       |
 
 ### Find out what to study next
 
 ```bash
 python main.py curriculum
 python main.py curriculum --goal ret2libc
-python main.py curriculum --stuck        # last attempt went badly, ease off
+python main.py curriculum --stuck
 ```
 
-Reads your actual history and builds a plan. If you ask for `ret2libc` and
-haven't got `stack-buffer-overflow` down yet, it'll schedule that first — plus
-`c-memory` and `stack-layout` underneath it. Misconceptions get repaired before
-anything new gets introduced, because building on a broken foundation is worse
-than building slowly.
+Reads your recorded history and builds a study plan around what you've actually done.
+
+If you ask for `ret2libc` and haven't got `stack-buffer-overflow` down yet, the curriculum can put the prerequisite first instead of pretending the missing foundation does not matter.
 
 ### See how challenges relate
 
@@ -161,8 +149,7 @@ python main.py graph --path stack-buffer-overflow ret2libc
 python main.py graph --stats
 ```
 
-Answers the two questions you actually have when you're stuck: *what's an easier
-version of this?* and *what should I try now that I've got it?*
+The graph connects techniques through prerequisites, related techniques, and learning routes.
 
 ### Search the archive
 
@@ -178,8 +165,31 @@ python main.py search "stack overflow" --category pwn --difficulty easy
 python main.py history --summary
 ```
 
-Technique frequency and average hint depth per technique — a decent proxy for
-which things you're leaning on help for.
+Use the learner and history commands to inspect technique frequency, previous attempts, and hint dependency.
+
+### Compare configured models
+
+```bash
+python main.py compare_models
+```
+
+This compares model capability profiles without requiring every model to be installed or reachable.
+
+### Inspect confidence and calibration
+
+```bash
+python main.py calibrate
+python main.py fit_calibration
+python main.py diagnose
+```
+
+Calibration machinery exists to measure and improve confidence behavior. It does **not** make an arbitrary `belief_score` equivalent to a probability.
+
+### Run performance diagnostics
+
+```bash
+python main.py perf
+```
 
 ### Everything else
 
@@ -189,50 +199,76 @@ python main.py generate "A beginner JWT validation challenge"
 python main.py list --category crypto
 python main.py fetch --search "picoctf"
 python main.py session create polyglot --language rust
-python main.py webui                     # http://127.0.0.1:8765
+python main.py serve --port 8765
 ```
 
-`python main.py --help` has the full list.
+`python main.py --help` has the current command list.
+
+---
+
+## Multi-language sessions
+
+Challenge sessions can execute supported source languages through the sandboxed runner.
+
+Current explicit language support:
+
+| **Language** | **Runtime**      |
+| ------------ | ---------------- |
+| Python       | `python3`        |
+| Rust         | `rustc`          |
+| Java         | `javac` / `java` |
+| .NET         | `dotnet`         |
+| C            | `gcc`            |
+| C++          | `g++`            |
+| Go           | `go`             |
+
+Example:
+
+```bash
+python main.py session create polyglot --language rust
+```
+
+Execution is subject to timeouts, output limits, resource limits, and the configured sandbox policy.
 
 ---
 
 ## Keeping it honest
 
-A tutor that quietly teaches you wrong things is worse than no tutor. Three
-commands exist purely to keep that from happening.
+A tutor that quietly teaches you wrong things is worse than no tutor.
 
-### Audit the archive
+The current system has several mechanisms specifically intended to make that failure visible.
+
+### Audit the knowledge base
 
 ```bash
-python main.py audit --sync
-python main.py audit --strict     # non-zero exit if anything's wrong (for CI)
+python main.py knowledge --audit
+python main.py knowledge --audit --strict
 ```
 
-Validates every entry, tracks where each piece of knowledge came from and how
-trustworthy that source is, versions entries by content hash so edits are
-visible instead of silent, and flags **contradictions** — two entries that make
-opposing claims about the same technique. When two entries disagree, source
-trust decides which one wins.
+The audit checks the relationship between the canonical taxonomy, technique library, corpus metadata, and knowledge graph.
+
+Strict mode is intended to fail CI when the knowledge base contains blocking inconsistencies.
 
 ### Rebuild the corpus
 
 ```bash
-python main.py corpus --min 500
+python main.py corpus
 ```
 
-Generates the study corpus from `data/technique_library.json`. Five kinds of
-card, each doing a different job:
+Study material is derived from the technique library and taxonomy rather than being treated as an unquestionable collection of generated facts.
 
-| Card kind | Count | What it's for |
-|---|---:|---|
-| scenario | 251 | The same idea wearing a different disguise |
-| discrimination | 111 | Telling two easily-confused techniques apart |
-| concept | 61 | What this technique *is* |
-| triage | 61 | Given these signals, what do you check first |
-| prerequisite | 31 | The foundations underneath |
-| archive | 45 | Hand-written curated entries |
+The system distinguishes between different learning-card purposes, including:
 
-It's deterministic, so evaluation stays comparable across machines and commits.
+| **Card kind**  | **What it's for**                            |
+| -------------- | -------------------------------------------- |
+| scenario       | The same idea wearing a different disguise   |
+| discrimination | Telling two easily-confused techniques apart |
+| concept        | What this technique *is*                     |
+| triage         | Given these signals, what do you check first |
+| prerequisite   | The foundations underneath                   |
+| archive        | Curated knowledge with provenance            |
+
+The exact corpus size is data-dependent and should be checked from the current generated corpus rather than hard-coded into this README.
 
 ### Look at the results
 
@@ -240,11 +276,7 @@ It's deterministic, so evaluation stays comparable across machines and commits.
 python main.py dashboard --eval --trace
 ```
 
-Writes two self-contained HTML files to `data/reports/` — no server, no CDN,
-just open them. One is a benchmark dashboard (accuracy, difficulty × category
-matrix, corpus health, archive issues). The other is a trace viewer that walks
-you through an agent run step by step, so when it goes somewhere strange you can
-see exactly where it turned.
+The dashboard produces local reports for evaluation and trace inspection. They are intended to make regressions and strange agent behavior easier to inspect.
 
 ---
 
@@ -256,15 +288,27 @@ python main.py experiment --benchmark
 python main.py experiment --ablation
 ```
 
-The offline evaluator runs 20 ground-truth cases with no Ollama and no vector
-store, using heuristic seeding and lexical retrieval. On the shipped set it gets
-**90% category accuracy** and a **95% technique hit rate**.
+The offline evaluator provides a deterministic regression signal for the shipped evaluation set. It does not require Ollama or a hosted model.
 
-Read that number for what it is: a regression check on a small local set, not a
-claim about solving real contest challenges. It exists to tell you when a change
-broke something. The ablation harness compares the full agent against
-`no_tools`, `no_retrieve`, and `classify_only` variants so you can see which
-parts are pulling weight.
+For broader capability measurement, the project distinguishes between local evaluation and harder external / held-out evaluation.
+
+The current release reports approximately **69.6% on the external-hard evaluation**.
+
+Read that number for what it is: a measurement on a defined evaluation population, not a claim about solving arbitrary real contest challenges.
+
+The system also supports:
+
+* category classification
+* technique classification
+* retrieval evaluation
+* active discrimination
+* abstention / UNKNOWN behavior
+* independent verification
+* calibration analysis
+* model capability comparison
+* ablation experiments
+
+The important goal is not to maximize a single benchmark number. It is to make regressions visible and make unsupported confidence harder to hide.
 
 ---
 
@@ -275,61 +319,123 @@ Drop a `.py` file in `plugins/` that exports `register(api)`:
 ```python
 def _check(args):
     text = args.get("text", "")
-    return True, f"saw {len(text)} characters", ""   # (ok, output, error)
+    return True, f"saw {len(text)} characters", ""
+
 
 def register(api):
-    api.describe(version="1.0.0", description="What this plugin does")
-    api.register_tool("check", _check, description="...", category_tags=["web"])
+    api.describe(
+        version="1.0.0",
+        description="What this plugin does",
+    )
+    api.register_tool(
+        "check",
+        _check,
+        description="...",
+        category_tags=["web"],
+    )
 ```
+
+Enable plugins explicitly:
 
 ```bash
 CTF_TUTOR_ENABLE_PLUGINS=1 python main.py plugins
 ```
 
-Tools get namespaced (`yourplugin.check`) so nothing can shadow a built-in,
-permissions are clamped to ANALYSIS at most no matter what a plugin asks for,
-and a handler that raises gets caught and reported rather than ending your run.
-Plugins are off by default because "drop a file in a folder and it executes"
-should never be silent. See `plugins/example_flagcheck.py` for a working one.
+Plugins are treated as trusted local Python code. They are not an untrusted plugin sandbox.
+
+Tool names are namespaced so a plugin cannot silently shadow a built-in tool. Plugin failures are reported rather than silently terminating the whole agent run.
+
+Plugins are disabled by default because "drop a file in a folder and execute it" should never be an implicit behavior.
+
+---
+
+## Web interface
+
+The current web architecture is intentionally small:
+
+```text
+python main.py serve
+        │
+        ▼
+ agent.http_api
+        │
+        ├── /health
+        ├── /v1/classify
+        ├── /v1/route
+        ├── /v1/eval
+        ├── /v1/triage
+        ├── /v1/vision
+        ├── /v1/research
+        ├── /v1/config
+        ├── /v1/models/compare
+        ├── /v1/cost
+        ├── /v1/languages
+        └── /v1/embeddings/info
+        │
+        ▼
+ frontend/index.html
+```
+
+Start it with:
+
+```bash
+python main.py serve --port 8765
+```
+
+By default the server binds to `127.0.0.1`, so it is not exposed to the network unless you explicitly configure it otherwise.
+
+The old `webui/` package is no longer the primary web architecture.
 
 ---
 
 ## How it fits together
 
-```
+```text
                     Challenge (+ optional files)
                               │
                               ▼
                    ┌──────────────────────┐
-                   │ Triage               │  inventory, magic bytes,
-                   │                      │  category hints
+                   │ Triage               │
+                   │ inventory, metadata, │
+                   │ category signals     │
                    └──────────┬───────────┘
                               ▼
                    ┌──────────────────────┐
-                   │ AgentState           │  facts + ranked hypotheses
+                   │ Classification       │
+                   │ hypotheses +         │
+                   │ belief_score         │
                    └──────────┬───────────┘
                               ▼
         ┌─────────────────────────────────────────────┐
-        │  Loop (budgeted)                            │
-        │    plan  →  execute  →  observe  →  update   │
-        │    permission-gated, sandboxed, traced      │
+        │ Investigation Loop                          │
+        │                                             │
+        │ plan → execute → observe → update → verify  │
+        │                                             │
+        │ permission-gated, sandboxed, traced         │
         └─────────────────────┬───────────────────────┘
                               ▼
                    ┌──────────────────────┐
-                   │ Verify               │
+                   │ Active discrimination│
+                   │ or abstain when      │
+                   │ evidence is weak     │
                    └──────────┬───────────┘
                               ▼
                    ┌──────────────────────┐
-                   │ Teach                │  Socratic prompts,
-                   │                      │  staged hints,
-                   │                      │  prerequisites,
-                   │                      │  misconception repair
+                   │ Independent Verify   │
+                   └──────────┬───────────┘
+                              ▼
+                   ┌──────────────────────┐
+                   │ Teach                │
+                   │ Socratic prompts,    │
+                   │ staged hints,        │
+                   │ prerequisites,       │
+                   │ misconception repair │
                    └──────────┬───────────┘
                               ▼
               workspace + learner memory + trace
 ```
 
-`ARCHITECTURE.md` has the full module table and safety model.
+`ARCHITECTURE.md` has the fuller module table and safety model.
 
 ---
 
@@ -337,65 +443,67 @@ should never be silent. See `plugins/example_flagcheck.py` for a working one.
 
 ```text
 CTF-tutor/
-├── agent/                    # the agent and tutor
-│   ├── loop.py               #   closed-loop orchestration
-│   ├── state.py              #   working memory
-│   ├── hypothesis.py         #   ranked claims with confidence
-│   ├── planner.py            #   which tool next
-│   ├── executor.py           #   local tool runners
-│   ├── observer.py           #   evidence extraction
-│   ├── verifier.py           #   independent check
-│   ├── triage.py             #   artifact inventory
-│   ├── hybrid_retrieve.py    #   lexical + vector search
-│   ├── rerank.py             #   second-stage scoring + diversity
-│   ├── challenge_graph.py    #   how challenges relate
-│   ├── skill_graph.py        #   technique prerequisites
-│   ├── curriculum.py         #   personalised plans, adaptive difficulty
-│   ├── misconception.py      #   detect and repair wrong beliefs
-│   ├── teaching.py           #   Socratic prompts + hint levels
-│   ├── memory.py             #   learner mastery stats
-│   ├── provenance.py         #   sources, versions, contradictions
-│   ├── corpus_builder.py     #   builds the study corpus
-│   ├── dashboard.py          #   HTML reports + trace viewer
-│   ├── plugins.py            #   third-party toolkit loading
-│   ├── providers.py          #   Ollama / OpenAI-compatible + failover
-│   ├── permissions.py        #   tool capability tiers
-│   ├── security.py           #   injection filtering, redaction
-│   ├── sandbox.py            #   resource-limited subprocesses
-│   └── eval_agent.py         #   offline metrics
-├── tools/                    # passive analysis toolkits
+├── agent/                       # agent, tutor, retrieval, evaluation
+│   ├── http_api.py              #   local HTTP API + web handler
+│   ├── model_compare.py         #   model capability comparison
+│   ├── model_profile.py         #   model capability profiles
+│   ├── active_classify.py       #   active classification
+│   ├── active_web.py             #   active web discrimination
+│   ├── calibration.py            #   calibration machinery
+│   ├── calibration_fit.py        #   calibration fitting
+│   ├── capability_plan.py        #   capability planning
+│   ├── challenge_fetch.py        #   public challenge fetching + archive safety
+│   ├── classify_challenge.py     #   challenge classification
+│   ├── classify_ensemble.py      #   ensemble classification
+│   ├── classify_pipeline.py      #   classification pipeline
+│   ├── confidence_policy.py      #   confidence / abstention policy
+│   ├── ensemble.py               #   model / heuristic ensemble
+│   ├── retrieval_abstain.py      #   retrieval abstention
+│   ├── sandbox.py                #   resource-limited execution
+│   ├── rev_dynamic_loop.py       #   reverse-engineering loop
+│   ├── pwn_exploit_loop.py       #   pwn investigation loop
+│   ├── taxonomy.py               #   canonical technique taxonomy
+│   ├── tool_result_schema.py     #   structured tool results
+│   └── unified_learner_store.py  #   learner state
+├── cli/                          # extracted CLI quality / ops commands
+├── frontend/
+│   └── index.html                # local web interface
+├── tools/                        # passive analysis toolkits
 ├── data/
-│   ├── archive/              #   45 curated entries
-│   ├── corpus/               #   857 study cards (curated + derived)
-│   ├── technique_library.json#   61 techniques, 251 scenarios
-│   ├── technique_vocab.json  #   canonical technique tags
-│   ├── eval/ground_truth.json#   20 evaluation cases
-│   └── provenance.json       #   where each entry came from
-├── plugins/                  # your extensions
-├── tests/                    # 355 tests
-├── webui/                    # local web UI
-└── main.py                   # CLI
+│   ├── archive/                  # curated knowledge
+│   ├── corpus/                   # generated study corpus
+│   ├── technique_library.json    # technique definitions
+│   ├── technique_vocab.json      # canonical technique tags
+│   └── ...                       # local evaluation / runtime data
+├── plugins/                      # optional local extensions
+├── tests/                        # automated tests
+├── scripts/
+│   └── release_gate.py           # release / gate checks
+├── CHANGELOG.md
+├── ARCHITECTURE.md
+└── main.py                       # CLI entry point
 ```
 
-Your personal state — history, learner memory, sessions, traces, reports, the
-vector store — stays local and gitignored. It's yours.
+Your personal state — history, learner memory, sessions, traces, reports, and local vector data — stays local and is intended to remain outside the committed source tree.
 
 ---
 
 ## Analysis toolkits
 
-All passive, all local. They read files; they don't attack anything.
+All passive by default, all local. They read files and artifacts rather than automatically attacking remote systems.
 
-| Module | What it inspects |
-|---|---|
-| `static_analysis.py` | Dispatches by challenge category |
-| `web_recon.py` | Frameworks, JWTs, headers, auth patterns — no HTTP requests |
-| `crypto_toolkit.py` | Hashes, algorithms, RSA parameters, ciphertext structure |
-| `forensics_toolkit.py` | Local forensic file inspection |
-| `osint_toolkit.py` | Metadata and manual-OSINT guidance |
-| `decode_toolkit.py` | Base64, hex, URL, ROT, XOR, gzip, recipe chaining |
-| `xor_crack.py` | XOR key recovery (with an optional Rust backend) |
-| `ghidra_headless.py` | Ghidra decompilation, if you have it installed |
+| **Module**             | **What it inspects**                                     |
+| ---------------------- | -------------------------------------------------------- |
+| `static_analysis.py`   | Dispatches analysis by challenge category                |
+| `web_recon.py`         | Frameworks, JWTs, headers, auth patterns                 |
+| `crypto_toolkit.py`    | Hashes, algorithms, RSA parameters, ciphertext structure |
+| `forensics_toolkit.py` | Local forensic file inspection                           |
+| `osint_toolkit.py`     | Metadata and manual-OSINT guidance                       |
+| `decode_toolkit.py`    | Base64, hex, URL, ROT, XOR, gzip, chaining               |
+| `xor_crack.py`         | XOR key recovery                                         |
+| `ghidra_headless.py`   | Ghidra decompilation when installed                      |
+
+Examples:
 
 ```bash
 python -m tools.decode_toolkit "ZmxhZ3t0ZXN0fQ=="
@@ -403,77 +511,107 @@ python -m tools.web_recon ./app.py
 python -m tools.crypto_toolkit ./ciphertext.txt
 ```
 
-Set `GHIDRA_INSTALL_DIR` and pass `--decompile` to use Ghidra. Without it, that
-feature degrades quietly rather than becoming mandatory.
+Set `GHIDRA_INSTALL_DIR` and pass the relevant decompilation options to use Ghidra. Without it, the rest of the system remains usable.
+
+---
+
+## Security hardening
+
+CTF challenge files and remote resources are untrusted input.
+
+The current release includes several explicit controls:
+
+* archive path traversal protection
+* archive member count and extraction-size limits
+* compression-ratio checks
+* symlink rejection during archive extraction
+* SSRF restrictions for network-aware features
+* bounded subprocess execution
+* CPU and memory limits where supported
+* output-size limits
+* Docker-backed sandbox execution where available
+* prompt-injection filtering for untrusted challenge text
+* secret redaction in logs
+* plugin permission restrictions
+* UNKNOWN / abstain behavior instead of forced classification
+
+These controls are defence in depth. They are not a replacement for a disposable VM or properly isolated environment when analysing genuinely malicious samples.
 
 ---
 
 ## Development
 
 ```bash
-python -m pytest -q              # 355 tests
-python -m compileall -q .        # syntax check
-python main.py audit --strict    # archive quality gate
+python -m pytest -q
+python -m compileall -q .
+python main.py knowledge --audit --strict
+python main.py gate
 ```
 
-CI runs all four of those plus a corpus build and the offline evaluator, and
-uploads the dashboard as an artifact.
+CI runs the automated test suite and release-quality checks.
 
-Optional toolchains (Ghidra, Rust, Java, .NET) aren't installed everywhere, so
-their paths need testing separately when you have them.
+Optional toolchains such as Ghidra, Rust, Java, .NET, and Docker are not guaranteed to be available on every development machine, so those execution paths should be tested separately when available.
 
 ---
 
 ## Where it stands
 
-Honest status: this is a **working local agent and tutor**, with the seven-phase
-roadmap now substantially complete.
+Honest status: this is a **working local CTF agent and tutor**, with the major reliability, knowledge, evaluation, and hardening work substantially implemented.
 
-| Phase | Focus | Status |
-|---|---|---|
-| 1 | Agent core — state, hypotheses, planning, tools, verification | Done |
-| 2 | Measurable — benchmark, ablation, difficulty matrix, CI, dashboard | Done |
-| 3 | CTF strength — triage, hybrid retrieval, reranking, challenge graph | Done |
-| 4 | Tutor — skill graph, hints, Socratic, curriculum, misconceptions | Done |
-| 5 | Robust — sandbox, permissions, injection defence, provider failover | Done |
-| 6 | Knowledge scale — 500+ cards, provenance, versioning, contradictions | Done |
-| 7 | Professionalize — plugins, web UI, experiments, dashboard, trace viewer | Mostly |
+| **Area**       | **Focus**                                                  | **Status**  |
+| -------------- | ---------------------------------------------------------- | ----------- |
+| Agent core     | state, hypotheses, planning, tools, verification           | Done        |
+| Evaluation     | benchmarks, ablations, regression checks                   | Done        |
+| CTF capability | triage, retrieval, classification, challenge relationships | Done        |
+| Tutor          | hints, Socratic teaching, curriculum, misconceptions       | Done        |
+| Reliability    | abstention, independent checks, retrieval controls         | Done        |
+| Security       | sandboxing, SSRF, archive safety, plugin boundaries        | Done        |
+| Knowledge      | taxonomy, corpus, provenance, contradiction checks         | Done        |
+| Model layer    | profiles, comparison, calibration machinery                | Implemented |
+| Web interface  | local HTTP API + frontend                                  | Implemented |
+| Multilanguage  | Python, Rust, Java, .NET, C, C++, Go                       | Implemented |
 
 **Still open, and worth being clear about:**
 
-- The corpus is high-quality *pattern* knowledge, not 500 real contest
-  writeups. Those are a different and much harder acquisition problem.
-- No public benchmark integration or multi-model comparison yet.
-- Deep language-specific reverse engineering and fully dynamic web/crypto
-  interaction remain shallow.
-- No research paper.
+* The corpus is pattern-oriented study knowledge, not a replacement for hundreds of real contest writeups.
+* External-hard evaluation is still a bounded benchmark, not a universal measure of CTF-solving ability.
+* Deep language-specific reverse engineering remains less mature than the core classification / teaching pipeline.
+* Fully dynamic exploitation workflows remain intentionally constrained.
+* Calibration machinery exists, but `belief_score` should not be presented as a probability without proper calibration evidence.
+* The project still needs broader real-task evaluation before making stronger capability claims.
 
-The highest-value next step is a locked regression benchmark on real tasks. The
-offline numbers above measure consistency, not capability, and it'd be
-dishonest to pretend otherwise.
+The highest-value next step is continued evaluation on held-out real tasks and growing the experience-lab layer without turning the project into a flag-solving black box.
 
 ---
 
 ## Safety
 
-CTF challenge files are untrusted input. Analysis may invoke local third-party
-tools (`binwalk`, `exiftool`, `objdump`, Ghidra, `tshark`, Volatility) when
-they're present. For genuinely untrusted samples, use a disposable VM or
-container, keep your tools patched, and cut network access.
+CTF challenge files are untrusted input. Analysis may invoke local third-party tools such as `binwalk`, `exiftool`, `objdump`, Ghidra, `tshark`, or Volatility when they are installed.
 
-The built-in timeouts, output caps, decompression limits, and resource limits
-are defence in depth. They are not a substitute for real isolation.
+For genuinely untrusted samples, use a disposable VM or container, keep your tools patched, and cut network access.
 
-Only use exploitation techniques against systems you own or have explicit
-written permission to test.
+The built-in timeouts, output caps, decompression limits, SSRF restrictions, and resource limits are defence in depth. They are not a substitute for real isolation.
+
+Only use exploitation techniques against systems you own or have explicit written permission to test.
 
 ---
 
 ## License and intent
 
-Built for education, CTF competitions, security research, and authorized
-testing. If you're using it for anything else, you're using the wrong tool.
+Built for education, CTF competitions, security research, and authorized testing.
 
-Contributions welcome — especially archive entries with real provenance, new
-technique library scenarios, and plugins. Run `python main.py audit --strict`
-before you open a PR.
+If you're using it for anything else, you're using the wrong tool.
+
+Contributions welcome — especially:
+
+* archive entries with real provenance
+* new technique-library scenarios
+* real experience labs
+* evaluation cases
+* retrieval / classification improvements
+* safe plugins
+* documentation improvements
+
+Run the relevant quality gates before opening a PR.
+
+© 2026 CTF-Tutor
