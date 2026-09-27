@@ -29,3 +29,11 @@ plugins/*
 # OS cruft
 .DS_Store
 .venv/
+
+*.bak
+*.egg-info/
+data/cost_ledger.jsonl
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/

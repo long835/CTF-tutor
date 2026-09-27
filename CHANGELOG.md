@@ -245,3 +245,69 @@ One existing assertion was updated: `test_help_flag_shows_subcommand_summary`
 checked for the literal string `"subcommands:"`, which the regrouped help no
 longer uses. It now asserts that every registered subcommand appears in the help
 output, which is what the test was actually trying to establish.
+
+---
+
+## Historical Phase 1 — Multi-Category Reconnaissance
+
+This section preserves the earlier Phase 1 implementation summary that was previously maintained in `IMPLEMENTATION_SUMMARY.md`.
+
+### Web reconnaissance
+
+Added `tools/web_recon.py` for passive web challenge analysis, including:
+
+- JWT decoding and inspection
+- framework detection
+- HTTP security-header detection
+- authentication-pattern detection
+- passive-only source analysis
+
+### Crypto reconnaissance
+
+Added `tools/crypto_toolkit.py` for structural crypto analysis, including:
+
+- common hash identification
+- RSA key inspection
+- cipher-mode detection
+- algorithm detection
+- ciphertext encoding and entropy hints
+
+### Static-analysis routing
+
+Updated `tools/static_analysis.py` to route evidence gathering according to challenge category rather than applying only generic binary analysis.
+
+### Classifier confidence threshold
+
+Introduced a minimum heuristic-confidence threshold so weak keyword matches could defer to stronger classification paths rather than becoming unsupported confident classifications.
+
+### Decompression-bomb protection
+
+Added decompressed-output limits to gzip/zlib processing so untrusted challenge files cannot expand without a bounded memory/output policy.
+
+### Historical result
+
+The Phase 1 changes were intended to broaden challenge analysis beyond PWN and reverse engineering while keeping web and crypto reconnaissance passive.
+
+
+---
+
+## Historical v0.4.6 — Evaluation Honesty
+
+Earlier evaluation work established the distinction between:
+
+- generated evaluation cases,
+- ground-truth / independent / public cases,
+- and the harder external evaluation set.
+
+The important project policy established at this stage was not to market generated-vocabulary accuracy as equivalent to real-world performance.
+
+The external-hard benchmark was introduced as a deliberately harder evaluation signal using wording less tied to the internal taxonomy.
+
+
+---
+
+## Historical Upgrade Roadmap
+
+The former `UPGRADE_STATUS.md` tracked the project's multi-phase reliability, reasoning, evaluation, hardening, knowledge, and evaluation-set work.
+
+Its completed/partial/not-started breakdown and bug discoveries are preserved in Git history. Current architectural requirements and limitations are maintained in `ARCHITECTURE.md`, while release-level changes belong in this changelog.

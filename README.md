@@ -1,16 +1,21 @@
 # CTF-Tutor
 
-## CURRENT (v0.7.0)
+## CURRENT (v0.9.2)
 
 | Item | Value |
 |------|-------|
+| Version | 0.9.2 |
 | Techniques | 97 |
-| Corpus cards | 867 (55 curated archive + derived) |
+| Corpus cards | 867 (55 curated + 812 derived) |
+| External hard | 66.7% (70/105) |
+| Hand evaluation | 100% (103/103) |
+| Provenance coverage | 100% (55/55) |
+| Gate | `python main.py gate` |
+| Full tests | `python -m pytest -q` |
+| Calibration | `python main.py calibrate` |
 | Experience labs | 21+ |
 | External hard (honest) | see `python main.py eval --external` |
-| Gate | `python main.py gate` |
 | Full CI | `bash scripts/ci_full.sh` |
-| Calibration | `python main.py calibrate` |
 
 **Confidence is a heuristic belief_score, not a calibrated probability.**
 **Plugins are trusted local Python (see docs/PLUGIN_TRUST.md).**
@@ -70,8 +75,8 @@ a JSONL trace you can read back.
 *requires* it. No API key, no account, no telemetry. If the model is down the
 agent falls back to heuristics and keeps going.
 
-**Knowledge it can actually search.** 45 curated archive entries plus a
-857-card study corpus (45 curated archive + 812 derived) covering 97 library techniques, across pwn, reverse engineering,
+**Knowledge it can actually search.** 55 curated archive entries plus an
+867-card study corpus (55 curated archive + 812 derived) covering 97 library techniques, across pwn, reverse engineering,
 web, crypto, forensics, OSINT, misc, blockchain, and mobile. Hybrid retrieval
 (lexical BM25 always, vectors when available) with a reranking stage that
 diversifies results so you get three different ideas rather than three
@@ -365,15 +370,15 @@ CTF-tutor/
 │   └── eval_agent.py         #   offline metrics
 ├── tools/                    # passive analysis toolkits
 ├── data/
-│   ├── archive/              #   45 curated entries
-│   ├── corpus/               #   857 study cards (curated + derived)
-│   ├── technique_library.json#   61 techniques, 251 scenarios
+│   ├── archive/              #   55 curated entries
+│   ├── corpus/               #   867 study cards (curated + derived)
+│   ├── technique_library.json  #   97 techniques, 251 scenarios
 │   ├── technique_vocab.json  #   canonical technique tags
 │   ├── eval/ground_truth.json#   20 evaluation cases
 │   └── provenance.json       #   where each entry came from
 ├── plugins/                  # your extensions
-├── tests/                    # 355 tests
-├── webui/                    # local web UI
+├── tests/                    # current test suite
+├── frontend/                # local web UI
 └── main.py                   # CLI
 ```
 
@@ -411,7 +416,7 @@ feature degrades quietly rather than becoming mandatory.
 ## Development
 
 ```bash
-python -m pytest -q              # 355 tests
+python -m pytest -q              # current test suite
 python -m compileall -q .        # syntax check
 python main.py audit --strict    # archive quality gate
 ```
@@ -443,7 +448,7 @@ roadmap now substantially complete.
 
 - The corpus is high-quality *pattern* knowledge, not 500 real contest
   writeups. Those are a different and much harder acquisition problem.
-- No public benchmark integration or multi-model comparison yet.
+- No broad public benchmark integration yet; multi-model comparison tooling is available through `compare_models`.
 - Deep language-specific reverse engineering and fully dynamic web/crypto
   interaction remain shallow.
 - No research paper.

@@ -85,12 +85,12 @@ See `.env.example` for the full list.
 
 ## Knowledge pipeline
 ```
-data/technique_library.json  (61 techniques, 251 scenarios)
+data/technique_library.json  (97 techniques, 251 scenarios)
           │
-          ├─► corpus_builder ─► data/corpus/challenges.jsonl  (560 cards,
-          │                      5 card kinds, 118 techniques)
+          ├─► corpus_builder ─► data/corpus/challenges.jsonl  (867 cards,
+          │                      5 card kinds, 97 techniques)
           │
-data/archive/*.json  (45 curated entries)
+data/archive/*.json  (55 curated entries)
           │
           ├─► provenance ─► data/provenance.json  (source, version, history)
           │                 + contradiction detection across shared techniques
@@ -106,3 +106,61 @@ wrapped so a raising handler cannot end a run. Off unless
 
 ## Public challenge import
 `agent/challenge_fetch.py` downloads public GitHub trees or zip archives into `data/workspaces/<id>/input/` with size/file limits and zip-slip protection. Use only public educational material.
+
+---
+
+## Current Requirements Status
+
+### Single classification path
+
+`classify_pipeline` is the primary classification path:
+
+```text
+deterministic signals
+        ↓
+heuristic classification
+        ↓
+optional LLM classification
+        ↓
+evidence arbitration
+        ↓
+belief / confidence policy
+        ↓
+UNKNOWN / ABSTAIN when evidence is insufficient
+```
+
+The system is designed to avoid maintaining competing independent
+classification paths that can disagree without arbitration.
+
+### Agent loop
+
+The agent loop uses the classification pipeline together with capability-aware
+planning and category-specific actions. Pwn and reverse-engineering workflows
+are routed through the same evidence and verification model rather than through
+separate competing classifiers.
+
+### Capability-aware behavior
+
+The tutor should distinguish between capabilities it can actually perform and
+capabilities it cannot. Missing tools, unavailable providers, and unsupported
+operations should be surfaced instead of being presented as completed work.
+
+### Confidence and calibration
+
+`belief_score` is a heuristic confidence/belief signal. Calibration tooling
+exists to measure and fit calibration, but the score should not be described as
+a calibrated probability unless that calibration has been validated for the
+relevant evaluation set.
+
+### Current boundaries
+
+The project intentionally does not claim:
+
+- live autonomous CTF participation
+- autonomous general exploitation
+- full operating-system-level plugin isolation
+- human-subject learning efficacy
+- broad real-world benchmark coverage
+
+The shipped evaluation sets are regression and capability signals, not proof of
+general CTF-solving performance.
