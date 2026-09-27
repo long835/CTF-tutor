@@ -87,11 +87,31 @@ def run_in_docker(
         "--tmpfs", "/tmp:size=64m",
         "--user", "65534:65534",  # nobody
     ]
+    container_argv = [str(arg) for arg in argv]
     if mount_ro:
+        host_root = str(Path(mount_ro).resolve())
+        host_prefix = host_root.rstrip(os.sep) + os.sep
+
+        # Commands are assembled using host paths, but the mounted workspace
+        # is visible inside the container at ``workdir``. Translate only
+        # arguments that actually point into that mounted workspace.
+        for i, arg in enumerate(container_argv):
+            try:
+                resolved_arg = str(Path(arg).resolve())
+            except (OSError, RuntimeError, ValueError):
+                continue
+
+            if resolved_arg == host_root:
+                container_argv[i] = workdir
+            elif resolved_arg.startswith(host_prefix):
+                relative = resolved_arg[len(host_prefix):]
+                container_argv[i] = str(Path(workdir) / relative)
+
         cmd.extend(["-v", f"{mount_ro}:{workdir}:ro"])
         cmd.extend(["-w", workdir])
+
     cmd.append(image)
-    cmd.extend(list(argv))
+    cmd.extend(container_argv)
 
     t0 = time.time()
     try:

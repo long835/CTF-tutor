@@ -7,6 +7,77 @@ from pathlib import Path
 from typing import Any, Dict, List
 
 
+
+def compare_models(
+    models: List[str] | None = None,
+    tasks: List[str] | None = None,
+) -> Dict[str, Any]:
+    """
+    Compare configured model profiles without requiring the models to be
+    installed or reachable.
+
+    This is a capability comparison, not a quality benchmark.  Profiles come
+    from ``agent.model_profile`` and describe what the agent can reasonably
+    ask each model to do.
+    """
+    from agent.model_profile import get_profile
+
+    model_names = list(models or ["qwen3:8b", "llava"])
+    task_names = [str(t).strip().lower() for t in (tasks or ["classify", "plan", "teach"]) if str(t).strip()]
+
+    profiles: List[Dict[str, Any]] = []
+
+    for name in model_names:
+        profile = get_profile(name)
+        data = profile.to_dict()
+
+        task_support: Dict[str, bool] = {}
+        for task in task_names:
+            if task in {"vision", "image", "images"}:
+                task_support[task] = bool(profile.supports_vision)
+            elif task in {"embed", "embedding", "embeddings"}:
+                task_support[task] = bool(profile.supports_embeddings)
+            else:
+                # Classification, planning, teaching, and similar tasks are
+                # text-generation tasks and therefore supported by generation
+                # profiles unless this is explicitly an embedding-only model.
+                task_support[task] = not profile.supports_embeddings
+
+        data["task_support"] = task_support
+        data["description"] = profile.describe()
+        profiles.append(data)
+
+    recommendation = "No models supplied."
+    if profiles:
+        viable = [
+            p for p in profiles
+            if all(p["task_support"].get(task, False) for task in task_names)
+        ]
+
+        if viable:
+            # Prefer the highest capability tier, then larger context.
+            viable.sort(
+                key=lambda p: (
+                    {"tiny": 0, "small": 1, "medium": 2, "large": 3, "frontier": 4}.get(
+                        p.get("tier", "small"), 1
+                    ),
+                    p.get("context_length", 0),
+                ),
+                reverse=True,
+            )
+            recommendation = viable[0]["name"]
+        else:
+            # No single model covers every requested task. Explain that the
+            # caller should route tasks to the profiles that support them.
+            recommendation = "Route tasks to models with matching capabilities."
+
+    return {
+        "models": model_names,
+        "tasks": task_names,
+        "profiles": profiles,
+        "recommendation": recommendation,
+    }
+
 def compare_heuristic_vs_llm(
     eval_path: str = "data/eval/external_hard.json",
     *,

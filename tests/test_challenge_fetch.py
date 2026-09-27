@@ -23,7 +23,7 @@ class TestParseGithub(unittest.TestCase):
 
 class TestSafeExtract(unittest.TestCase):
     def test_zip_path_traversal_blocked(self):
-        from agent.challenge_fetch import _safe_extract_zip
+        from agent.challenge_fetch import _safe_extract_zip, ArchiveSafetyError
         buf = io.BytesIO()
         with zipfile.ZipFile(buf, "w") as zf:
             zf.writestr("safe.txt", "ok")
@@ -35,9 +35,8 @@ class TestSafeExtract(unittest.TestCase):
             dest = Path(td) / "out"
             dest.mkdir()
             with zipfile.ZipFile(buf) as zf:
-                _safe_extract_zip(zf, dest)
-            self.assertTrue((dest / "safe.txt").exists())
-            self.assertTrue((dest / "nested" / "good.txt").exists())
+                with self.assertRaises(ArchiveSafetyError):
+                    _safe_extract_zip(zf, dest)
             self.assertFalse((Path(td) / "evil.txt").exists())
 
 

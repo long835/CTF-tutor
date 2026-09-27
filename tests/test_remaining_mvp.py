@@ -46,9 +46,10 @@ class TestPlatformsOffline(unittest.TestCase):
 
 class TestWebuiImport(unittest.TestCase):
     def test_handler_exists(self):
-        from webui.server import Handler, HTML
-        self.assertIn("CTF-Tutor", HTML)
-        self.assertTrue(hasattr(Handler, "do_POST"))
+        from agent.http_api import TutorHandler
+        html = Path("frontend/index.html").read_text(encoding="utf-8")
+        self.assertIn("CTF-Tutor", html)
+        self.assertTrue(hasattr(TutorHandler, "do_POST"))
 
 
 if __name__ == "__main__":

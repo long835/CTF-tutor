@@ -1,0 +1,17 @@
+requests>=2.28
+python-dotenv>=1.0
+
+[dev]
+pytest>=7.0
+
+[full]
+chromadb>=0.4
+youtube-transcript-api>=0.6
+yt-dlp>=2023.1
+
+[ingest]
+youtube-transcript-api>=0.6
+yt-dlp>=2023.1
+
+[vector]
+chromadb>=0.4

@@ -158,46 +158,33 @@ def has_decisive_keyword(text: str) -> bool:
 
 def _strip_decisive_terms(text: str) -> str:
     """
-    Remove the classifier's own decisive signal matches.
+    Remove technique names the classifier keys on, keeping the situation.
 
-    Blind cases must be blind according to the same SIGNALS table used by
-    ``has_decisive_keyword()``. Keeping a second hand-written list here would
-    eventually drift and let decisive clues leak into the benchmark.
+    Used on generated conditions so the blind subset is genuinely blind: the
+    case still describes an algorithm field in a token header, it just never
+    writes the letters J-W-T.
     """
+    replacements = {
+        r"\bjwt\b": "the bearer token",
+        r"json web token": "the bearer token",
+        r"sql\s*injection": "the query construction",
+        r"\bsqli\b": "the query construction",
+        r"\bssti\b": "the template rendering",
+        r"template injection": "the template rendering",
+        r"\bxss\b": "the reflected output",
+        r"cross.site scripting": "the reflected output",
+        r"\bssrf\b": "the outbound fetch",
+        r"\bxxe\b": "the XML parse",
+        r"buffer overflow": "the oversized copy",
+        r"format string": "the logging call",
+        r"\brop\b": "the return sequence",
+        r"\bstego\b|steganograph\w*": "the hidden payload",
+        r"reentranc\w*": "the repeated external call",
+    }
     out = text or ""
-
-    for pattern, _category in _decisive_patterns():
-        try:
-            out = re.sub(pattern, "", out, flags=re.IGNORECASE)
-        except re.error:
-            out = out.replace(pattern, "")
-
-    # Normalise the prose after removing matched phrases.
-    out = re.sub(r"\\s+", " ", out)
-    out = re.sub(r"\\s+([,.!?])", r"\\1", out)
-    out = re.sub(r"([,.!?]){2,}", r"\\1", out)
-
-    # A pattern can theoretically expose another decisive pattern after
-    # removal, so make the invariant explicit: blind means no decisive
-    # classifier signal remains.
-    for _ in range(3):
-        if not has_decisive_keyword(out):
-            break
-
-        changed = out
-        for pattern, _category in _decisive_patterns():
-            try:
-                changed = re.sub(pattern, "", changed, flags=re.IGNORECASE)
-            except re.error:
-                changed = changed.replace(pattern, "")
-
-        changed = re.sub(r"\\s+", " ", changed)
-        changed = re.sub(r"\\s+([,.!?])", r"\\1", changed)
-        if changed == out:
-            break
-        out = changed
-
-    return out.strip()
+    for pattern, rep in replacements.items():
+        out = re.sub(pattern, rep, out, flags=re.IGNORECASE)
+    return out
 
 
 # ---------------------------------------------------------------------------

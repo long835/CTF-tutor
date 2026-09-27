@@ -41,7 +41,7 @@ class TestMultiLanguageSession(unittest.TestCase):
             self.assertIsNone(result.returncode)
 
     def test_supported_languages_are_explicit(self):
-        self.assertEqual(SUPPORTED_LANGUAGES, ("python", "rust", "java", "dotnet"))
+        self.assertEqual(SUPPORTED_LANGUAGES, ("python", "rust", "java", "dotnet", "c", "cpp", "go"))
 
     def test_state_is_json(self):
         with TemporaryDirectory() as td:

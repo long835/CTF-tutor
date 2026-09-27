@@ -693,9 +693,9 @@ def cmd_platform(argv) -> int:
 
 
 def cmd_webui(argv) -> int:
-    """Start MVP web UI (http://127.0.0.1:8765)."""
-    from webui.server import main as web_main
-    web_main()
+    """Start the local web UI through the current HTTP API."""
+    from agent.http_api import serve
+    serve()
     return 0
 
 
@@ -1519,6 +1519,11 @@ def main(argv=None) -> int:
         print("  labs        list/classify experience labs")
         print("  next        next practice (reviews + weak + labs)")
         print("  dataset     build/measure the generated evaluation set (easy vs blind split)")
+        print("  calibrate   calibrate confidence scores against evaluation outcomes")
+        print("  fit_calibration fit a calibration model from recorded evaluation data")
+        print("  diagnose    diagnose classifier / pipeline quality issues")
+        print("  perf        performance and timing diagnostics")
+        print("  compare_models compare configured model profiles and routing")
         print("  trust       trust policy, and scan a file for injection attempts")
         print()
         print("run `python main.py <subcommand> --help` for that subcommand's options.")
